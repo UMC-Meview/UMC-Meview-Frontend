@@ -1,37 +1,49 @@
 @import "tailwindcss";
 
-@import "tailwindcss";
-
 :root {
-  font-family: "Pretendard", system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    font-family: "Pretendard", system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 
-  /* 컬러 테마 */
-  --primary-color: #ff5e3d;
-  /* --secondary-color: #4ecdc4;
+    /* 컬러 테마 */
+    --primary-color: #ff5e3d;
+    /* --secondary-color: #4ecdc4;
   --accent-color: #ffe66d;
   --text-primary: #2d3436;
   --text-secondary: #636e72;
   --background-light: #ffeaa7; */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: #fafafa;
+    margin: 0;
+    min-width: 390px;
+    min-height: 100vh;
+    background-color: #fafafa;
 }
 
-/* 웹앱 전용 설정 */
-#root {
-  width: 100%;
-  min-height: 100vh;
+@media (min-width: 640px) {
+    /* 데스크톱에서 웹앱을 모바일 크기로 제한 */
+    #root {
+        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* padding: 20px; */
+    }
+}
+
+/* PWA 설정 */
+@media (display-mode: standalone) {
+    /* PWA 모드에서의 추가 스타일 */
+    body {
+        user-select: none;
+        -webkit-user-select: none;
+    }
 }
 
 /* 
