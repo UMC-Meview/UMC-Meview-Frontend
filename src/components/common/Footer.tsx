@@ -1,34 +1,58 @@
-import { CircleUserRound, Heart, MapIcon, QrCode } from "lucide-react";
+import { CircleUserRound, Heart, MapIcon, Scan, Trophy } from "lucide-react";
+import { useState } from "react";
+
+type TabType = "map" | "heart" | "qr" | "ranking" | "profile";
 
 const Footer = () => {
+    const [selectedTab, setSelectedTab] = useState<TabType>("map");
+
+    const tabs = [
+        { id: "map" as TabType, icon: MapIcon, label: "지도" },
+        { id: "heart" as TabType, icon: Heart, label: "찜" },
+        { id: "qr" as TabType, icon: Scan, label: "QR" },
+        { id: "ranking" as TabType, icon: Trophy, label: "랭킹" },
+        { id: "profile" as TabType, icon: CircleUserRound, label: "프로필" },
+    ];
+
+    const handleTabClick = (tabId: TabType) => {
+        setSelectedTab(tabId);
+    };
+
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 shadow-lg bg-gradient-to-t from-[#FF774C] to-[#FF694F]">
-            <div className="flex justify-center items-center p-4">
-                <div className="flex space-x-10 justify-center items-center">
-                    <div className="flex items-center flex-col">
-                        <QrCode color="white" size={20} />
-                        <button className="text-white font-bold text-sm mt-1">
-                            QR
-                        </button>
-                    </div>
-                    <div className="flex items-center flex-col">
-                        <MapIcon color="white" size={20} />
-                        <button className="text-white font-bold text-sm mt-1">
-                            지도
-                        </button>
-                    </div>
-                    <div className="flex items-center flex-col">
-                        <Heart color="white" size={20} fill="white" />
-                        <button className="text-white font-bold text-sm mt-1">
-                            찜한가게
-                        </button>
-                    </div>
-                    <div className="flex items-center flex-col">
-                        <CircleUserRound color="white" size={20} />
-                        <button className="text-white font-bold text-sm mt-1">
-                            프로필
-                        </button>
-                    </div>
+            <div className="flex justify-center items-center p-3">
+                <div className="flex space-x-6 justify-center items-center">
+                    {tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        const isSelected = selectedTab === tab.id;
+
+                        return (
+                            <button
+                                key={tab.id}
+                                onClick={() => handleTabClick(tab.id)}
+                                className={`flex items-center flex-col w-[55px] h-[55px] justify-center rounded-full transition-all duration-200 ${
+                                    isSelected
+                                        ? "bg-white/20 scale-105"
+                                        : "hover:bg-white/10"
+                                }`}
+                            >
+                                <Icon
+                                    color={isSelected ? "#FFF5F0" : "white"}
+                                    size={24}
+                                    strokeWidth={isSelected ? 2.5 : 2}
+                                />
+                                <span
+                                    className={`font-bold text-xs mt-1 transition-colors ${
+                                        isSelected
+                                            ? "text-[#FFF5F0]"
+                                            : "text-white"
+                                    }`}
+                                >
+                                    {tab.label}
+                                </span>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
         </div>
