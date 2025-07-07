@@ -1,5 +1,12 @@
+import Footer from "../../components/common/Footer";
+
 const NotFoundPage = () => {
-    return <div>Notfound</div>;
+    return (
+        <>
+            <div>Notfound</div>
+            <Footer />
+        </>
+    );
 };
 
 export default NotFoundPage;

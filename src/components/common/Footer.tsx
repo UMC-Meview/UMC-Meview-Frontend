@@ -1,21 +1,35 @@
 import { CircleUserRound, Heart, MapIcon, Scan, Trophy } from "lucide-react";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-type TabType = "map" | "heart" | "qr" | "ranking" | "profile";
+type TabType = "" | "favorite" | "qr" | "ranking" | "profile";
 
 const Footer = () => {
-    const [selectedTab, setSelectedTab] = useState<TabType>("map");
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const tabs = [
-        { id: "map" as TabType, icon: MapIcon, label: "지도" },
-        { id: "heart" as TabType, icon: Heart, label: "찜" },
+        { id: "" as TabType, icon: MapIcon, label: "지도" },
+        { id: "favorite" as TabType, icon: Heart, label: "찜" },
         { id: "qr" as TabType, icon: Scan, label: "QR" },
         { id: "ranking" as TabType, icon: Trophy, label: "랭킹" },
         { id: "profile" as TabType, icon: CircleUserRound, label: "프로필" },
     ];
 
+    // 현재 경로에 따라 선택된 탭 결정
+    const getSelectedTab = (): TabType => {
+        const pathname = location.pathname;
+        if (pathname === "/") return "";
+        if (pathname.startsWith("/favorite")) return "favorite";
+        if (pathname.startsWith("/qr")) return "qr";
+        if (pathname.startsWith("/ranking")) return "ranking";
+        if (pathname.startsWith("/profile")) return "profile";
+        return ""; // 기본값은 지도
+    };
+
+    const selectedTab = getSelectedTab();
+
     const handleTabClick = (tabId: TabType) => {
-        setSelectedTab(tabId);
+        navigate(tabId === "" ? "/" : `/${tabId}`);
     };
 
     return (
@@ -28,7 +42,7 @@ const Footer = () => {
 
                         return (
                             <button
-                                key={tab.id}
+                                key={tab.id || "map"}
                                 onClick={() => handleTabClick(tab.id)}
                                 className={`flex items-center flex-col w-[55px] h-[55px] justify-center rounded-full transition-all duration-200 ${
                                     isSelected

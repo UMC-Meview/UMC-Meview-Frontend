@@ -6,7 +6,10 @@ import Homepage from "./pages/Home/Homepage";
 import { RouteObject } from "react-router-dom";
 import NotFoundPage from "./pages/Auth/NotFoundPage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import FavoritePage from "./pages/Restaurant/FavoritePage";
+import RankingPage from "./pages/Restaurant/RankingPage";
+import ProfilePage from "./pages/Auth/ProfilePage";
 
 // public Routes: 인증 없이 접근 가능
 const publicRoutes: RouteObject[] = [
@@ -18,6 +21,11 @@ const publicRoutes: RouteObject[] = [
             { index: true, element: <Homepage /> },
             // { path: "login", element: <LoginPage /> },
             // { path: "signup", element: <SignupPage /> },
+            // { path: "qr", element: <QrPage /> },
+            {
+                path: "ranking",
+                element: <RankingPage />,
+            },
         ],
     },
 ];
@@ -27,10 +35,16 @@ const protectedRoutes: RouteObject[] = [
     {
         path: "/",
         element: <ProtectedLayout />,
+        errorElement: <NotFoundPage />,
         children: [
             {
-                path: "home",
-                element: <Homepage />,
+                path: "favorite",
+                element: <FavoritePage />,
+            },
+
+            {
+                path: "profile",
+                element: <ProfilePage />,
             },
         ],
     },
@@ -42,9 +56,9 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
-            {import.meta.env.DEV && (
+            {/* {import.meta.env.DEV && (
                 <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            )} */}
         </QueryClientProvider>
     );
 }
