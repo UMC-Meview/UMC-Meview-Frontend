@@ -2,6 +2,9 @@
 import axios from "axios";
 
 export const axiosClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL:
+        process.env.NODE_ENV === "development"
+            ? "/api"
+            : "https://miview-api.vercel.app",
     timeout: 10000,
 });

@@ -158,7 +158,7 @@ const RestaurantBottomSheet: React.FC<RestaurantBottomSheetProps> = ({
     const getSheetHeight = () => {
         if (isFullScreen) return "h-full";
         if (isExpanded) return "h-96";
-        return "h-20";
+        return "h-22";
     };
 
     const getSheetPosition = () => {
@@ -186,13 +186,13 @@ const RestaurantBottomSheet: React.FC<RestaurantBottomSheetProps> = ({
             </div>
 
             <div
-                className="px-4 pb-3"
+                className="px-4"
                 onTouchStart={(e) => e.stopPropagation()}
                 onTouchMove={(e) => e.stopPropagation()}
                 onTouchEnd={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <div className="flex space-x-2 overflow-x-auto">
+                <div className="flex space-x-2 overflow-x-auto p-2">
                     {sortOptions.map((option) => (
                         <button
                             key={option}
@@ -220,7 +220,7 @@ const RestaurantBottomSheet: React.FC<RestaurantBottomSheetProps> = ({
                     )}
 
                     {error && (
-                        <div className="flex justify-center items-center py-8">
+                        <div className="flex justify-center items-center py-4">
                             <div className="text-red-500 text-sm">
                                 {error}
                                 <br />
