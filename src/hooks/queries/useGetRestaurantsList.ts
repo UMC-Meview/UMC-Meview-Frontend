@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { axiosClient } from "../../apis/axiosClients";
+import { axiosClient } from "../../services/apis/axiosClients";
 import { Restaurant, SortType } from "../../types/restaurant";
 
 export interface LocationSearchParams {
@@ -55,14 +55,14 @@ const calculateDistance = (
 const fetchRestaurantsByLocation = async (
     params: LocationSearchParams
 ): Promise<ExtendedRestaurant[]> => {
-    const { latitude, longitude, radius = 2000 } = params;
+    const { latitude, longitude } = params;
 
-    const response = await axiosClient.get("/stores/search/location", {
-        params: {
-            latitude: latitude.toString(),
-            longitude: longitude.toString(),
-            radius: radius.toString(),
-        },
+    const response = await axiosClient.get("/stores", {
+        // params: {
+        //     latitude: latitude.toString(),
+        //     longitude: longitude.toString(),
+        //     radius: radius.toString(),
+        // },
     });
 
     const data: Restaurant[] = response.data;
@@ -110,7 +110,6 @@ export const useGetRestaurantsList = (
     const [currentSearchParams, setCurrentSearchParams] =
         useState(searchParams);
 
-    // useQuery를 사용한 데이터 fetching
     const {
         data: rawRestaurants,
         isLoading: loading,
