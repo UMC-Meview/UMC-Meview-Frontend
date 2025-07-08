@@ -3,15 +3,50 @@ import { useState } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
+import { useGetStoresList } from "../../hooks/queries/useGetStoresList";
+
+// 가게 ID를 기반으로 임시 레벨 생성 (1-5)
+const getStoreLevel = (storeId: string): number => {
+    let hash = 0;
+    for (let i = 0; i < storeId.length; i++) {
+        const char = storeId.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash % 5) + 1; // 1-5 사이의 값
+};
 
 const Homepage = () => {
-    const lat = 35.8457189028033;
-    const lng = 127.12960348882953;
+    const lat = 35.84662;
+    const lng = 127.136609;
     const [isBottomSheetFullScreen, setIsBottomSheetFullScreen] =
         useState(false);
+    const [selectedStoreId, setSelectedStoreId] = useState<string>("");
+    const [shouldExpandBottomSheet, setShouldExpandBottomSheet] =
+        useState(false);
+
+    // 가게 목록 가져오기
+    const { stores } = useGetStoresList({
+        latitude: lat,
+        longitude: lng,
+        radius: 2000,
+    });
 
     const handleBottomSheetFullScreenChange = (isFullScreen: boolean) => {
         setIsBottomSheetFullScreen(isFullScreen);
+    };
+
+    const handleMarkerClick = (storeId: string) => {
+        setSelectedStoreId(storeId);
+        setShouldExpandBottomSheet(true);
+    };
+
+    const handleBottomSheetExpandedChange = (isExpanded: boolean) => {
+        setShouldExpandBottomSheet(isExpanded);
+        // 축소될 때 선택된 가게 초기화
+        if (!isExpanded) {
+            setSelectedStoreId("");
+        }
     };
 
     return (
@@ -21,12 +56,40 @@ const Homepage = () => {
                 center={{ lat, lng }}
                 style={{ width: "100%", height: "100vh" }}
             >
-                <MapMarker position={{ lat, lng }}>
-                    {/* <div style={{ color: "#000" }}>Hello World!</div> */}
-                </MapMarker>
+                {/* 가게 마커들 렌더링 */}
+                {stores.map((store) => {
+                    const level = getStoreLevel(store._id);
+                    return (
+                        <MapMarker
+                            key={store._id}
+                            position={{
+                                lat: store.latitude,
+                                lng: store.longitude,
+                            }}
+                            image={{
+                                src: `/mark/lv${level}.svg`,
+                                size: {
+                                    width: 40,
+                                    height: 40,
+                                },
+                                options: {
+                                    offset: {
+                                        x: 20,
+                                        y: 40,
+                                    },
+                                },
+                            }}
+                            clickable={true}
+                            onClick={() => handleMarkerClick(store._id)}
+                        />
+                    );
+                })}
             </Map>
             <StoreBottomSheet
                 onFullScreenChange={handleBottomSheetFullScreenChange}
+                selectedStoreId={selectedStoreId}
+                shouldExpand={shouldExpandBottomSheet}
+                onExpandedChange={handleBottomSheetExpandedChange}
             />
             <Footer />
         </div>
