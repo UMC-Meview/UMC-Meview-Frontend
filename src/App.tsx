@@ -11,21 +11,45 @@ import FavoritePage from "./pages/Store/FavoritePage";
 import RankingPage from "./pages/Store/RankingPage";
 import ProfilePage from "./pages/Auth/ProfilePage";
 import StoreDetailPage from "./pages/Store/StoreDetailPage";
+import QRCodePage from "./pages/QR/QRCodePage";
+import AuthMainPage from "./pages/Auth/AuthMainPage";
+import SignupPage from "./pages/Auth/SignupPage";
+import HomeLayout from "./layouts/HomeLayout";
+import StoreRegistrationPage from "./pages/Store/StoreRegistrationPage";
+import TastePreferencePage from "./pages/Auth/TastePreferencePage";
+import ProfileInfoPage from "./pages/Auth/ProfileInfoPage";
+import SignupCompletePage from "./pages/Auth/SignupCompletePage";
 
 // public Routes: 인증 없이 접근 가능
 const publicRoutes: RouteObject[] = [
     {
         path: "/",
-        element: <Homepage />,
+        element: <HomeLayout />,
         errorElement: <NotFoundPage />,
         children: [
             { index: true, element: <Homepage /> },
-            // { path: "login", element: <LoginPage /> },
-            // { path: "signup", element: <SignupPage /> },
-            // { path: "qr", element: <QrPage /> },
+            { path: "login", element: <AuthMainPage /> },
+            { path: "signup", element: <SignupPage /> },
+            { path: "qrcode", element: <QRCodePage /> },
             {
                 path: "ranking",
                 element: <RankingPage />,
+            },
+            {
+                path: "store-registration",
+                element: <StoreRegistrationPage />,
+            },
+            {
+                path: "taste-preference",
+                element: <TastePreferencePage />,
+            },
+            {
+                path: "profile-info",
+                element: <ProfileInfoPage />,
+            },
+            {
+                path: "signup-complete",
+                element: <SignupCompletePage />,
             },
         ],
     },

@@ -76,7 +76,7 @@ const fetchStoresByLocation = async (
 };
 
 // 더미 데이터 정의
-const DUMMY_RESTAURANTS: Store[] = [
+const DUMMY_STORE: Store[] = [
     {
         _id: "686928268368dd40403f609f",
         latitude: 35.84662,
@@ -128,7 +128,7 @@ export const useGetStoresList = (
     // 에러 발생 시 더미 데이터 사용, 성공 시 실제 데이터 사용
     const stores: ExtendedStore[] = useMemo(() => {
         return queryError
-            ? DUMMY_RESTAURANTS.map((item: Store) => ({
+            ? DUMMY_STORE.map((item: Store) => ({
                   ...item,
                   distance: calculateDistance(
                       searchParams.latitude,
