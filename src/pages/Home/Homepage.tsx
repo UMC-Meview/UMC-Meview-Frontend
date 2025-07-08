@@ -2,7 +2,7 @@ import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { useState } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
-import RestaurantBottomSheet from "../../components/restaurant/RestaurantBottomSheet";
+import StoreBottomSheet from "../../components/store/StoreBottomSheet";
 
 const Homepage = () => {
     const lat = 35.8457189028033;
@@ -25,7 +25,7 @@ const Homepage = () => {
                     {/* <div style={{ color: "#000" }}>Hello World!</div> */}
                 </MapMarker>
             </Map>
-            <RestaurantBottomSheet
+            <StoreBottomSheet
                 onFullScreenChange={handleBottomSheetFullScreenChange}
             />
             <Footer />

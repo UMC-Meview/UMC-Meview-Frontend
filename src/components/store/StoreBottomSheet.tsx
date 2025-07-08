@@ -1,27 +1,26 @@
 import React, { useState } from "react";
 import BottomSheet from "../common/BottomSheet";
-import RestaurantList from "./RestaurantList";
-import RestaurantDetail from "./RestaurantDetail";
+import StoreList from "./StoreList";
+import StoreDetail from "./StoreDetailCard";
 
-interface RestaurantBottomSheetProps {
+interface StoreBottomSheetProps {
     onFullScreenChange: (isFullScreen: boolean) => void;
 }
 
-const RestaurantBottomSheet: React.FC<RestaurantBottomSheetProps> = ({
+const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     onFullScreenChange,
 }) => {
     const [mode, setMode] = useState<"list" | "detail">("list");
-    const [selectedRestaurantId, setSelectedRestaurantId] =
-        useState<string>("");
+    const [selectedStoreId, setSelectedStoreId] = useState<string>("");
 
-    const handleRestaurantSelect = (restaurantId: string) => {
-        setSelectedRestaurantId(restaurantId);
+    const handleStoreSelect = (storeId: string) => {
+        setSelectedStoreId(storeId);
         setMode("detail");
     };
 
     const handleBackToList = () => {
         setMode("list");
-        setSelectedRestaurantId("");
+        setSelectedStoreId("");
     };
 
     const handleExpandedChange = () => {
@@ -34,10 +33,10 @@ const RestaurantBottomSheet: React.FC<RestaurantBottomSheetProps> = ({
             onExpandedChange={handleExpandedChange}
         >
             {mode === "list" ? (
-                <RestaurantList onRestaurantSelect={handleRestaurantSelect} />
+                <StoreList onStoreSelect={handleStoreSelect} />
             ) : (
-                <RestaurantDetail
-                    restaurantId={selectedRestaurantId}
+                <StoreDetail
+                    storeId={selectedStoreId}
                     onBackToList={handleBackToList}
                 />
             )}
@@ -45,4 +44,4 @@ const RestaurantBottomSheet: React.FC<RestaurantBottomSheetProps> = ({
     );
 };
 
-export default RestaurantBottomSheet;
+export default StoreBottomSheet;
