@@ -10,6 +10,7 @@ interface BottomSheetProps {
     children: ReactNode;
     onFullScreenChange: (isFullScreen: boolean) => void;
     onExpandedChange?: (isExpanded: boolean) => void;
+    forceExpanded?: boolean;
 }
 
 export interface BottomSheetContext {
@@ -23,6 +24,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     children,
     onFullScreenChange,
     onExpandedChange,
+    forceExpanded = false,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -36,6 +38,13 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
 
     const DRAG_THRESHOLD = 10;
     const SWIPE_THRESHOLD = 50;
+
+    useEffect(() => {
+        if (forceExpanded && !isExpanded) {
+            setIsExpanded(true);
+            onExpandedChange?.(true);
+        }
+    }, [forceExpanded, isExpanded, onExpandedChange]);
 
     const handleMove = useCallback(
         (clientY: number) => {

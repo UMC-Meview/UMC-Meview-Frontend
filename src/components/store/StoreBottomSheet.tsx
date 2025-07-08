@@ -1,42 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BottomSheet from "../common/BottomSheet";
 import StoreList from "./StoreList";
 import StoreDetail from "./StoreDetailCard";
 
 interface StoreBottomSheetProps {
     onFullScreenChange: (isFullScreen: boolean) => void;
+    selectedStoreId?: string;
+    shouldExpand?: boolean;
+    onExpandedChange?: (isExpanded: boolean) => void;
 }
 
 const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     onFullScreenChange,
+    selectedStoreId,
+    shouldExpand = false,
+    onExpandedChange,
 }) => {
     const [mode, setMode] = useState<"list" | "detail">("list");
-    const [selectedStoreId, setSelectedStoreId] = useState<string>("");
+    const [internalSelectedStoreId, setInternalSelectedStoreId] =
+        useState<string>("");
+
+    // 외부에서 가게가 선택되었을 때 처리
+    useEffect(() => {
+        if (selectedStoreId) {
+            setInternalSelectedStoreId(selectedStoreId);
+            setMode("detail");
+        }
+    }, [selectedStoreId]);
 
     const handleStoreSelect = (storeId: string) => {
-        setSelectedStoreId(storeId);
+        setInternalSelectedStoreId(storeId);
         setMode("detail");
     };
 
     const handleBackToList = () => {
         setMode("list");
-        setSelectedStoreId("");
+        setInternalSelectedStoreId("");
     };
 
-    const handleExpandedChange = () => {
-        // 확장 상태가 변경될 때의 추가 로직이 필요한 경우 여기에 구현
+    const handleExpandedChange = (isExpanded: boolean) => {
+        onExpandedChange?.(isExpanded);
+        // 축소될 때 detail 모드에서 list 모드로 돌아가기
+        if (!isExpanded && mode === "detail") {
+            setMode("list");
+            setInternalSelectedStoreId("");
+        }
     };
 
     return (
         <BottomSheet
             onFullScreenChange={onFullScreenChange}
             onExpandedChange={handleExpandedChange}
+            forceExpanded={shouldExpand}
         >
             {mode === "list" ? (
                 <StoreList onStoreSelect={handleStoreSelect} />
             ) : (
                 <StoreDetail
-                    storeId={selectedStoreId}
+                    storeId={internalSelectedStoreId}
                     onBackToList={handleBackToList}
                 />
             )}
