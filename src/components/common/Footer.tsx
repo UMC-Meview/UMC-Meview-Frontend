@@ -1,7 +1,7 @@
 import { CircleUserRound, Heart, MapIcon, Scan, Trophy } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-type TabType = "" | "favorite" | "qr" | "ranking" | "profile";
+type TabType = "" | "favorite" | "qrcode" | "ranking" | "profile";
 
 const Footer = () => {
     const navigate = useNavigate();
@@ -10,7 +10,7 @@ const Footer = () => {
     const tabs = [
         { id: "" as TabType, icon: MapIcon, label: "지도" },
         { id: "favorite" as TabType, icon: Heart, label: "찜" },
-        { id: "qr" as TabType, icon: Scan, label: "QR" },
+        { id: "qrcode" as TabType, icon: Scan, label: "QR" },
         { id: "ranking" as TabType, icon: Trophy, label: "랭킹" },
         { id: "profile" as TabType, icon: CircleUserRound, label: "프로필" },
     ];
@@ -20,7 +20,7 @@ const Footer = () => {
         const pathname = location.pathname;
         if (pathname === "/") return "";
         if (pathname.startsWith("/favorite")) return "favorite";
-        if (pathname.startsWith("/qr")) return "qr";
+        if (pathname.startsWith("/qrcode")) return "qrcode";
         if (pathname.startsWith("/ranking")) return "ranking";
         if (pathname.startsWith("/profile")) return "profile";
         return ""; // 기본값은 지도

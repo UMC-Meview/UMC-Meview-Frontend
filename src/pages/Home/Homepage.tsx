@@ -1,4 +1,4 @@
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Map, MapMarker, useKakaoLoader } from "react-kakao-maps-sdk";
 import { useState } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
@@ -48,6 +48,31 @@ const Homepage = () => {
             setSelectedStoreId("");
         }
     };
+
+    // 카카오맵 로더 사용
+    const [loading, error] = useKakaoLoader({
+        appkey: import.meta.env.VITE_KAKAO_MAP_API_KEY,
+    });
+
+    // 카카오맵 로딩 중
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="text-gray-500">지도를 불러오는 중...</div>
+            </div>
+        );
+    }
+
+    // 카카오맵 로딩 에러
+    if (error) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="text-red-500">
+                    지도를 불러올 수 없습니다: {error.message}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative w-full h-screen">
