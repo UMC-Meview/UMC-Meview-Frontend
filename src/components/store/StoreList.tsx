@@ -1,21 +1,28 @@
 import React, { useState } from "react";
-import { useGetRestaurantsList } from "../../hooks/queries/useGetRestaurantsList";
-import { SortType } from "../../types/restaurant";
+import { useGetStoresList } from "../../hooks/queries/useGetStoresList";
+import { SortType } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 
-interface RestaurantListProps {
+interface StoreListProps {
     bottomSheetContext?: BottomSheetContext;
-    onRestaurantSelect?: (restaurantId: string) => void;
+    onStoreSelect?: (storeId: string) => void;
 }
 
-const RestaurantList: React.FC<RestaurantListProps> = ({
+const StoreList: React.FC<StoreListProps> = ({
     bottomSheetContext,
-    onRestaurantSelect,
+    onStoreSelect,
 }) => {
     const [selectedSort, setSelectedSort] =
         useState<SortType>("보너스금액 많은 순");
-    const { sortedRestaurants, loading, error, sortBy } =
-        useGetRestaurantsList();
+
+    // BottomSheet가 확장된 상태일 때만 API 호출
+    const isExpanded = bottomSheetContext?.isExpanded || false;
+    const isFullScreen = bottomSheetContext?.isFullScreen || false;
+
+    const { sortedStores, loading, error, sortBy } = useGetStoresList(
+        undefined, // 기본 위치 사용
+        isExpanded || isFullScreen // 확장되거나 풀스크린일 때만 API 호출
+    );
 
     const sortOptions: SortType[] = [
         "보너스금액 많은 순",
@@ -37,17 +44,15 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
         }
     };
 
-    const handleRestaurantClick = (restaurantId: string) => {
-        onRestaurantSelect?.(restaurantId);
+    const handleStoreClick = (storeId: string) => {
+        onStoreSelect?.(storeId);
     };
-
-    const { isExpanded, isFullScreen } = bottomSheetContext || {};
 
     return (
         <>
             {/* 정렬 옵션 */}
             <div
-                className="px-4"
+                className="px-2"
                 onTouchStart={(e) => e.stopPropagation()}
                 onTouchMove={(e) => e.stopPropagation()}
                 onTouchEnd={(e) => e.stopPropagation()}
@@ -70,7 +75,7 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
                 </div>
             </div>
 
-            {/* 레스토랑 리스트 */}
+            {/* 가게 리스트 */}
             {(isExpanded || isFullScreen) && (
                 <div className="flex-1 overflow-y-auto px-4">
                     {loading && (
@@ -94,40 +99,50 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
                     )}
 
                     {!loading &&
-                        sortedRestaurants.map((restaurant) => (
+                        sortedStores.map((store) => (
                             <div
-                                key={restaurant._id}
+                                key={store._id}
                                 className="flex items-start space-x-3 py-3 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors"
-                                onClick={() =>
-                                    handleRestaurantClick(restaurant._id)
-                                }
+                                onClick={() => handleStoreClick(store._id)}
                             >
                                 <img
-                                    src={restaurant.mainImage}
-                                    alt={restaurant.name}
-                                    className="w-20 h-20 rounded-lg object-cover"
+                                    src={store.mainImage}
+                                    alt={store.name}
+                                    className="w-20 h-20 rounded-lg object-cover bg-gray-200"
+                                    onError={(e) => {
+                                        const target =
+                                            e.target as HTMLImageElement;
+                                        // 이미 fallback으로 변경된 경우 더 이상 변경하지 않음
+                                        if (
+                                            !target.src.includes("data:image")
+                                        ) {
+                                            // base64 인코딩된 기본 이미지로 변경 (무한 루프 방지)
+                                            target.src =
+                                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0yOCAzNkgyOFYzNkg1MlY1Nkg0NEw0MCA0NEwzNiA0OEgzMkwyOCAzNloiIGZpbGw9IiM2NjY2NjYiLz4KPHN2Zz4K";
+                                        }
+                                    }}
                                 />
 
                                 <div className="flex-1 space-y-1">
                                     <div className="flex items-center space-x-2 justify-between">
                                         <div className="flex items-center space-x-2">
                                             <span className="font-semibold text-gray-900">
-                                                {restaurant.name}
+                                                {store.name}
                                             </span>
                                             <span className="text-sm text-gray-500">
-                                                {restaurant.category}
+                                                {store.category}
                                             </span>
                                         </div>
                                     </div>
 
                                     <div className="text-sm text-gray-600">
-                                        {restaurant.address}
+                                        {store.address}
                                     </div>
 
                                     <div className="text-sm text-gray-600">
                                         영업시간 |{" "}
                                         <span className="text-[#FF694F]">
-                                            {restaurant.operatingHours}
+                                            {store.operatingHours}
                                         </span>
                                     </div>
                                 </div>
@@ -139,4 +154,4 @@ const RestaurantList: React.FC<RestaurantListProps> = ({
     );
 };
 
-export default RestaurantList;
+export default StoreList;

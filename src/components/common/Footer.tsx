@@ -35,7 +35,7 @@ const Footer = () => {
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 shadow-lg bg-gradient-to-t from-[#FF774C] to-[#FF694F]">
             <div className="flex justify-center items-center p-3">
-                <div className="flex space-x-6 justify-center items-center">
+                <div className="flex space-x-4 justify-center items-center">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const isSelected = selectedTab === tab.id;

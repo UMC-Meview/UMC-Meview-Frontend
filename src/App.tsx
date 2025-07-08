@@ -7,9 +7,10 @@ import { RouteObject } from "react-router-dom";
 import NotFoundPage from "./pages/Auth/NotFoundPage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import FavoritePage from "./pages/Restaurant/FavoritePage";
-import RankingPage from "./pages/Restaurant/RankingPage";
+import FavoritePage from "./pages/Store/FavoritePage";
+import RankingPage from "./pages/Store/RankingPage";
 import ProfilePage from "./pages/Auth/ProfilePage";
+import StoreDetailPage from "./pages/Store/StoreDetailPage";
 
 // public Routes: 인증 없이 접근 가능
 const publicRoutes: RouteObject[] = [
@@ -45,6 +46,10 @@ const protectedRoutes: RouteObject[] = [
             {
                 path: "profile",
                 element: <ProfilePage />,
+            },
+            {
+                path: "store/:storeId",
+                element: <StoreDetailPage />,
             },
         ],
     },
