@@ -37,8 +37,18 @@ const Homepage = () => {
     };
 
     const handleMarkerClick = (storeId: string) => {
-        setSelectedStoreId(storeId);
-        setShouldExpandBottomSheet(true);
+        // 이미 선택된 가게라도 detail 모드로 전환하기 위해
+        // 먼저 selectedStoreId를 초기화하고 다시 설정
+        if (selectedStoreId === storeId) {
+            setSelectedStoreId("");
+            setTimeout(() => {
+                setSelectedStoreId(storeId);
+                setShouldExpandBottomSheet(true);
+            }, 0);
+        } else {
+            setSelectedStoreId(storeId);
+            setShouldExpandBottomSheet(true);
+        }
     };
 
     const handleBottomSheetExpandedChange = (isExpanded: boolean) => {

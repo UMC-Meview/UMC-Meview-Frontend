@@ -1,5 +1,5 @@
 import React from "react";
-import { Clock, Heart, MapPin, SquareMenu } from "lucide-react";
+import { Clock, Heart, MapPin } from "lucide-react";
 import { StoreDetail } from "../../types/store";
 
 interface StoreInfoProps {
@@ -18,9 +18,9 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store, onToggleFavorite }) => {
     };
 
     return (
-        <div className="p-4">
+        <div className="py-4">
             {/* 1. 가게명, 카테고리, 찜하기 버튼 */}
-            <div className="mb-3">
+            <div className="mb-2">
                 <div className="flex items-center justify-between">
                     <div className="flex space-x-2 items-center">
                         <h2 className="text-xl font-bold">{store.name}</h2>
@@ -40,17 +40,14 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store, onToggleFavorite }) => {
                         )}
                     </button>
                 </div>
-            </div>
-
-            {/* 2. 보너스 평균 */}
-            <div className="mb-3">
+                {/* 2. 보너스 평균 */}
                 <div className="text-[#FF694F] font-semibold">
                     보너스 평균 {store.bonusAverage?.toFixed(1) || "0.0"}점
                 </div>
             </div>
 
             {/* 3. 주소 */}
-            <div className="mb-3">
+            <div className="mb-2">
                 <div className="flex items-center space-x-2">
                     <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0 mt-0.5" />
                     <span className="text-sm text-gray-700">
@@ -70,18 +67,6 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store, onToggleFavorite }) => {
                                 .map((hours, index) => (
                                     <div key={index}>{hours.trim()}</div>
                                 ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {/* 5. 메뉴 */}
-            <div className="mb-4">
-                <div className="flex items-start space-x-2">
-                    <div className="flex-1 flex items-center space-x-2">
-                        <SquareMenu className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                        <div className="text-sm text-gray-600">
-                            {store.menus?.join(", ") || "메뉴 정보 없음"}
                         </div>
                     </div>
                 </div>

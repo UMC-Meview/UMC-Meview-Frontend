@@ -111,12 +111,17 @@ const StoreDetailPage: React.FC = () => {
                 )}
             </div>
 
-            {/* 가게 상세 정보 */}
-            <StoreInfo store={store} onToggleFavorite={handleToggleFavorite} />
+            <div className="px-4">
+                {/* 가게 상세 정보 */}
+                <StoreInfo
+                    store={store}
+                    onToggleFavorite={handleToggleFavorite}
+                />
 
-            {/* 메뉴 */}
+                {/* 메뉴 */}
 
-            {/* 리뷰 */}
+                {/* 리뷰 */}
+            </div>
         </div>
     );
 };

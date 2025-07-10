@@ -26,15 +26,30 @@ body {
     background-color: #fafafa;
 }
 
-@media (min-width: 640px) {
-    /* 데스크톱에서 웹앱을 모바일 크기로 제한 */
-    #root {
-        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        /* padding: 20px; */
-    }
+.header {
+    top: calc(env(safe-area-inset-top, 40px) + 24px);
+}
+
+/* 메인 콘텐츠도 헤더 높이에 맞춰 조정 */
+.main-content-with-header {
+    padding-top: calc(env(safe-area-inset-top, 40px) + 120px);
+}
+
+/* 🧪 테스트용: 크롬에서 다이나믹 아일랜드 시뮬레이션 */
+.test-dynamic-island {
+    --safe-area-inset-top: 59px; /* iPhone 14 Pro */
+}
+
+.test-dynamic-island-16pro {
+    --safe-area-inset-top: 62px; /* iPhone 16 Pro */
+}
+
+.test-dynamic-island .header {
+    top: calc(var(--safe-area-inset-top) + 20px);
+}
+
+.test-dynamic-island .main-content-with-header {
+    padding-top: calc(var(--safe-area-inset-top) + 120px);
 }
 
 /* PWA 설정 */
