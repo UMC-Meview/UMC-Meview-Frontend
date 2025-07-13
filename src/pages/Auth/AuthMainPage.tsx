@@ -10,7 +10,7 @@ const AuthMainPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-white w-full mx-auto relative flex flex-col">
             {/* 중앙: 로고 + 텍스트 */}
-            <div className="flex-1 flex flex-col justify-center items-center px-6">
+            <div className="flex-1 flex flex-col justify-center items-center px-6 -translate-y-10">
                 <Logo />
                 <div className="text-center mt-[24px]">
                     <h1 className="text-[22px] leading-[32px] font-bold text-black mb-4">
@@ -23,17 +23,17 @@ const AuthMainPage: React.FC = () => {
             </div>
             {/* 하단: 버튼 */}
             <BottomFixedWrapper>
-                <div className="flex flex-col gap-3 w-full">
+                <div className="flex flex-col gap-4 w-full">
                     <Button
                         variant="secondary"
                         onClick={() => navigate("/signup")}
-                        className="font-normal text-sm w-full h-[46px]"
+                        className="text-lg font-bold w-full h-[46px]"
                     >
                         로그인 하기
                     </Button>
                     <Button
                         onClick={() => navigate("/store-registration")}
-                        className="!bg-[#B0B0B0] text-black font-normal text-sm w-full h-[46px]"
+                        className="!bg-[#B0B0B0] text-white text-lg font-bold w-full h-[46px]"
                     >
                         가게 등록하기
                     </Button>
