@@ -17,10 +17,10 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
     const isLoginButton =
         typeof children === "string" && children === "로그인 하기";
-    const baseStyles = `w-full h-[59px] text-lg font-bold rounded-full transition-colors`;
+    const baseStyles = `w-full h-[65px] text-lg font-bold rounded-full transition-colors`;
 
     const variantStyles = {
-        primary: "bg-[#FF5436]",
+        primary: "bg-[#FF774C]",
         secondary: "bg-white border border-gray-300",
         disabled: "bg-gray-300 text-gray-500 cursor-not-allowed",
         gray: "bg-[#D9D9D9]",

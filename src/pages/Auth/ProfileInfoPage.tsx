@@ -57,20 +57,19 @@ const ProfileInfoPage: React.FC = () => {
                     }
                 />
             </div>
-
-            {/* Content: 타이틀을 더 아래로, 간격 조정 */}
-            <div
-                className="flex-1 flex flex-col justify-start px-6"
-                style={{ marginTop: "80px" }}
-            >
-                <div className="w-full mb-10">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-10 text-left leading-tight">
+            {/* 타이틀 wrapper: 헤더 아래 고정, 통일된 스타일 */}
+            <div className="flex-1 flex flex-col justify-start px-6">
+                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mb-8" style={{ marginTop: "56px" }}>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>출생년도와 성별을</div>
                         <div>알려주세요</div>
                     </h2>
+                </div>
+                {/* Content: 타이틀 아래에서 시작 */}
+                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     {/* 생년월일 입력 */}
-                    <div className="mb-12">
-                        <p className="text-gray-600 text-sm mb-4">생년월일</p>
+                    <div className="mb-12 w-full">
+                        <p className="text-gray-600 text-sm mb-1">생년월일</p>
                         <div className="relative">
                             <input
                                 type="text"
@@ -79,13 +78,13 @@ const ProfileInfoPage: React.FC = () => {
                                     handleBirthDateChange(e.target.value)
                                 }
                                 placeholder="예시) 250701"
-                                className="w-full px-0 py-3 text-lg font-medium bg-transparent border-0 border-b-2 border-black outline-none transition-colors focus:border-[#FF5436]"
+                                className="w-full px-0 py-2 text-lg font-medium bg-transparent border-0 border-b-2 border-black outline-none transition-colors focus:border-[#FF774C]"
                                 maxLength={6}
                             />
                         </div>
                     </div>
                     {/* 성별 선택 */}
-                    <div className="mb-8">
+                    <div className="mb-8 w-full mt-10">
                         <p className="text-gray-600 text-sm mb-4">성별</p>
                         <div className="flex gap-4">
                             {["남성", "여성"].map((option) => (

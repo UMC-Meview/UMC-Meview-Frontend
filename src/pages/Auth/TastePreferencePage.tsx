@@ -80,22 +80,18 @@ const TastePreferencePage: React.FC = () => {
                 />
             </div>
             {/* Content*/}
-            <div
-                className="flex-1 flex flex-col justify-start px-6"
-                style={{ marginTop: "80px" }}
-            >
-                <div className="w-full max-w-[400px] aspect-[4/3] mx-auto flex flex-col justify-center items-center mb-10">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-10 text-left leading-tight w-full">
+            <div className="flex-1 flex flex-col justify-start px-6" style={{ marginTop: "56px" }}>
+                {/* 타이틀 wrapper: 위치 고정 */}
+                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>선호하는 입맛을</div>
                         <div className="flex items-end gap-2">
                             <div>알려주세요.</div>
-                            <span className="text-gray-400 text-sm pb-1">
-                                (최소 2개)
-                            </span>
+                            <span className="text-gray-400 text-sm pb-1">(최소 2개)</span>
                         </div>
                     </h2>
-                    {/* Taste Selection Grid */}
-                    <div className="w-full mb-8 flex-1 flex flex-col justify-center">
+                    {/* 선택 영역: 타이틀과 분리, flex-1로 아래로 밀림 → 타이틀 아래로 이동 */}
+                    <div className="w-full mb-8 flex-1 flex flex-col justify-center mt-[72px]">
                         {tasteRows.map((row, rowIdx) => (
                             <div
                                 key={rowIdx}
@@ -117,6 +113,7 @@ const TastePreferencePage: React.FC = () => {
                         ))}
                     </div>
                 </div>
+                {/* 선택 영역 삭제됨 */}
             </div>
             {/* Bottom Button */}
             <BottomFixedWrapper>

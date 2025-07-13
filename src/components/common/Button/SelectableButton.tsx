@@ -20,7 +20,7 @@ const SelectableButton: React.FC<SelectableButtonProps> = ({
             ? `w-full h-full min-h-[36px] rounded-full shadow-[0_4px_16px_0_rgba(0,0,0,0.18)] text-base font-medium border bg-white
   ${
       selected
-          ? "border-[#FF5436] text-gray-800"
+          ? "border-[#FF774C] text-gray-800"
           : "border-transparent text-gray-800"
   }`
             : "";
@@ -29,7 +29,7 @@ const SelectableButton: React.FC<SelectableButtonProps> = ({
             ? `w-full h-[88px] rounded-2xl shadow-md bg-white text-lg font-semibold flex items-center justify-center border-2 transition-all duration-150
       ${
           selected
-              ? "border-[#FF5436] text-gray-700"
+              ? "border-[#FF774C] text-gray-700"
               : "border-gray-200 text-gray-700"
       }`
             : "";

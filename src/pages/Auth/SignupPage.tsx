@@ -47,27 +47,30 @@ const SignupPage: React.FC = () => {
                 />
             </div>
 
-            {/* Content: 타이틀을 더 아래로, 간격 조정 */}
+            {/* Content: TastePreferencePage.tsx와 동일한 구조로 통일 */}
             <div
                 className="flex-1 flex flex-col justify-start px-6"
-                style={{ marginTop: "80px" }}
+                style={{ marginTop: "56px" }}
             >
-                <div className="w-full mb-10">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-10 text-left leading-tight">
+                {/* 타이틀 wrapper: 위치 고정 */}
+                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>닉네임을</div>
-                        <div>입력해주세요.</div>
+                        <div className="flex items-end gap-2">
+                            <div>입력해주세요.</div>
+                        </div>
                     </h2>
-
-                    <div className="relative mb-3">
-                        <input
-                            type="text"
-                            value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
-                            placeholder="미냥"
-                            className="w-full px-0 py-3 text-lg font-medium bg-transparent border-0 border-b-2 border-[#FF5436] outline-none transition-colors"
-                            maxLength={12}
-                        />
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+                    {/* 입력 영역: 타이틀과 분리, flex-1로 아래로 밀림 → 타이틀 아래로 이동 */}
+                    <div className="relative mb-8 w-full mt-12">
+                        <div className="flex items-center border-b-2 border-[#FF774C] w-full">
+                            <input
+                                type="text"
+                                value={nickname}
+                                onChange={(e) => setNickname(e.target.value)}
+                                placeholder="미냥"
+                                className="flex-1 px-0 py-1 text-xl font-medium bg-transparent border-0 outline-none transition-colors placeholder:text-xl placeholder:font-medium"
+                                maxLength={12}
+                            />
                             <img
                                 src={
                                     nickname.length >= 2 &&
@@ -81,20 +84,25 @@ const SignupPage: React.FC = () => {
                                         ? "close"
                                         : "check"
                                 }
-                                className="w-6 h-6"
+                                className={`ml-2 ${
+                                    nickname.length >= 2 && nickname.length <= 12
+                                        ? "w-6 h-6"
+                                        : "w-7 h-7"
+                                }`}
                             />
                         </div>
+                        <p
+                            className={`text-base mt-2 ${
+                                nickname.length >= 2 && nickname.length <= 12
+                                    ? "text-[#FF774C]"
+                                    : "text-gray-500"
+                            } w-full`}
+                        >
+                            2자 이상 12자 이하로 입력해주세요.
+                        </p>
                     </div>
-                    <p
-                        className={`text-sm mt-2 ${
-                            nickname.length >= 2 && nickname.length <= 12
-                                ? "text-[#FF5436]"
-                                : "text-gray-500"
-                        }`}
-                    >
-                        2자 이상 12자 이하로 입력해주세요.
-                    </p>
                 </div>
+                {/* 입력 영역 삭제됨 */}
             </div>
 
             {/* Bottom Button: 하단 여백 충분히, 버튼 두개 증가 */}
