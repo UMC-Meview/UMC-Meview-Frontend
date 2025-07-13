@@ -84,8 +84,8 @@ const TastePreferencePage: React.FC = () => {
                 className="flex-1 flex flex-col justify-start px-6"
                 style={{ marginTop: "80px" }}
             >
-                <div className="w-full mb-10">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-10 text-left leading-tight">
+                <div className="w-full max-w-[400px] aspect-[4/3] mx-auto flex flex-col justify-center items-center mb-10">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-10 text-left leading-tight w-full">
                         <div>선호하는 입맛을</div>
                         <div className="flex items-end gap-2">
                             <div>알려주세요.</div>
@@ -95,7 +95,7 @@ const TastePreferencePage: React.FC = () => {
                         </div>
                     </h2>
                     {/* Taste Selection Grid */}
-                    <div className="w-full mb-8">
+                    <div className="w-full mb-8 flex-1 flex flex-col justify-center">
                         {tasteRows.map((row, rowIdx) => (
                             <div
                                 key={rowIdx}
@@ -108,7 +108,7 @@ const TastePreferencePage: React.FC = () => {
                                             taste
                                         )}
                                         onClick={() => toggleTaste(taste)}
-                                        className="text-base font-medium px-4 py-2"
+                                        className="flex-1 min-w-0"
                                     >
                                         {taste}
                                     </SelectableButton>

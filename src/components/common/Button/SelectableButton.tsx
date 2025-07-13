@@ -17,12 +17,12 @@ const SelectableButton: React.FC<SelectableButtonProps> = ({
 }) => {
     const pillStyle =
         shape === "pill"
-            ? `h-auto px-3 py-1 rounded-full shadow-[0_4px_16px_0_rgba(0,0,0,0.18)] text-sm font-medium border bg-white
-      ${
-          selected
-              ? "border-[#FF5436] text-gray-800"
-              : "border-transparent text-gray-800"
-      }`
+            ? `w-full h-full min-h-[36px] rounded-full shadow-[0_4px_16px_0_rgba(0,0,0,0.18)] text-base font-medium border bg-white
+  ${
+      selected
+          ? "border-[#FF5436] text-gray-800"
+          : "border-transparent text-gray-800"
+  }`
             : "";
     const baseStyle =
         shape === "rounded"
