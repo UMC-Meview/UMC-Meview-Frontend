@@ -31,10 +31,26 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         large: "w-32 h-32",
     };
 
+    // +버튼(즉, label이 빈 문자열)일 때 medium 사이즈만 더 작게
+    const getSizeStyle = () => {
+        if (size === "medium" && label === "") {
+            return "w-20 h-20"; // 80x80px
+        }
+        return sizeStyles[size];
+    };
+
     const iconSizes = {
         small: { width: 42, height: 42 },
         medium: { width: 80, height: 80 }, // medium일 때 80x80으로 조정
         large: { width: 83, height: 83 },
+    };
+
+    // +버튼(즉, label이 빈 문자열)일 때 medium 사이즈만 더 작게
+    const getIconSize = () => {
+        if (size === "medium" && label === "") {
+            return { width: 60, height: 60 };
+        }
+        return iconSizes[size];
     };
 
     return (
@@ -50,10 +66,11 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                     className="hidden"
                 />
                 <div
-                    className={`relative ${sizeStyles[size]} bg-[#D9D9D9] border border-[#D9D9D9] rounded-xl flex items-center justify-center hover:bg-[#e5e5e5] transition-colors`}
+                    className={`relative ${getSizeStyle()} bg-[#D9D9D9] border border-[#D9D9D9] rounded-xl flex items-center justify-center hover:bg-[#e5e5e5] transition-colors`}
                     style={{ aspectRatio: "1/1" }}
                 >
-                    {preview && (
+                    {/* label이 비어있지 않을 때만 미리보기 이미지 렌더링 */}
+                    {preview && label !== "" && (
                         <img
                             src={preview}
                             alt="미리보기"
@@ -62,8 +79,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                         />
                     )}
                     <svg
-                        width={iconSizes[size].width}
-                        height={iconSizes[size].height}
+                        width={getIconSize().width}
+                        height={getIconSize().height}
                         viewBox="0 0 24 24"
                         fill="none"
                         style={{
