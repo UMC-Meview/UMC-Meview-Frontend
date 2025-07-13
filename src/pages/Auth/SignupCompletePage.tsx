@@ -12,7 +12,7 @@ const SignupCompletePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white max-w-[390px] w-full relative flex flex-col">
+        <div className="min-h-screen bg-white w-full relative flex flex-col">
             {/* Content */}
             <div className="flex-1 flex flex-col items-center justify-end pb-[50vh] px-6">
                 <Logo />

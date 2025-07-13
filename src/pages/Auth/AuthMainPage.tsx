@@ -2,15 +2,13 @@ import Logo from "../../components/common/Logo.tsx";
 import Button from "../../components/common/Button/Button.tsx";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 
 const AuthMainPage: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div
-            className="min-h-screen bg-white max-w-[390px] w-full mx-auto flex flex-col justify-between relative"
-            style={{ height: "100dvh" }}
-        >
+        <div className="min-h-screen bg-white w-full mx-auto relative flex flex-col">
             {/* 중앙: 로고 + 텍스트 */}
             <div className="flex-1 flex flex-col justify-center items-center px-6">
                 <Logo />
@@ -24,21 +22,23 @@ const AuthMainPage: React.FC = () => {
                 </div>
             </div>
             {/* 하단: 버튼 */}
-            <div className="flex flex-col gap-3 w-full px-6 pb-[48px]">
-                <Button
-                    variant="secondary"
-                    onClick={() => navigate("/signup")}
-                    className="font-normal text-sm !w-[282px] !h-[46px] mx-auto"
-                >
-                    로그인 하기
-                </Button>
-                <Button
-                    onClick={() => navigate("/store-registration")}
-                    className="!bg-[#B0B0B0] text-black font-normal text-sm !w-[282px] !h-[46px] mx-auto"
-                >
-                    가게 등록하기
-                </Button>
-            </div>
+            <BottomFixedWrapper>
+                <div className="flex flex-col gap-3 w-full">
+                    <Button
+                        variant="secondary"
+                        onClick={() => navigate("/signup")}
+                        className="font-normal text-sm w-full h-[46px]"
+                    >
+                        로그인 하기
+                    </Button>
+                    <Button
+                        onClick={() => navigate("/store-registration")}
+                        className="!bg-[#B0B0B0] text-black font-normal text-sm w-full h-[46px]"
+                    >
+                        가게 등록하기
+                    </Button>
+                </div>
+            </BottomFixedWrapper>
         </div>
     );
 };

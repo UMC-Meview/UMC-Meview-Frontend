@@ -6,7 +6,7 @@ const QRCodePage: React.FC = () => {
     console.log("QRCodePage");
 
     return (
-        <div className="min-h-screen bg-white max-w-[390px] w-full mx-auto">
+        <div className="min-h-screen bg-white w-full mx-auto">
             {/* 헤더: 상단 패딩을 늘려 더 아래로 */}
             <div className="pt-10">
                 <Header

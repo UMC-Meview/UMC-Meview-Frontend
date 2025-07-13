@@ -58,7 +58,7 @@ const TastePreferencePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white max-w-[390px] w-full mx-auto relative flex flex-col">
+        <div className="min-h-screen bg-white w-full mx-auto relative flex flex-col">
             {/* 헤더*/}
             <div className="pt-10">
                 <Header

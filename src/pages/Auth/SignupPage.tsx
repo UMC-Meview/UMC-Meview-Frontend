@@ -25,7 +25,7 @@ const SignupPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white max-w-[390px] w-full relative flex flex-col">
+        <div className="min-h-screen bg-white w-full relative flex flex-col">
             {/* 헤더: 상단 패딩을 늘려 더 아래로 */}
             <div className="pt-10">
                 <Header
