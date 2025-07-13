@@ -6,6 +6,7 @@ interface SelectableButtonProps {
     children: React.ReactNode;
     className?: string;
     shape?: "pill" | "rounded"; // 추가
+    disabled?: boolean;
 }
 
 const SelectableButton: React.FC<SelectableButtonProps> = ({
@@ -14,6 +15,7 @@ const SelectableButton: React.FC<SelectableButtonProps> = ({
     children,
     className = "",
     shape = "pill", // 기본값
+    disabled = false,
 }) => {
     const pillStyle =
         shape === "pill"
@@ -39,6 +41,7 @@ const SelectableButton: React.FC<SelectableButtonProps> = ({
             className={`${
                 shape === "pill" ? pillStyle : baseStyle
             } ${className}`}
+            disabled={disabled}
         >
             {children}
         </button>
