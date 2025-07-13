@@ -14,7 +14,7 @@ const QRCodePage: React.FC = () => {
                 <Header
                     onBack={() => navigate(-1)}
                     center={
-                        <h1 className="text-xl font-bold text-gray-800">
+                        <h1 className="text-lg font-bold text-gray-800">
                             가게 이름
                         </h1>
                     }
@@ -31,7 +31,7 @@ const QRCodePage: React.FC = () => {
                 </div>
             </div>
             <BottomFixedWrapper>
-                <Button variant="primary" className="w-[333px] h-[59px] text-lg font-bold rounded-full mx-auto">
+                <Button variant="primary">
                     QR 저장하기
                 </Button>
             </BottomFixedWrapper>

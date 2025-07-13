@@ -5,6 +5,7 @@ import Header from "../../components/common/Header";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
 import LabeledInput from "../../components/store/LabeledInput";
 import MenuInput from "../../components/store/MenuInput";
+import Button from "../../components/common/Button/Button";
 
 const weekDays = ["월", "화", "수", "목", "금", "토", "일", "연휴"];
 
@@ -294,14 +295,13 @@ const StoreRegistrationPage: React.FC = () => {
             </div>
             {/* 등록 완료 버튼 - 하단 고정 */}
             <BottomFixedWrapper>
-                <button
-                    className={`w-full max-w-md rounded-full py-4 text-lg font-bold text-white ${isFormValid() ? "bg-[#FF774C]" : "bg-gray-300"}`}
+                <Button
                     onClick={handleSubmit}
                     disabled={!isFormValid()}
-                    style={{ maxWidth: '480px' }}
+                    variant={isFormValid() ? "primary" : "disabled"}
                 >
                     가게 등록 완료
-                </button>
+                </Button>
             </BottomFixedWrapper>
         </div>
     );
