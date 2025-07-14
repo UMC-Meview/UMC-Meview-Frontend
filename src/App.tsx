@@ -6,7 +6,6 @@ import Homepage from "./pages/Home/Homepage";
 import { RouteObject } from "react-router-dom";
 import NotFoundPage from "./pages/Auth/NotFoundPage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
-// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import FavoritePage from "./pages/Store/FavoritePage";
 import RankingPage from "./pages/Store/RankingPage";
 import ProfilePage from "./pages/Auth/ProfilePage";
@@ -86,8 +85,8 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <RouterProvider router={router} />
             {/* {import.meta.env.DEV && (
-                <ReactQueryDevtools initialIsOpen={false} />
-            )} */}
+                    <ReactQueryDevtools initialIsOpen={false} />
+                )} */}
         </QueryClientProvider>
     );
 }

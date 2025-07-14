@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import StepIndicator from "../../components/common/StepIndicator.tsx";
 import Button from "../../components/common/Button/Button";
@@ -6,41 +6,51 @@ import logoIcon from "../../assets/Logo.svg";
 import SelectableButton from "../../components/common/Button/SelectableButton";
 import Header from "../../components/common/Header.tsx";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
+import { getTempSignupData, updateTempProfile } from "../../utils/auth";
+import { usePostSignup } from "../../hooks/queries/usePostSignup";
 
 const ProfileInfoPage: React.FC = () => {
-    const [birthDate, setBirthDate] = useState<string>("");
-    const [selectedGender, setSelectedGender] = useState<string>("");
+    const signupData = getTempSignupData();
+    const { signup, isLoading, error, isSuccess } = usePostSignup();
+    const [birthYear, setBirthYear] = useState<string>(signupData.birthYear || "");
+    const [selectedGender, setSelectedGender] = useState<string>(signupData.gender || "");
     const navigate = useNavigate();
 
-    const handleBirthDateChange = (value: string) => {
+    // 회원가입 성공 시 완료 페이지로 이동
+    useEffect(() => {
+        if (isSuccess) {
+            navigate("/signup-complete");
+        }
+    }, [isSuccess, navigate]);
+
+    const handleBirthYearChange = (value: string) => {
         const numericValue = value.replace(/[^0-9]/g, "");
         if (numericValue.length <= 6) {
-            setBirthDate(numericValue);
+            setBirthYear(numericValue);
         }
-    };
-
-    const handleGenderSelect = (gender: string) => {
-        setSelectedGender(gender);
     };
 
     const handleNext = () => {
-        if (birthDate.length === 6 && selectedGender) {
-            navigate("/signup-complete");
+        if (birthYear.length === 6 && selectedGender) {
+            const englishGender = selectedGender === "남성" ? "male" : "female";
+            
+            updateTempProfile(birthYear, englishGender);
+            
+            signup({
+                ...signupData,
+                birthYear,
+                gender: englishGender,
+            });
         }
     };
 
-    const handleBack = () => {
-        navigate(-1);
-    };
-
-    const isFormValid = birthDate.length === 6 && selectedGender;
+    const isFormValid = birthYear.length === 6 && selectedGender;
 
     return (
         <div className="min-h-screen bg-white w-full relative flex flex-col">
-            {/* 헤더: 상단 패딩을 늘려 더 아래로 */}
             <div className="pt-10">
                 <Header
-                    onBack={handleBack}
+                    onBack={() => navigate(-1)}
                     center={
                         <img
                             src={logoIcon}
@@ -57,32 +67,29 @@ const ProfileInfoPage: React.FC = () => {
                     }
                 />
             </div>
-            {/* 타이틀 wrapper: 헤더 아래 고정, 통일된 스타일 */}
+
             <div className="flex-1 flex flex-col justify-start px-6">
-                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mb-8" style={{ marginTop: "56px" }}>
+                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mb-8 mt-14">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>출생년도와 성별을</div>
                         <div>알려주세요</div>
                     </h2>
                 </div>
-                {/* Content: 타이틀 아래에서 시작 */}
+
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     {/* 생년월일 입력 */}
                     <div className="mb-12 w-full">
                         <p className="text-gray-600 text-sm mb-1">생년월일</p>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={birthDate}
-                                onChange={(e) =>
-                                    handleBirthDateChange(e.target.value)
-                                }
-                                placeholder="예시) 250701"
-                                className="w-full px-0 py-2 text-lg font-medium bg-transparent border-0 border-b-2 border-black outline-none transition-colors focus:border-[#FF774C]"
-                                maxLength={6}
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            value={birthYear}
+                            onChange={(e) => handleBirthYearChange(e.target.value)}
+                            placeholder="예시) 250701"
+                            className="w-full px-0 py-2 text-lg font-medium bg-transparent border-0 border-b-2 border-black outline-none transition-colors focus:border-[#FF774C]"
+                            maxLength={6}
+                        />
                     </div>
+
                     {/* 성별 선택 */}
                     <div className="mb-8 w-full mt-10">
                         <p className="text-gray-600 text-sm mb-4">성별</p>
@@ -91,7 +98,7 @@ const ProfileInfoPage: React.FC = () => {
                                 <SelectableButton
                                     key={option}
                                     selected={selectedGender === option}
-                                    onClick={() => handleGenderSelect(option)}
+                                    onClick={() => setSelectedGender(option)}
                                     className="flex-1"
                                     shape="rounded"
                                 >
@@ -102,14 +109,22 @@ const ProfileInfoPage: React.FC = () => {
                     </div>
                 </div>
             </div>
-            {/* Bottom Button */}
+
+            {error && (
+                <div className="px-6 mb-4">
+                    <p className="text-red-500 text-sm text-center">
+                        {error.message}
+                    </p>
+                </div>
+            )}
+            
             <BottomFixedWrapper>
                 <Button
                     onClick={handleNext}
-                    disabled={!isFormValid}
-                    variant={isFormValid ? "primary" : "disabled"}
+                    disabled={!isFormValid || isLoading}
+                    variant={isFormValid && !isLoading ? "primary" : "disabled"}
                 >
-                    가입완료
+                    {isLoading ? "가입 중..." : "가입완료"}
                 </Button>
             </BottomFixedWrapper>
         </div>
