@@ -1,4 +1,4 @@
-import { User } from "./Auth";
+import { User } from "./auth";
 
 export interface CreateReviewDto {
     storeId: string;
