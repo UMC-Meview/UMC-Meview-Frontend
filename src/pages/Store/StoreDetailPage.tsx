@@ -3,6 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
 import { ChevronLeft } from "lucide-react";
 import StoreInfo from "../../components/store/StoreInfo";
+import MenuInfo from "../../components/store/MenuInfo";
+import Divider from "../../components/common/Divider";
+import ImagesInfo from "../../components/store/ImagesInfo";
+import ReviewInfo from "../../components/store/ReviewInfo";
 
 const StoreDetailPage: React.FC = () => {
     const { storeId } = useParams<{ storeId: string }>();
@@ -59,13 +63,13 @@ const StoreDetailPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="bg-white h-[calc(100vh-80px)] overflow-y-auto">
             {/* 가게 이미지 섹션 */}
             <div className="relative w-full h-[300px]">
                 {/* 뒤로가기 */}
                 <button
                     onClick={handleBack}
-                    className="absolute top-4 left-4 z-20 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-all"
+                    className="fixed top-4 left-4 z-20 p-2 bg-black/50 hover:bg-black/70 rounded-full transition-all"
                 >
                     <ChevronLeft size={24} color="white" />
                 </button>
@@ -117,10 +121,31 @@ const StoreDetailPage: React.FC = () => {
                     store={store}
                     onToggleFavorite={handleToggleFavorite}
                 />
+                <Divider />
 
                 {/* 메뉴 */}
+                <MenuInfo menus={store.menus || []} />
 
+                <Divider />
+
+                {/* 이미지 */}
+                <ImagesInfo
+                    images={store.images}
+                    mainImage={store.mainImage}
+                    storeName={store.name}
+                />
+
+                <Divider />
                 {/* 리뷰 */}
+                <div className="space-y-3">
+                    {store.reviews?.map((review) => (
+                        <ReviewInfo key={review._id} review={review} />
+                    )) || (
+                        <div className="text-gray-500 text-center py-4">
+                            아직 리뷰가 없습니다.
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

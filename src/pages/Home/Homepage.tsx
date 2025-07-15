@@ -5,20 +5,21 @@ import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
 import { useGetStoresList } from "../../hooks/queries/useGetStoresList";
 
-// 가게 ID를 기반으로 임시 레벨 생성 (1-5)
-const getStoreLevel = (storeId: string): number => {
-    let hash = 0;
-    for (let i = 0; i < storeId.length; i++) {
-        const char = storeId.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash % 5) + 1; // 1-5 사이의 값
+// 가게의 averagePositiveScore를 기반으로 레벨 생성 (1-5)
+const getStoreLevel = (averagePositiveScore?: number): number => {
+    if (!averagePositiveScore) return 1; // 점수가 없으면 기본 레벨 1
+
+    // 0~10 점수를 5단계로 나누기
+    if (averagePositiveScore >= 8) return 5;
+    if (averagePositiveScore >= 6) return 4;
+    if (averagePositiveScore >= 4) return 3;
+    if (averagePositiveScore >= 2) return 2;
+    return 1;
 };
 
 const Homepage = () => {
-    const lat = 35.84662;
-    const lng = 127.136609;
+    const lat = 37.5665;
+    const lng = 126.978;
     const [isBottomSheetFullScreen, setIsBottomSheetFullScreen] =
         useState(false);
     const [selectedStoreId, setSelectedStoreId] = useState<string>("");
@@ -93,13 +94,14 @@ const Homepage = () => {
             >
                 {/* 가게 마커들 렌더링 */}
                 {stores.map((store) => {
-                    const level = getStoreLevel(store._id);
+                    const level = getStoreLevel(store.averagePositiveScore);
+                    console.log(store.location.coordinates);
                     return (
                         <MapMarker
                             key={store._id}
                             position={{
-                                lat: store.latitude,
-                                lng: store.longitude,
+                                lat: store.location.coordinates[1],
+                                lng: store.location.coordinates[0],
                             }}
                             image={{
                                 src: `/mark/lv${level}.svg`,

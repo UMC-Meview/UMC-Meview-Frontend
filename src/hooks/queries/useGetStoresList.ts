@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
-import { Store, SortType } from "../../types/store";
+import { StoreDetail, SortType } from "../../types/store";
 
 export interface LocationSearchParams {
     latitude: number;
@@ -9,10 +9,9 @@ export interface LocationSearchParams {
     radius?: number;
 }
 
-// Store 타입 확장 (거리와 보너스 평점 포함)
-export interface ExtendedStore extends Store {
+// Store 타입 확장 (거리 포함)
+export interface ExtendedStore extends StoreDetail {
     distance: number;
-    bonusAverage: number;
 }
 
 export interface UseStoresResult {
@@ -59,40 +58,72 @@ const fetchStoresByLocation = async (
 
     const response = await axiosClient.get("/stores");
 
-    const data: Store[] = response.data;
+    const data: StoreDetail[] = response.data;
     console.log(data);
 
     // API 응답 데이터 구조에 맞게 변환
-    return data.map((item: Store) => ({
+    return data.map((item: StoreDetail) => ({
         ...item,
         distance: calculateDistance(
             latitude,
             longitude,
-            item.latitude,
-            item.longitude
+            item.location.coordinates[0],
+            item.location.coordinates[1]
         ),
         bonusAverage: Math.random() * 5, // 임시 랜덤 값 (추후 실제 API 데이터로 변경)
     }));
 };
 
 // 더미 데이터 정의
-const DUMMY_STORE: Store[] = [
+const DUMMY_STORE: StoreDetail[] = [
     {
-        _id: "686928268368dd40403f609f",
-        latitude: 35.84662,
-        longitude: 127.136609,
-        name: "공대 7호관",
-        category: "지식 맛집 (더미 데이터)",
-        description: "많은 것을 배워갈 수 있는 꿈의 공간입니다.",
-        address: "전북특별자치도 전주시 덕진구 백제대로 567",
-        operatingHours: "월-금 0:00-24:00, 토-일 00:00-24:00",
-        mainImage:
-            "https://via.placeholder.com/300x200/4A90E2/ffffff?text=%EA%B3%B5%EB%8C%80+7%ED%98%B8%EA%B4%80",
-        createdAt: "2025-07-05T13:27:02.689Z",
-        updatedAt: "2025-07-05T14:48:14.851Z",
+        _id: "64f7a1b2c3d4e5f6a7b8c9d0",
+        location: {
+            type: "Point",
+            coordinates: [126.978, 37.5665],
+        },
+        name: "홍대 맛집",
+        category: "술집",
+        description: "분위기 좋은 홍대 맛집입니다.",
+        address: "서울시 마포구 홍대길 123",
+        operatingHours: "월-금 18:00-02:00, 토-일 17:00-03:00",
+        mainImage: "https://example.com/main-image.jpg",
         images: [
-            "https://via.placeholder.com/300x200/4A90E2/ffffff?text=%EA%B3%B5%EB%8C%80+7%ED%98%B8%EA%B4%80",
+            "https://example.com/image1.jpg",
+            "https://example.com/image2.jpg",
         ],
+        createdAt: "2023-01-01T00:00:00.000Z",
+        updatedAt: "2023-01-01T00:00:00.000Z",
+        menus: [
+            {
+                _id: "64f7a1b2c3d4e5f6a7b8c9d0",
+                name: "김치찌개",
+                image: "https://example.com/menu-image.jpg",
+                description: "정통 김치찌개입니다.",
+                price: 12000,
+                storeId: "64f7a1b2c3d4e5f6a7b8c9d0",
+                createdAt: "2023-01-01T00:00:00.000Z",
+                updatedAt: "2023-01-01T00:00:00.000Z",
+            },
+        ],
+        reviews: [
+            {
+                _id: "64f7a1b2c3d4e5f6a7b8c9d0",
+                store: "64f7a1b2c3d4e5f6a7b8c9d0",
+                user: "64f7a1b2c3d4e5f6a7b8c9d0",
+                isPositive: true,
+                score: 8,
+                foodReviews: ["음식이 맛있어요", "양이 푸짐해요"],
+                storeReviews: ["매장이 청결해요", "직원이 친절해요"],
+                imageUrl: "https://example.com/image.jpg",
+                createdAt: "2025-07-11T12:31:43.263Z",
+                updatedAt: "2025-07-11T12:31:43.263Z",
+            },
+        ],
+        averagePositiveScore: 8.5,
+        averageNegativeScore: 3.2,
+        favoriteCount: 15,
+        isFavorited: true,
     },
 ];
 
@@ -128,13 +159,13 @@ export const useGetStoresList = (
     // 에러 발생 시 더미 데이터 사용, 성공 시 실제 데이터 사용
     const stores: ExtendedStore[] = useMemo(() => {
         return queryError
-            ? DUMMY_STORE.map((item: Store) => ({
+            ? DUMMY_STORE.map((item: StoreDetail) => ({
                   ...item,
                   distance: calculateDistance(
                       searchParams.latitude,
                       searchParams.longitude,
-                      item.latitude,
-                      item.longitude
+                      item.location.coordinates[0],
+                      item.location.coordinates[1]
                   ),
                   bonusAverage: Math.random() * 5, // 임시 랜덤 값
               }))
@@ -154,7 +185,10 @@ export const useGetStoresList = (
             const sorted = [...stores].sort((a, b) => {
                 switch (sortType) {
                     case "보너스금액 많은 순":
-                        return (b.bonusAverage || 0) - (a.bonusAverage || 0);
+                        return (
+                            (b.averagePositiveScore || 0) -
+                            (a.averagePositiveScore || 0)
+                        );
                     case "리뷰 많은 순":
                         return Math.random() - 0.5;
                     case "가까운 순":
