@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import "./App.css";
 import Homepage from "./pages/Home/Homepage";
+import SearchPage from "./pages/Home/SearchPage";
 import { RouteObject } from "react-router-dom";
 import NotFoundPage from "./pages/Auth/NotFoundPage";
 import ProtectedLayout from "./layouts/ProtectedLayout";
@@ -27,6 +28,7 @@ const publicRoutes: RouteObject[] = [
         errorElement: <NotFoundPage />,
         children: [
             { index: true, element: <Homepage /> },
+            { path: "search", element: <SearchPage /> },
             { path: "login", element: <AuthMainPage /> },
             { path: "signup", element: <SignupPage /> },
             { path: "qrcode", element: <QRCodePage /> },

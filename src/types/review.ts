@@ -1,3 +1,5 @@
+import { User } from "./Auth";
+
 export interface CreateReviewDto {
     storeId: string;
     userId: string;
@@ -11,7 +13,7 @@ export interface CreateReviewDto {
 export interface ReviewResponseDto {
     _id: string;
     store: string;
-    user: string;
+    user: User;
     isPositive: boolean;
     score: number;
     foodReviews: string[];

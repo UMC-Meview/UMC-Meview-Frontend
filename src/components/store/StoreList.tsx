@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import { useGetStoresList } from "../../hooks/queries/useGetStoresList";
+import {
+    useGetStoresList,
+    ExtendedStore,
+} from "../../hooks/queries/useGetStoresList";
 import { SortType } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
+import { Clock, MapPin } from "lucide-react";
 
 interface StoreListProps {
     bottomSheetContext?: BottomSheetContext;
@@ -31,6 +35,28 @@ const StoreList: React.FC<StoreListProps> = ({
         "찜 많은 순",
     ];
 
+    // 정렬 타입에 따른 정보 렌더링 함수
+    const renderSortInfo = (store: ExtendedStore) => {
+        switch (selectedSort) {
+            case "보너스금액 많은 순":
+                return `보너스 평균 ${store.averagePositiveScore}점`;
+            case "리뷰 많은 순": {
+                const reviewCount = store.reviews?.length || 0;
+                return `리뷰 ${reviewCount.toLocaleString()}개`;
+            }
+            case "가까운 순": {
+                const distanceInMeters = Math.round(
+                    (store.distance || 0) * 1000
+                );
+                return `현재 위치에서 ${distanceInMeters}m`;
+            }
+            case "찜 많은 순":
+                return `찜 ${store.favoriteCount || 0}개`;
+            default:
+                return store.averagePositiveScore || 0;
+        }
+    };
+
     const handleSortChange = (sortType: SortType) => {
         setSelectedSort(sortType);
         sortBy(sortType);
@@ -49,21 +75,21 @@ const StoreList: React.FC<StoreListProps> = ({
     };
 
     return (
-        <>
+        <div className="flex flex-col h-full">
             {/* 정렬 옵션 */}
             <div
-                className="px-2"
+                className="px-2 flex-shrink-0"
                 onTouchStart={(e) => e.stopPropagation()}
                 onTouchMove={(e) => e.stopPropagation()}
                 onTouchEnd={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <div className="flex space-x-2 overflow-x-auto p-2">
+                <div className="flex space-x-1 overflow-x-auto p-2">
                     {sortOptions.map((option) => (
                         <button
                             key={option}
                             onClick={() => handleSortChange(option)}
-                            className={`px-4 py-2 rounded-[28px] text-sm font-medium whitespace-nowrap shadow-sm ${
+                            className={`h-[26px] px-[10px] py-[8px] rounded-[28px] text-[13px] font-medium whitespace-nowrap shadow-sm flex items-center justify-center ${
                                 selectedSort === option
                                     ? "text-[#FF694F] bg-white border border-[#FF694F]"
                                     : "text-[#919191] bg-white border border-gray-200"
@@ -77,7 +103,7 @@ const StoreList: React.FC<StoreListProps> = ({
 
             {/* 가게 리스트 */}
             {(isExpanded || isFullScreen) && (
-                <div className="flex-1 overflow-y-auto px-4">
+                <div className="flex-1 overflow-y-auto px-4 min-h-0">
                     {loading && (
                         <div className="flex justify-center items-center py-8">
                             <div className="text-gray-500">
@@ -112,11 +138,9 @@ const StoreList: React.FC<StoreListProps> = ({
                                     onError={(e) => {
                                         const target =
                                             e.target as HTMLImageElement;
-                                        // 이미 fallback으로 변경된 경우 더 이상 변경하지 않음
                                         if (
                                             !target.src.includes("data:image")
                                         ) {
-                                            // base64 인코딩된 기본 이미지로 변경 (무한 루프 방지)
                                             target.src =
                                                 "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0yOCAzNkgyOFYzNkg1MlY1Nkg0NEw0MCA0NEwzNiA0OEgzMkwyOCAzNloiIGZpbGw9IiM2NjY2NjYiLz4KPHN2Zz4K";
                                         }
@@ -133,24 +157,40 @@ const StoreList: React.FC<StoreListProps> = ({
                                                 {store.category}
                                             </span>
                                         </div>
-                                    </div>
-
-                                    <div className="text-sm text-gray-600">
-                                        {store.address}
-                                    </div>
-
-                                    <div className="text-sm text-gray-600">
-                                        영업시간 |{" "}
-                                        <span className="text-[#FF694F]">
-                                            {store.operatingHours}
+                                        <span className="text-sm text-[#FF5436]">
+                                            {renderSortInfo(store)}
                                         </span>
+                                    </div>
+
+                                    <div className="flex items-center space-x-2">
+                                        <MapPin className="w-[14px] h-[14px] text-gray-500 flex-shrink-0 mt-0.5" />
+                                        <span className="text-sm text-gray-700">
+                                            {store.address}
+                                        </span>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <div className="flex items-start space-x-2">
+                                            <Clock className="w-[14px] h-[14px] text-gray-500 flex-shrink-0 mt-0.5" />
+                                            <div className="flex-1">
+                                                <div className="space-y-1 text-sm text-gray-600">
+                                                    {store.operatingHours
+                                                        .split(",")
+                                                        .map((hours, index) => (
+                                                            <div key={index}>
+                                                                {hours.trim()}
+                                                            </div>
+                                                        ))}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         ))}
                 </div>
             )}
-        </>
+        </div>
     );
 };
 

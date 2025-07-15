@@ -8,7 +8,7 @@ const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
     return (
         <button
             onClick={onClick}
-            className="text-[#FF4444] hover:text-[#FF2222] transition-colors text-2xl px-2 py-0"
+            className="text-[#FF4444] hover:text-[#FF2222] transition-colors text-2xl pr-2 py-0"
         >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
                 <path

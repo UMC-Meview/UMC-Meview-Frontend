@@ -214,13 +214,17 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
             </div>
 
             <div className="flex-1 overflow-hidden">
-                {React.Children.map(children, (child) =>
-                    React.isValidElement(child)
-                        ? React.cloneElement(child, { bottomSheetContext } as {
-                              bottomSheetContext: BottomSheetContext;
-                          })
-                        : child
-                )}
+                <div className="max-w-[500px] mx-auto h-full">
+                    {React.Children.map(children, (child) =>
+                        React.isValidElement(child)
+                            ? React.cloneElement(child, {
+                                  bottomSheetContext,
+                              } as {
+                                  bottomSheetContext: BottomSheetContext;
+                              })
+                            : child
+                    )}
+                </div>
             </div>
         </div>
     );

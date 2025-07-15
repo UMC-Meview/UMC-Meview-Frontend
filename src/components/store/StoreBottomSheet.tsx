@@ -20,13 +20,13 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     const [internalSelectedStoreId, setInternalSelectedStoreId] =
         useState<string>("");
 
-    // 외부에서 가게가 선택되었을 때 처리
+    // shouldExpand가 true가 되고 selectedStoreId가 있을 때도 detail 모드로 전환
     useEffect(() => {
         if (selectedStoreId) {
             setInternalSelectedStoreId(selectedStoreId);
             setMode("detail");
         }
-    }, [selectedStoreId]);
+    }, [shouldExpand, selectedStoreId]);
 
     const handleStoreSelect = (storeId: string) => {
         setInternalSelectedStoreId(storeId);

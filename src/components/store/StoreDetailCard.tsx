@@ -64,13 +64,13 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
     }
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full px-4">
             {/* 헤더 영역 (고정) */}
-            <div className="flex-shrink-0 px-4">
+            <div className="flex-shrink-0">
                 <div className="flex items-center justify-between py-1">
                     <button
                         onClick={onBackToList}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                        className="py-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                     >
                         <ChevronLeft size={24} />
                     </button>
@@ -80,45 +80,41 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
             {(isExpanded || isFullScreen) && store && (
                 <div className="flex-1 overflow-y-auto">
                     {/* 가게 이미지 */}
-                    <div className="p-4">
-                        <div className="flex space-x-2 overflow-x-auto">
-                            {/* 대표 이미지*/}
+                    <div className="flex space-x-2 overflow-x-auto">
+                        {/* 대표 이미지*/}
+                        <button
+                            onClick={() => setActiveImageIndex(0)}
+                            className={
+                                "flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] border-gray-200"
+                            }
+                        >
+                            <img
+                                src={store.mainImage}
+                                alt={`${store.name} 대표 이미지`}
+                                className="w-full h-full object-cover"
+                            />
+                        </button>
+
+                        {/* 일반 이미지들 */}
+                        {store.images?.map((image, index) => (
                             <button
-                                onClick={() => setActiveImageIndex(0)}
-                                className={
-                                    "flex-shrink-0 w-[110px] h-[100px] overflow-hidden border rounded-[4px] border-gray-200"
-                                }
+                                key={index}
+                                onClick={() => setActiveImageIndex(index + 1)}
+                                className={`flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] ${
+                                    activeImageIndex === index + 1
+                                        ? "border-[#FF694F]"
+                                        : "border-gray-200"
+                                }`}
                             >
                                 <img
-                                    src={store.mainImage}
-                                    alt={`${store.name} 대표 이미지`}
+                                    src={image}
+                                    alt={`${store.name} ${
+                                        index + 1
+                                    }번째 이미지`}
                                     className="w-full h-full object-cover"
                                 />
                             </button>
-
-                            {/* 일반 이미지들 */}
-                            {store.images?.map((image, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() =>
-                                        setActiveImageIndex(index + 1)
-                                    }
-                                    className={`flex-shrink-0 w-[110px] h-[100px] overflow-hidden border rounded-[4px] ${
-                                        activeImageIndex === index + 1
-                                            ? "border-[#FF694F]"
-                                            : "border-gray-200"
-                                    }`}
-                                >
-                                    <img
-                                        src={image}
-                                        alt={`${store.name} ${
-                                            index + 1
-                                        }번째 이미지`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </button>
-                            ))}
-                        </div>
+                        ))}
                     </div>
 
                     {/* 가게 상세 정보 */}
