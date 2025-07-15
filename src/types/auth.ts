@@ -8,7 +8,7 @@ export interface ApiError {
 }
 
 // 사용자 정보 기본 구조
-export interface BaseUserInfo {
+export interface User {
   nickname: string;
   tastePreferences: string[];
   birthYear: string;
@@ -16,7 +16,7 @@ export interface BaseUserInfo {
 }
 
 // 백엔드에서 반환되는 사용자 정보 (MongoDB 필드 포함)
-export interface UserApiResponse extends BaseUserInfo {
+export interface UserApiResponse extends User {
   _id: string;
   createdAt: string;
   updatedAt: string;
@@ -24,7 +24,7 @@ export interface UserApiResponse extends BaseUserInfo {
 }
 
 // 회원가입 관련 타입
-export type SignupRequest = BaseUserInfo;
+export type SignupRequest = User;
 
 export type SignupResponse = UserApiResponse;
 
@@ -40,6 +40,6 @@ export interface LoginResponse {
 }
 
 // 타입 별칭으로 일관성 유지
-export type SignupData = BaseUserInfo;
+export type SignupData = User;
 export type SignupError = ApiError;
 export type LoginError = ApiError; 
