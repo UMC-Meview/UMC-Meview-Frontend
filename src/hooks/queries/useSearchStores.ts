@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
-import { Store } from "../../types/store";
+import { StoreDetail } from "../../types/store";
 
 // 검색 파라미터 인터페이스
 export interface SearchStoresParams {
@@ -13,14 +13,16 @@ export interface SearchStoresParams {
 
 // 검색 결과 인터페이스
 export interface UseSearchStoresResult {
-    stores: Store[];
+    stores: StoreDetail[];
     loading: boolean;
     error: string | null;
     refetch: () => void;
 }
 
 // API 요청 함수
-const searchStores = async (params: SearchStoresParams): Promise<Store[]> => {
+const searchStores = async (
+    params: SearchStoresParams
+): Promise<StoreDetail[]> => {
     const { keyword, category, latitude, longitude, radius } = params;
 
     // 쿼리 파라미터 구성
@@ -34,9 +36,7 @@ const searchStores = async (params: SearchStoresParams): Promise<Store[]> => {
         queryParams.append("longitude", longitude.toString());
     if (radius !== undefined) queryParams.append("radius", radius.toString());
 
-    const response = await axiosClient.get(
-        `/stores/search?${queryParams.toString()}`
-    );
+    const response = await axiosClient.get(`/stores?${queryParams.toString()}`);
     return response.data;
 };
 

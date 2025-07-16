@@ -20,6 +20,7 @@ export interface StoreDetail {
     updatedAt: string;
     menus?: MenuResponseDto[];
     reviews?: ReviewResponseDto[];
+    reviewCount?: number;
     averagePositiveScore?: number;
     averageNegativeScore?: number;
     favoriteCount?: number;

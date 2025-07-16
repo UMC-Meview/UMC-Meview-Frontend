@@ -59,7 +59,7 @@ const SearchPage = () => {
         const updatedSearches = [
             keyword,
             ...recentSearches.filter((item) => item !== keyword),
-        ].slice(0, 20); // 최대 10개까지만 저장
+        ].slice(0, 20); // 최대 20개까지만 저장
 
         setRecentSearches(updatedSearches);
         localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
@@ -116,41 +116,42 @@ const SearchPage = () => {
                         <div className="text-gray-500">검색 중...</div>
                     </div>
                 ) : searchParams ? (
-                    // 검색 결과가 있을 때
+                    // 자동 완성 결과가 있을 때
                     <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                            '{searchParams.keyword}' 검색 결과 ({stores.length})
-                        </h2>
                         {error ? (
                             <div className="text-red-500 text-center py-4">
                                 {error}
                             </div>
                         ) : stores.length > 0 ? (
-                            <div className="max-h-[calc(100vh-160px)] overflow-y-auto pb-4">
-                                <div className="space-y-3">
+                            <div className="max-h-[calc(100vh-160px)] overflow-y-auto pb-4 -mx-4">
+                                <h2 className="text-lg font-semibold text-gray-900 mb-4 px-4">
+                                    '{searchParams.keyword}' 자동 완성 (
+                                    {stores.length})
+                                </h2>
+                                <div className="">
                                     {stores.map((store) => (
                                         <div
                                             key={store._id}
-                                            className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:shadow-md transition-shadow"
+                                            className="bg-white cursor-pointer border-b border-gray-200 hover:bg-gray-50 transition-colors duration-300 p-4"
                                             onClick={() =>
                                                 navigate(`/store/${store._id}`)
                                             }
                                         >
-                                            <div className="flex items-start space-x-3">
-                                                {store.mainImage && (
-                                                    <img
-                                                        src={store.mainImage}
-                                                        alt={store.name}
-                                                        className="w-16 h-16 rounded-lg object-cover"
-                                                    />
-                                                )}
+                                            <div className="flex items-center space-x-3">
+                                                <img
+                                                    src="/mark/skeleton-mark.svg"
+                                                    alt={store.name}
+                                                    className="w-[30px] h-[30px] rounded-lg"
+                                                />
                                                 <div className="flex-1">
-                                                    <h3 className="font-semibold text-gray-900 mb-1">
-                                                        {store.name}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-600 mb-1">
-                                                        {store.category}
-                                                    </p>
+                                                    <div className="flex items-center space-x-2">
+                                                        <h3 className="font-semibold text-gray-900 mb-1">
+                                                            {store.name}
+                                                        </h3>
+                                                        <p className="text-sm text-gray-600 mb-1">
+                                                            {store.category}
+                                                        </p>
+                                                    </div>
                                                     <p className="text-sm text-gray-500">
                                                         {store.address}
                                                     </p>
@@ -178,7 +179,7 @@ const SearchPage = () => {
                             {recentSearches.map((searchTerm, index) => (
                                 <div
                                     key={index}
-                                    className={`flex items-center justify-between py-3 bg-white ${
+                                    className={`flex items-center justify-between py-4 bg-white ${
                                         index !== recentSearches.length - 1
                                             ? "border-b border-gray-200"
                                             : ""
@@ -186,20 +187,18 @@ const SearchPage = () => {
                                 >
                                     <div className="flex items-center">
                                         <div
-                                            className="flex items-center flex-1 cursor-pointer"
+                                            className="flex items-center flex-1 cursor-pointer space-x-4"
                                             onClick={() =>
                                                 handleRecentSearchClick(
                                                     searchTerm
                                                 )
                                             }
                                         >
-                                            <div className="w-[30px] h-[30px] bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                                                <img
-                                                    src="/mark/skeleton-mark.svg"
-                                                    alt="search"
-                                                    className="w-full h-full p-0.5"
-                                                />
-                                            </div>
+                                            <img
+                                                src="/mark/skeleton-mark.svg"
+                                                alt="search"
+                                                className="w-[25px] h-[25px] rounded-lg"
+                                            />
                                             <span className="text-gray-700 font-medium">
                                                 {searchTerm}
                                             </span>
