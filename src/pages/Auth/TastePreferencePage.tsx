@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button/Button.tsx";
 import StepIndicator from "../../components/common/StepIndicator.tsx";
@@ -6,45 +6,26 @@ import logoIcon from "../../assets/Logo.svg";
 import SelectableButton from "../../components/common/Button/SelectableButton";
 import Header from "../../components/common/Header.tsx";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
-import { getTempSignupData, updateTempPreferences } from "../../utils/auth";
-
-const TASTE_OPTIONS = [
-    "매운맛", "짠맛", "단맛", "새콤한",
-    "담백한", "느끼한", "자극적인", "기름진", 
-    "회", "해산물", "채식", "향신료",
-    "양식", "한식", "일식", "중식", "고기"
-];
+import { useMultiSelect } from "../../hooks/useMultiSelect";
+import { SIGNUP_TASTE_OPTIONS } from "../../constants/tasteOptions";
+import { updateTempPreferences } from "../../utils/auth";
 
 const TastePreferencePage: React.FC = () => {
     const navigate = useNavigate();
-    const signupData = getTempSignupData();
-    const [selectedTastes, setSelectedTastes] = useState<string[]>(signupData.tastePreferences);
-
-    useEffect(() => {
-        const currentData = getTempSignupData();
-        if (currentData.tastePreferences.length > 0) {
-            setSelectedTastes(currentData.tastePreferences);
-        }
-    }, []);
+    const { selectedItems: selectedTastes, toggleItem: toggleTaste } = useMultiSelect({ maxSelections: 3 });
 
     // 4개씩 4행으로 나누기 (마지막 행은 5개)
     const rows = [
-        TASTE_OPTIONS.slice(0, 4),   // 첫 번째 행
-        TASTE_OPTIONS.slice(4, 8),   // 두 번째 행  
-        TASTE_OPTIONS.slice(8, 12),  // 세 번째 행
-        TASTE_OPTIONS.slice(12, 17)  // 네 번째 행
+        SIGNUP_TASTE_OPTIONS.slice(0, 4),   // 첫 번째 행
+        SIGNUP_TASTE_OPTIONS.slice(4, 8),   // 두 번째 행  
+        SIGNUP_TASTE_OPTIONS.slice(8, 12),  // 세 번째 행
+        SIGNUP_TASTE_OPTIONS.slice(12, 17)  // 네 번째 행
     ];
 
-    const toggleTaste = (taste: string) => {
-        setSelectedTastes((prev) =>
-            prev.includes(taste)
-                ? prev.filter((t) => t !== taste)
-                : [...prev, taste]
-        );
-    };
-
     const handleNext = () => {
-        if (selectedTastes.length >= 2) {
+        console.log("선택된 입맛들:", selectedTastes);
+        console.log("선택된 개수:", selectedTastes.length);
+        if (selectedTastes.length >= 3) {
             updateTempPreferences(selectedTastes);
             navigate("/profile-info");
         }
@@ -82,7 +63,7 @@ const TastePreferencePage: React.FC = () => {
                         <div>선호하는 입맛을</div>
                         <div className="flex items-end gap-2">
                             <div>알려주세요.</div>
-                            <span className="text-gray-400 text-sm pb-1">(최소 2개)</span>
+                            <span className="text-gray-400 text-sm pb-1">(3개 선택)</span>
                         </div>
                     </h2>
 
@@ -97,7 +78,7 @@ const TastePreferencePage: React.FC = () => {
                                         key={taste}
                                         selected={selectedTastes.includes(taste)}
                                         onClick={() => toggleTaste(taste)}
-                                        className="flex-1 min-w-0"
+                                        disabled={!selectedTastes.includes(taste) && selectedTastes.length >= 3}
                                     >
                                         {taste}
                                     </SelectableButton>
@@ -111,10 +92,10 @@ const TastePreferencePage: React.FC = () => {
             <BottomFixedWrapper>
                 <Button
                     onClick={handleNext}
-                    disabled={selectedTastes.length < 2}
-                    variant={selectedTastes.length >= 2 ? "primary" : "disabled"}
+                    disabled={selectedTastes.length < 3}
+                    variant={selectedTastes.length >= 3 ? "primary" : "disabled"}
                 >
-                    다음 ({selectedTastes.length}/2)
+                    다음 ({selectedTastes.length}/3)
                 </Button>
             </BottomFixedWrapper>
         </div>

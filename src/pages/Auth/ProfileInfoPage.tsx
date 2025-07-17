@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import StepIndicator from "../../components/common/StepIndicator.tsx";
 import Button from "../../components/common/Button/Button";
 import logoIcon from "../../assets/Logo.svg";
-import SelectableButton from "../../components/common/Button/SelectableButton";
 import Header from "../../components/common/Header.tsx";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 import { getTempSignupData, updateTempProfile } from "../../utils/auth";
@@ -79,7 +78,7 @@ const ProfileInfoPage: React.FC = () => {
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     {/* 생년월일 입력 */}
                     <div className="mb-12 w-full">
-                        <p className="text-gray-600 text-sm mb-1">생년월일</p>
+                        <p className="text-gray-600 text-[15px] mb-1">생년월일</p>
                         <input
                             type="text"
                             value={birthYear}
@@ -92,18 +91,20 @@ const ProfileInfoPage: React.FC = () => {
 
                     {/* 성별 선택 */}
                     <div className="mb-8 w-full mt-10">
-                        <p className="text-gray-600 text-sm mb-4">성별</p>
-                        <div className="flex gap-4">
+                        <p className="text-gray-600 text-[15px] mb-6">성별</p>
+                        <div className="flex gap-[45px] justify-center">
                             {["남성", "여성"].map((option) => (
-                                <SelectableButton
+                                <button
                                     key={option}
-                                    selected={selectedGender === option}
                                     onClick={() => setSelectedGender(option)}
-                                    className="flex-1"
-                                    shape="rounded"
+                                    className={`w-[140px] h-[80px] rounded-[20px] border bg-white shadow-[0_2px_8px_0_rgba(0,0,0,0.12)] text-[18px] font-medium whitespace-nowrap transition-all duration-200 ${
+                                        selectedGender === option
+                                            ? "border-[#FF774C] text-gray-800"
+                                            : "border-transparent text-gray-800"
+                                    }`}
                                 >
                                     {option}
-                                </SelectableButton>
+                                </button>
                             ))}
                         </div>
                     </div>

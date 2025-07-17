@@ -19,6 +19,7 @@ import StoreRegistrationPage from "./pages/Store/StoreRegistrationPage";
 import TastePreferencePage from "./pages/Auth/TastePreferencePage";
 import ProfileInfoPage from "./pages/Auth/ProfileInfoPage";
 import SignupCompletePage from "./pages/Auth/SignupCompletePage";
+import ProfileEditPage from "./pages/Auth/ProfileEditPage";
 
 // public Routes: 인증 없이 접근 가능
 const publicRoutes: RouteObject[] = [
@@ -51,6 +52,10 @@ const publicRoutes: RouteObject[] = [
             {
                 path: "signup-complete",
                 element: <SignupCompletePage />,
+            },
+            {
+                path: "profile/edit",
+                element: <ProfileEditPage />,
             },
         ],
     },

@@ -1,5 +1,6 @@
 import { CircleUserRound, Heart, MapIcon, Scan, Trophy } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { isLoggedIn } from "../../utils/auth";
 
 type TabType = "" | "favorite" | "qrcode" | "ranking" | "profile";
 
@@ -29,7 +30,16 @@ const Footer = () => {
     const selectedTab = getSelectedTab();
 
     const handleTabClick = (tabId: TabType) => {
-        navigate(tabId === "" ? "/" : `/${tabId}`);
+        if (tabId === "profile") {
+            // 프로필 버튼 클릭 시 로그인 상태 확인
+            if (isLoggedIn()) {
+                navigate("/profile");
+            } else {
+                navigate("/login");
+            }
+        } else {
+            navigate(tabId === "" ? "/" : `/${tabId}`);
+        }
     };
 
     return (

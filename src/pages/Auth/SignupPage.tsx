@@ -29,7 +29,7 @@ const SignupPage: React.FC = () => {
         if (isNewUser) {
             navigate("/taste-preference");
         } else if (isSuccess && data?.user) {
-            navigate("/");
+            navigate("/profile");
         }
     }, [isSuccess, data, isNewUser, navigate]);
 

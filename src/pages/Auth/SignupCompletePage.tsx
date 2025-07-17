@@ -24,7 +24,7 @@ const SignupCompletePage: React.FC = () => {
                 </p>
             </div>
             <BottomFixedWrapper>
-                <Button onClick={() => navigate("/")} variant="primary">
+                <Button onClick={() => navigate("/profile")} variant="primary">
                     리뷰 구경가기
                 </Button>
             </BottomFixedWrapper>
