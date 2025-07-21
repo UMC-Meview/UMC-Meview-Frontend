@@ -7,21 +7,19 @@ import Header from "../../components/common/Header.tsx";
 import checkRoundFill from "../../assets/Check_round_fill.svg";
 import closeRoundFill from "../../assets/Close_round_fill.svg";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
-import { getTempSignupData, updateTempNickname } from "../../utils/auth";
+import { updateTempNickname } from "../../utils/auth";
 import { usePostLogin } from "../../hooks/queries/usePostLogin";
 
 const SignupPage: React.FC = () => {
-    const signupData = getTempSignupData();
     const { login, isLoading, error, isSuccess, data, isNewUser } = usePostLogin();
-    const [nickname, setNickname] = useState(signupData.nickname);
+    const [nickname, setNickname] = useState("");
     const navigate = useNavigate();
 
     const isValidNickname = nickname.length >= 2 && nickname.length <= 12;
 
-    // localStorage에서 닉네임 초기화
+    // 컴포넌트 마운트 시 닉네임 초기화 (빈값으로 시작)
     useEffect(() => {
-        const currentData = getTempSignupData();
-        setNickname(currentData.nickname);
+        setNickname("");
     }, []);
 
     // 로그인 결과에 따른 페이지 이동
