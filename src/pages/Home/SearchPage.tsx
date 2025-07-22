@@ -2,21 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/common/Button/BackButton";
 import { Search, X } from "lucide-react";
-import {
-    useSearchStores,
-    SearchStoresParams,
-} from "../../hooks/queries/useSearchStores";
+import { useStores, StoresParams } from "../../hooks/queries/useGetStoreList";
+import { StoreDetail } from "../../types/store";
 
 const SearchPage = () => {
     const navigate = useNavigate();
     const [recentSearches, setRecentSearches] = useState<string[]>([]);
     const [searchKeyword, setSearchKeyword] = useState("");
-    const [searchParams, setSearchParams] = useState<SearchStoresParams | null>(
-        null
-    );
+    const [searchParams, setSearchParams] = useState<StoresParams | null>(null);
 
     // 검색 hook 사용 (searchParams가 있을 때만 실행)
-    const { stores, loading, error } = useSearchStores(
+    const { stores, loading, error } = useStores(
         searchParams || { keyword: "" },
         !!searchParams
     );
@@ -129,7 +125,7 @@ const SearchPage = () => {
                                     {stores.length})
                                 </h2>
                                 <div className="">
-                                    {stores.map((store) => (
+                                    {stores.map((store: StoreDetail) => (
                                         <div
                                             key={store._id}
                                             className="bg-white cursor-pointer border-b border-gray-200 hover:bg-gray-50 transition-colors duration-300 p-4"

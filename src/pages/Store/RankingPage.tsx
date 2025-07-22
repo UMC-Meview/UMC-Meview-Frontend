@@ -1,53 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import RankingItem from "../../components/store/RankingItem";
+import { useRankingStores } from "../../hooks/queries/useGetStoreList";
 
 const RankingPage = () => {
     const navigate = useNavigate();
-
-    // 더미 랭킹 데이터
-    const rankingData = [
-        {
-            id: "1",
-            rank: 1,
-            image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-            storeName: "모토이시",
-            category: "술집",
-            score: 58293,
-            bonusAmount: 63348,
-            reviewCount: 12328,
-        },
-        {
-            id: "2",
-            rank: 2,
-            image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-            storeName: "모토이시",
-            category: "술집",
-            score: 45124,
-            bonusAmount: 63348,
-            reviewCount: 12328,
-        },
-        {
-            id: "3",
-            rank: 3,
-            image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-            storeName: "모토이시",
-            category: "술집",
-            score: 42156,
-            bonusAmount: 63348,
-            reviewCount: 12328,
-        },
-        {
-            id: "4",
-            rank: 4,
-            image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
-            storeName: "모토이시",
-            category: "술집",
-            score: 42156,
-            bonusAmount: 63348,
-            reviewCount: 12328,
-        },
-    ];
+    const { stores, loading, error } = useRankingStores();
 
     const handleStoreClick = (storeId: string) => {
         navigate(`/store/${storeId}`);
@@ -60,19 +18,44 @@ const RankingPage = () => {
 
             {/* 랭킹 리스트 */}
             <div className="bg-white">
-                {rankingData.map((store) => (
-                    <RankingItem
-                        key={store.id}
-                        rank={store.rank}
-                        image={store.image}
-                        storeName={store.storeName}
-                        category={store.category}
-                        score={store.score}
-                        bonusAmount={store.bonusAmount}
-                        reviewCount={store.reviewCount}
-                        onClick={() => handleStoreClick(store.id)}
-                    />
-                ))}
+                {loading && (
+                    <div className="flex justify-center items-center py-8">
+                        <div className="text-gray-500">
+                            랭킹을 불러오는 중...
+                        </div>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="flex justify-center items-center py-4">
+                        <div className="text-red-500 text-sm">
+                            {error}
+                            <br />
+                            <span className="text-gray-500 text-xs">
+                                더미 데이터를 표시합니다.
+                            </span>
+                        </div>
+                    </div>
+                )}
+
+                {!loading &&
+                    stores.map((store, index) => (
+                        <RankingItem
+                            key={store._id}
+                            rank={index + 1}
+                            image={store.mainImage || ""}
+                            storeName={store.name}
+                            category={store.category}
+                            score={Math.round(
+                                ((store.averagePositiveScore || 0) -
+                                    (store.averageNegativeScore || 0)) /
+                                    (store.reviewCount || 1)
+                            )}
+                            bonusAmount={store.averagePositiveScore || 0}
+                            reviewCount={store.reviewCount || 0}
+                            onClick={() => handleStoreClick(store._id)}
+                        />
+                    ))}
             </div>
         </div>
     );
