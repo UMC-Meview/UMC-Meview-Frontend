@@ -87,7 +87,7 @@ const SearchPage = () => {
             <div className="header absolute left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
                 <div className="flex items-center py-3 px-3">
                     <BackButton onClick={() => navigate("/")} />
-                    <div className="bg-white rounded-[24.5px] shadow-lg flex items-center px-4 h-[40px] cursor-pointer hover:shadow-xl transition-shadow flex-1">
+                    <div className="bg-white rounded-[24.5px] shadow-lg flex items-center px-4 h-[40px] cursor-pointer flex-1">
                         <input
                             type="text"
                             placeholder="장소, 메뉴, 지역 검색"
