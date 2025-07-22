@@ -9,6 +9,7 @@ export interface ApiError {
 
 // 사용자 정보 기본 구조
 export interface User {
+    _id: string;
     nickname: string;
     tastePreferences: string[];
     birthYear: string;
@@ -17,7 +18,6 @@ export interface User {
 
 // 백엔드에서 반환되는 사용자 정보 (MongoDB 필드 포함)
 export interface UserApiResponse extends User {
-    _id: string;
     createdAt: string;
     updatedAt: string;
     __v: number;

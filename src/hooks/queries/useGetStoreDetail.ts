@@ -20,8 +20,10 @@ const fetchStoreDetail = async (storeId: string): Promise<StoreDetail> => {
 // 더미 데이터 (API 실패 시 사용)
 const createDummyStoreDetail = (storeId: string): StoreDetail => ({
     _id: storeId,
-    latitude: 35.84662,
-    longitude: 127.136609,
+    location: {
+        type: "Point",
+        coordinates: [127.136609, 35.84662],
+    },
     name: "맛있는 한식당",
     category: "한식",
     address: "전북특별자치도 전주시 덕진구 백제대로 567",
@@ -36,11 +38,10 @@ const createDummyStoreDetail = (storeId: string): StoreDetail => ({
     description:
         "정통 한식을 맛볼 수 있는 맛집입니다. 신선한 재료로 정성스럽게 만든 음식을 제공합니다.",
     reviewCount: 128,
-    bonusAverage: 4.2,
-    distance: 1.5,
+    averagePositiveScore: 4.2,
+    averageNegativeScore: 3.8,
     favoriteCount: 128,
-    menus: ["양고기", "소고기", "일본식 전골"],
-    isFavorite: false,
+    isFavorited: false,
     createdAt: "2024-01-01T00:00:00.000Z",
     updatedAt: "2024-01-01T00:00:00.000Z",
 });

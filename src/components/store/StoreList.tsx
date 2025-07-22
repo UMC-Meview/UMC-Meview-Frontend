@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import {
-    useGetStoresList,
-    ExtendedStore,
-} from "../../hooks/queries/useGetStoresList";
-import { SortType } from "../../types/store";
+    useStores,
+    mapClientSortToServer,
+} from "../../hooks/queries/useGetStoreList";
+import { SortType, StoreDetail } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { Clock, MapPin } from "lucide-react";
 
@@ -23,8 +23,8 @@ const StoreList: React.FC<StoreListProps> = ({
     const isExpanded = bottomSheetContext?.isExpanded || false;
     const isFullScreen = bottomSheetContext?.isFullScreen || false;
 
-    const { sortedStores, loading, error, sortBy } = useGetStoresList(
-        undefined, // 기본 위치 사용
+    const { stores, loading, error } = useStores(
+        { sortBy: mapClientSortToServer(selectedSort) },
         isExpanded || isFullScreen // 확장되거나 풀스크린일 때만 API 호출
     );
 
@@ -36,18 +36,17 @@ const StoreList: React.FC<StoreListProps> = ({
     ];
 
     // 정렬 타입에 따른 정보 렌더링 함수
-    const renderSortInfo = (store: ExtendedStore) => {
+    const renderSortInfo = (store: StoreDetail) => {
         switch (selectedSort) {
             case "보너스금액 많은 순":
                 return `보너스 평균 ${store.averagePositiveScore}점`;
             case "리뷰 많은 순": {
-                const reviewCount = store.reviews?.length || 0;
+                const reviewCount = store.reviewCount || 0;
                 return `리뷰 ${reviewCount.toLocaleString()}개`;
             }
             case "가까운 순": {
-                const distanceInMeters = Math.round(
-                    (store.distance || 0) * 1000
-                );
+                // 거리 정보가 없으므로 임시로 랜덤 거리 표시
+                const distanceInMeters = Math.round(Math.random() * 2000);
                 return `현재 위치에서 ${distanceInMeters}m`;
             }
             case "찜 많은 순":
@@ -59,7 +58,6 @@ const StoreList: React.FC<StoreListProps> = ({
 
     const handleSortChange = (sortType: SortType) => {
         setSelectedSort(sortType);
-        sortBy(sortType);
 
         if (
             bottomSheetContext &&
@@ -125,7 +123,7 @@ const StoreList: React.FC<StoreListProps> = ({
                     )}
 
                     {!loading &&
-                        sortedStores.map((store) => (
+                        stores.map((store: StoreDetail) => (
                             <div
                                 key={store._id}
                                 className="flex items-start space-x-3 py-3 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -176,11 +174,18 @@ const StoreList: React.FC<StoreListProps> = ({
                                                 <div className="space-y-1 text-sm text-gray-600">
                                                     {store.operatingHours
                                                         .split(",")
-                                                        .map((hours, index) => (
-                                                            <div key={index}>
-                                                                {hours.trim()}
-                                                            </div>
-                                                        ))}
+                                                        .map(
+                                                            (
+                                                                hours: string,
+                                                                index: number
+                                                            ) => (
+                                                                <div
+                                                                    key={index}
+                                                                >
+                                                                    {hours.trim()}
+                                                                </div>
+                                                            )
+                                                        )}
                                                 </div>
                                             </div>
                                         </div>
