@@ -33,7 +33,7 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
                 >
                     {imageElement}
                 </ImageUpload>
-                <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] bg-white border border-gray-200 rounded-full flex items-center justify-center" style={{ zIndex: 10 }}>
+                <div className="absolute -bottom-2 -right-2 w-[40px] h-[40px] bg-white border border-gray-200 rounded-full flex items-center justify-center" style={{ zIndex: 5 }}>
                     <img src={cameraIcon} alt="카메라" className="w-8 h-8" />
                 </div>
             </div>

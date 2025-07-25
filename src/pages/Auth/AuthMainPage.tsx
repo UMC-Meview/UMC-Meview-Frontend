@@ -10,7 +10,7 @@ const AuthMainPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-white w-full mx-auto relative flex flex-col">
             {/* 중앙: 로고 + 텍스트 */}
-            <div className="flex-1 flex flex-col justify-center items-center px-6 -translate-y-10">
+            <div className="flex-1 flex flex-col justify-center items-center px-6 sm:px-8 md:px-10 lg:px-12 -translate-y-10">
                 <Logo />
                 <div className="text-center mt-[24px]">
                     <h1 className="text-[22px] leading-[32px] font-bold text-black mb-4">

@@ -31,6 +31,38 @@ export const FOOD_TYPE_OPTIONS = [
     { name: "디저트", emoji: "🍰" },
 ] as const;
 
+// 레이아웃 설정 타입
+export interface LayoutConfig {
+    type: 'auto' | 'custom';
+    rowDistribution?: readonly number[] | number[];
+}
+
+// 레이아웃 설정 상수들
+export const LAYOUT_CONFIGS: Record<string, LayoutConfig> = {
+    // 회원가입 입맛 선택
+    SIGNUP_TASTE: {
+        type: 'custom',
+        rowDistribution: [4, 4, 4, 5]
+    },
+    
+    // 프로필 입맛 선택
+    PROFILE_TASTE: {
+        type: 'custom',
+        rowDistribution: [4, 5, 4, 3]
+    },
+    
+    // 음식 종류 선택
+    FOOD_TYPE: {
+        type: 'custom',
+        rowDistribution: [4, 4, 3, 2]
+    },
+    
+    // 자동 레이아웃
+    AUTO: {
+        type: 'auto'
+    }
+};
+
 // 타입 정의
 export type SignupTasteOption = typeof SIGNUP_TASTE_OPTIONS[number];
 export type ProfileTasteOption = typeof PROFILE_TASTE_OPTIONS[number];

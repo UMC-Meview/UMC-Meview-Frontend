@@ -13,7 +13,7 @@ const AddItemButton: React.FC<AddItemButtonProps> = ({
   className = "",
   variant = "full"
 }) => {
-  const baseStyles = "text-black font-medium text-base";
+  const baseStyles = "text-black font-medium text-sm";
   
   const variantStyles = {
     full: "mt-2 w-full bg-white rounded-lg py-3 hover:bg-gray-50",

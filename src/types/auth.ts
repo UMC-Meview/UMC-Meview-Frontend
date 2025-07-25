@@ -23,6 +23,30 @@ export interface UserApiResponse extends User {
     __v: number;
 }
 
+// 프로필 조회 API 응답 타입
+export interface UserProfileResponse {
+    _id: string;
+    nickname: string;
+    introduction: string;
+    profileImageUrl: string;
+    tastePreferences: string[];
+    reviewCount: number;
+    favoriteCount: number;
+}
+
+// 프로필 수정 API 응답 타입
+export interface PatchProfileResponse {
+    message: string;
+    user: {
+        nickname: string;
+        introduction: string;
+        profileImageUrl: string;
+        tastePreferences: string[];
+        reviewCount: number;
+        favoriteCount: number;
+    };
+}
+
 // 회원가입 관련 타입
 export type SignupRequest = User;
 

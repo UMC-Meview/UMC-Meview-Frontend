@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import StepIndicator from "../../components/common/StepIndicator.tsx";
 import Button from "../../components/common/Button/Button.tsx";
-import logoIcon from "../../assets/Logo.svg";
 import Header from "../../components/common/Header.tsx";
 import checkRoundFill from "../../assets/Check_round_fill.svg";
 import closeRoundFill from "../../assets/Close_round_fill.svg";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
+import ErrorMessage from "../../components/common/ErrorMessage";
 import { updateTempNickname } from "../../utils/auth";
 import { usePostLogin } from "../../hooks/queries/usePostLogin";
 
@@ -43,30 +42,16 @@ const SignupPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white w-full relative flex flex-col">
+        <div className="min-h-screen bg-white">
             {/* 헤더 */}
-            <div className="pt-10">
-                <Header
-                    onBack={handleBack}
-                    center={
-                        <img
-                            src={logoIcon}
-                            alt="Meview Logo"
-                            className="w-6 h-6"
-                        />
-                    }
-                    right={
-                        <StepIndicator
-                            currentStep={1}
-                            totalSteps={3}
-                            className="scale-110"
-                        />
-                    }
-                />
-            </div>
+            <Header 
+                onBack={handleBack} 
+                showLogo={true} 
+                page={1} 
+            />
 
             {/* 메인 콘텐츠 */}
-            <div className="flex-1 flex flex-col justify-start px-6 mt-14">
+            <div className="flex-1 flex flex-col justify-start px-6 sm:px-8 md:px-10 lg:px-12 mt-14">
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     {/* 타이틀 */}
                     <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
@@ -100,13 +85,7 @@ const SignupPage: React.FC = () => {
             </div>
 
             {/* 에러 메시지 */}
-            {error && (
-                <div className="px-6 mb-4">
-                    <p className="text-red-500 text-sm text-center">
-                        {error.message}
-                    </p>
-                </div>
-            )}
+            {error && <ErrorMessage message={error.message} />}
 
             {/* 하단 버튼 */}
             <BottomFixedWrapper>

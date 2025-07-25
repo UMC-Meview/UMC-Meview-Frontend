@@ -14,7 +14,7 @@ const RankingPage = () => {
     return (
         <div className="min-h-screen bg-white">
             {/* 헤더 */}
-            <Header onBack={() => navigate("/")} center={<div>랭킹</div>} />
+            <Header onBack={() => navigate("/")} center="랭킹" />
 
             {/* 랭킹 리스트 */}
             <div className="bg-white">

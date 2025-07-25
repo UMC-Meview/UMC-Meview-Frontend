@@ -1,173 +1,173 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/common/Header";
-import SelectableButton from "../../components/common/Button/SelectableButton";
 import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
-import ProfileImage from "../../components/common/auth/ProfileImage";
-import EditableText from "../../components/common/auth/EditableText";
-import { PROFILE_TASTE_OPTIONS, FOOD_TYPE_OPTIONS } from "../../constants/tasteOptions";
+import ProfileInfoSection from "../../components/common/auth/ProfileInfoSection";
+import TasteSelectionGrid from "../../components/common/TasteSelectionGrid";
+import ThinDivider from "../../components/common/ThinDivider";
+import { PROFILE_TASTE_OPTIONS, FOOD_TYPE_OPTIONS, LAYOUT_CONFIGS } from "../../constants/tasteOptions";
 import checkIcon from "../../assets/Check.svg";
 import { useMultiSelect } from "../../hooks/useMultiSelect";
+import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
+import { usePatchUserProfileEdit, PatchProfileRequest } from "../../hooks/queries/usePatchUserProfileEdit";
+import { useNavigate } from "react-router-dom";
 
+/**
+ * 프로필 수정 페이지 컴포넌트
+ */
 const ProfileEditPage: React.FC = () => {
-    // 멀티셀렉트 훅들
+    const navigate = useNavigate();
+    const { data: userProfile } = useGetUserProfile();
+    const { patchProfile, isLoading: isUpdating, isSuccess } = usePatchUserProfileEdit();
+    
+    // 멀티 선택 훅 초기화
     const tasteSelector = useMultiSelect({ maxSelections: 3 });
     const foodTypeSelector = useMultiSelect({ maxSelections: 3 });
     
-    // 사용자 정보 상태
-    const [userName, setUserName] = useState("홍길동");
-    const [userDescription, setUserDescription] = useState("...");
+    // 로컬 상태 관리
+    const [userName, setUserName] = useState("");
+    const [userDescription, setUserDescription] = useState("");
+    const [profileImageUrl, setProfileImageUrl] = useState<string>("");
 
-    // 총 선택 개수
+    // 선택된 항목 총 개수 계산
     const totalSelections = tasteSelector.selectedItems.length + foodTypeSelector.selectedItems.length;
 
-    // 핸들러들
+    // 사용자 프로필 데이터로 초기값 설정
+    useEffect(() => {
+        if (userProfile) {
+            setUserName(userProfile.nickname || "");
+            setUserDescription(userProfile.introduction || "");
+            setProfileImageUrl(userProfile.profileImageUrl || "");
+            
+            // 기존 선택된 취향 설정
+            const existingPreferences = userProfile.tastePreferences || [];
+            existingPreferences.forEach(preference => {
+                if (PROFILE_TASTE_OPTIONS.some(option => option === preference)) {
+                    tasteSelector.toggleItem(preference);
+                } else if (FOOD_TYPE_OPTIONS.some(option => option.name === preference)) {
+                    foodTypeSelector.toggleItem(preference);
+                }
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userProfile]);
+
+    // 수정 완료 후 프로필 페이지로 이동
+    useEffect(() => {
+        if (isSuccess) {
+            setTimeout(() => navigate("/profile", { replace: true }), 300);
+        }
+    }, [isSuccess, navigate]);
+
+    // 취향 선택 토글 핸들러
     const handleTasteToggle = (taste: string) => {
         if (totalSelections < 3 || tasteSelector.selectedItems.includes(taste)) {
             tasteSelector.toggleItem(taste);
         }
     };
 
+    // 음식 종류 선택 토글 핸들러
     const handleFoodTypeToggle = (foodType: string) => {
         if (totalSelections < 3 || foodTypeSelector.selectedItems.includes(foodType)) {
             foodTypeSelector.toggleItem(foodType);
         }
     };
 
-    const handleBack = () => window.history.back();
-
+    // 프로필 수정 완료 핸들러
     const handleEditComplete = () => {
-        console.log('프로필 수정 완료!', {
-            tastes: tasteSelector.selectedItems,
-            foodTypes: foodTypeSelector.selectedItems,
-            userName,
-            userDescription,
-            totalSelections
-        });
+        // 유효성 검사
+        if (totalSelections < 3 || !userName.trim()) return;
+
+        const updateData: PatchProfileRequest = {
+            nickname: userName.trim(),
+            introduction: userDescription.trim(),
+            tastePreferences: [...tasteSelector.selectedItems, ...foodTypeSelector.selectedItems],
+            profileImageUrl: profileImageUrl,
+        };
+
+        patchProfile(updateData);
     };
 
-    const handleNameSave = (name: string) => setUserName(name);
-    const handleDescriptionSave = (description: string) => setUserDescription(description);
+    // 이미지 선택 핸들러
+    const handleImageSelect = (file: File) => {
+        setProfileImageUrl(URL.createObjectURL(file));
+    };
+
+    // 섹션 제목 컴포넌트
+    const SectionTitle = ({ title }: { title: string }) => (
+        <div className="flex items-baseline space-x-2 ml-4">
+            <h2 className="text-[16px] font-semibold text-gray-800">{title}</h2>
+            <img src={checkIcon} alt="체크" className="w-4 h-4" />
+        </div>
+    );
 
     return (
-        <div className="min-h-screen bg-white pb-20 overflow-y-auto">
+        <div className="min-h-screen bg-white flex flex-col">
             {/* 헤더 */}
-            <div className="pt-10">
-                <Header
-                    onBack={handleBack}
-                    center={<h1 className="text-[19px] font-bold text-black">프로필 수정</h1>}
-                />
-            </div>
+            <Header
+                onBack={() => window.history.back()}
+                center="프로필 수정"
+            />
 
-            <div className="px-4 py-6 space-y-5">
+            {/* 스크롤 가능한 메인 컨텐츠 영역 */}
+            <div className="flex-1 overflow-y-auto pb-20">
                 {/* 프로필 정보 섹션 */}
-                <div className="flex justify-center">
-                    <div className="flex items-start space-x-4 max-w-md">
-                        <ProfileImage isEditable={true} />
-                        <div className="flex-1 space-y-3">
-                            <EditableText
-                                value={userName}
-                                onSave={handleNameSave}
-                                className="text-[21px] font-semibold text-gray-800"
-                                inputClassName="text-[21px] font-semibold text-gray-800"
-                                showEditIcon={true}
-                                editMode="nickname"
-                                maxLength={6}
-                            />
-                            <div className="space-y-6">
-                                <label className="text-xs text-gray-600">한 줄 소개</label>
-                                <EditableText
-                                    value={userDescription}
-                                    onSave={handleDescriptionSave}
-                                    className="px-3 py-1.5 rounded-tr-full rounded-br-full rounded-bl-full shadow-[0_2px_8px_0_rgba(0,0,0,0.12)] bg-white border border-transparent w-[230px] h-[36px] text-[15px] text-black text-center"
-                                    inputClassName="text-[15px] text-gray-700 bg-transparent flex-1"
-                                    showEditIcon={true}
-                                    iconPosition="end"
-                                    editMode="description"
-                                    maxLength={13}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ProfileInfoSection
+                    imageUrl={profileImageUrl}
+                    nickname={userName}
+                    introduction={userDescription}
+                    isEditable={true}
+                    onImageSelect={handleImageSelect}
+                    onNicknameChange={setUserName}
+                    onIntroductionChange={setUserDescription}
+                />
 
-                {/* 구분선 */}
-                <div className="flex justify-center mt-12">
-                    <div className="w-[360px] h-[1px] bg-[#D9D9D9]"></div>
-                </div>
+                <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-6 space-y-5">
+                    <ThinDivider />
 
-                {/* 입맛 선택 섹션 */}
-                <div className="space-y-4">
-                    <div className="flex items-baseline space-x-2 ml-4">
-                        <h2 className="text-[16px] font-semibold text-gray-800">입 맛 선택</h2>
-                        <img src={checkIcon} alt="체크" className="w-4 h-4" />
+                    {/* 입맛 선택 섹션 */}
+                    <div className="space-y-4">
+                        <SectionTitle title="입 맛 선택" />
+                        <TasteSelectionGrid
+                            options={PROFILE_TASTE_OPTIONS}
+                            selectedItems={tasteSelector.selectedItems}
+                            onToggle={handleTasteToggle}
+                            maxSelections={3}
+                            totalSelections={totalSelections}
+                            textSize="lg"
+                            rowGap="sm"
+                            layout={LAYOUT_CONFIGS.PROFILE_TASTE}
+                            className="w-full mb-4 flex-1 flex flex-col justify-center"
+                        />
                     </div>
-                    <div className="w-full mb-4 flex-1 flex flex-col justify-center">
-                        {[
-                            PROFILE_TASTE_OPTIONS.slice(0, 4),
-                            PROFILE_TASTE_OPTIONS.slice(4, 9),
-                            PROFILE_TASTE_OPTIONS.slice(9, 13),
-                            PROFILE_TASTE_OPTIONS.slice(13, 16)
-                        ].map((row, index) => (
-                            <div key={index} className="flex flex-row justify-center gap-3 mb-1.5 w-full">
-                                {row.map((taste) => (
-                                    <SelectableButton
-                                        key={taste}
-                                        selected={tasteSelector.selectedItems.includes(taste)}
-                                        onClick={() => handleTasteToggle(taste)}
-                                        className="text-lg"
-                                        disabled={!tasteSelector.selectedItems.includes(taste) && totalSelections >= 3}
-                                    >
-                                        {taste}
-                                    </SelectableButton>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
 
-                {/* 구분선 */}
-                <div className="flex justify-center">
-                    <div className="w-[360px] h-[1px] bg-[#D9D9D9]"></div>
-                </div>
+                    <ThinDivider />
 
-                {/* 음식종류 선택 섹션 */}
-                <div className="space-y-4">
-                    <div className="flex items-baseline space-x-2 ml-4">
-                        <h2 className="text-[16px] font-semibold text-gray-800">선호하는 음식종류 선택</h2>
-                        <img src={checkIcon} alt="체크" className="w-4 h-4" />
-                    </div>
-                    <div className="w-full mb-8 flex-1 flex flex-col justify-center">
-                        {[
-                            FOOD_TYPE_OPTIONS.slice(0, 4),
-                            FOOD_TYPE_OPTIONS.slice(4, 8),
-                            FOOD_TYPE_OPTIONS.slice(8, 11),
-                            FOOD_TYPE_OPTIONS.slice(11, 13)
-                        ].map((row, index) => (
-                            <div key={index} className="flex flex-row justify-center gap-3 mb-1.5 w-full">
-                                {row.map((foodType) => (
-                                    <SelectableButton
-                                        key={foodType.name}
-                                        selected={foodTypeSelector.selectedItems.includes(foodType.name)}
-                                        onClick={() => handleFoodTypeToggle(foodType.name)}
-                                        className="flex items-center space-x-1"
-                                        disabled={!foodTypeSelector.selectedItems.includes(foodType.name) && totalSelections >= 3}
-                                    >
-                                        <span>{foodType.emoji}</span>
-                                        <span>{foodType.name}</span>
-                                    </SelectableButton>
-                                ))}
-                            </div>
-                        ))}
+                    {/* 음식종류 선택 섹션 */}
+                    <div className="space-y-4">
+                        <SectionTitle title="선호하는 음식종류 선택" />
+                        <TasteSelectionGrid
+                            options={FOOD_TYPE_OPTIONS}
+                            selectedItems={foodTypeSelector.selectedItems}
+                            onToggle={handleFoodTypeToggle}
+                            maxSelections={3}
+                            totalSelections={totalSelections}
+                            textSize="lg"
+                            rowGap="sm"
+                            layout={LAYOUT_CONFIGS.FOOD_TYPE}
+                            showEmoji={true}
+                            className="w-full mb-4 flex-1 flex flex-col justify-center"
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* 하단 버튼 */}
+            {/* 하단 완료 버튼 */}
             <BottomFixedButton 
                 onClick={handleEditComplete}
-                variant={totalSelections >= 3 ? "primary" : "gray"}
+                variant={totalSelections >= 3 && !isUpdating ? "primary" : "gray"}
+                disabled={isUpdating || totalSelections < 3}
             >
-                수정완료
+                {isUpdating ? "수정 중..." : "수정완료"}
             </BottomFixedButton>
         </div>
     );

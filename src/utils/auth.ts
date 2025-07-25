@@ -34,14 +34,9 @@ export const logout = (): void => {
   clearTempSignupData();
 };
 
-// 현재 사용자 닉네임 가져오기
-export const getCurrentUserNickname = (): string | null => {
-  const userInfo = getUserInfo();
-  return userInfo?.nickname || null;
-};
-
 // 회원가입 임시 데이터 관리
 const initialSignupData: SignupData = {
+  _id: "",
   nickname: "",
   tastePreferences: [],
   birthYear: "",

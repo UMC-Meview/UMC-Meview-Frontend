@@ -14,7 +14,7 @@ const SignupCompletePage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-white w-full relative flex flex-col">
-            <div className="flex-1 flex flex-col items-center justify-end pb-[50vh] px-6">
+            <div className="flex-1 flex flex-col items-center justify-end pb-[50vh] px-6 sm:px-8 md:px-10 lg:px-12">
                 <Logo />
                 <h2 className="text-2xl font-bold text-black mb-4 mt-8">
                     가입 완료!

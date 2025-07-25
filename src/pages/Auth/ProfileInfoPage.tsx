@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import StepIndicator from "../../components/common/StepIndicator.tsx";
 import Button from "../../components/common/Button/Button";
-import logoIcon from "../../assets/Logo.svg";
 import Header from "../../components/common/Header.tsx";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
+import ErrorMessage from "../../components/common/ErrorMessage";
 import { getTempSignupData, updateTempProfile } from "../../utils/auth";
 import { usePostSignup } from "../../hooks/queries/usePostSignup";
 
@@ -46,28 +45,14 @@ const ProfileInfoPage: React.FC = () => {
     const isFormValid = birthYear.length === 6 && selectedGender;
 
     return (
-        <div className="min-h-screen bg-white w-full relative flex flex-col">
-            <div className="pt-10">
-                <Header
-                    onBack={() => navigate(-1)}
-                    center={
-                        <img
-                            src={logoIcon}
-                            alt="Meview Logo"
-                            className="w-6 h-6"
-                        />
-                    }
-                    right={
-                        <StepIndicator
-                            currentStep={3}
-                            totalSteps={3}
-                            className="scale-110"
-                        />
-                    }
-                />
-            </div>
+        <div className="min-h-screen bg-white">
+            <Header 
+                onBack={() => navigate(-1)} 
+                showLogo={true} 
+                page={3} 
+            />
 
-            <div className="flex-1 flex flex-col justify-start px-6">
+            <div className="flex-1 flex flex-col justify-start px-6 sm:px-8 md:px-10 lg:px-12">
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mb-8 mt-14">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>출생년도와 성별을</div>
@@ -111,13 +96,7 @@ const ProfileInfoPage: React.FC = () => {
                 </div>
             </div>
 
-            {error && (
-                <div className="px-6 mb-4">
-                    <p className="text-red-500 text-sm text-center">
-                        {error.message}
-                    </p>
-                </div>
-            )}
+            {error && <ErrorMessage message={error.message} />}
             
             <BottomFixedWrapper>
                 <Button

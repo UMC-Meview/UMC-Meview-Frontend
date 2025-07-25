@@ -3,7 +3,7 @@ import { useState } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
-import { useGetStoresList } from "../../hooks/queries/useGetStoresList";
+import { useStores } from "../../hooks/queries/useGetStoreList";
 
 // 가게의 averagePositiveScore를 기반으로 레벨 생성 (1-5)
 const getStoreLevel = (averagePositiveScore?: number): number => {
@@ -27,7 +27,7 @@ const Homepage = () => {
         useState(false);
 
     // 가게 목록 가져오기
-    const { stores } = useGetStoresList({
+    const { stores } = useStores({
         latitude: lat,
         longitude: lng,
         radius: 2000,

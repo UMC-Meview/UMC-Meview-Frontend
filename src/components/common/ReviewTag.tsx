@@ -6,7 +6,7 @@ interface TagProps {
 const ReviewTag = ({ text, className = "" }: TagProps) => {
     return (
         <span
-            className={`inline-block text-gray-700 text-xs rounded-full shadow ${className}`}
+            className={`inline-block text-black text-xs rounded-full shadow ${className}`}
             style={{
                 height: "23px",
                 paddingTop: "3px",

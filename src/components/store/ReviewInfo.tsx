@@ -28,7 +28,7 @@ const ReviewInfo = ({ review }: ReviewInfoProps) => {
             <div className="flex-1">
                 {/* 첫 번째 줄: 닉네임과 보너스/할퀸 정보 */}
                 <div className="flex justify-between items-center mb-2">
-                    <span className="font-[16px] font-semibold text-gray-900">
+                    <span className="text-[16px] font-semibold text-gray-900">
                         {user.nickname}
                     </span>
                     <span className="text-[13px] font-medium text-orange-500">
