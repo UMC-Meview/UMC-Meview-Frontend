@@ -18,7 +18,7 @@ const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({
                 {onBack && (
                     <button
                         onClick={onBack}
-                        className="w-[40px] h-[40px] flex items-center justify-center py-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+                        className="w-[40px] h-[40px] flex items-center py-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
                     >
                         <ChevronLeft size={24} />
                     </button>

@@ -137,7 +137,7 @@ const StoreList: React.FC<StoreListProps> = ({
                                             <span className="font-semibold text-gray-900 truncate">
                                                 {store.name}
                                             </span>
-                                            <span className="text-sm text-gray-500 truncate">
+                                            <span className="text-sm text-gray-500 flex-shrink-0">
                                                 {store.category}
                                             </span>
                                         </div>
