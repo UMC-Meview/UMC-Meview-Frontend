@@ -1,6 +1,6 @@
-import ImageUpload from "../ImageUpload";
-import logoIcon from "../../../assets/Logo.svg";
-import cameraIcon from "../../../assets/Camera.svg";
+import ImageUpload from "../common/ImageUpload";
+import logoIcon from "../../assets/Logo.svg";
+import cameraIcon from "../../assets/Camera.svg";
 
 interface ProfileImageProps {
     imageUrl?: string;

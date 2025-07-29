@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/common/Header";
 import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
-import ProfileInfoSection from "../../components/common/auth/ProfileInfoSection";
-import TasteSelectionGrid from "../../components/common/TasteSelectionGrid";
+import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
+import SelectionGrid from "../../components/common/SelectionGrid";
 import ThinDivider from "../../components/common/ThinDivider";
-import { PROFILE_TASTE_OPTIONS, FOOD_TYPE_OPTIONS, LAYOUT_CONFIGS } from "../../constants/tasteOptions";
+import { PROFILE_TASTE_OPTIONS, FOOD_TYPE_OPTIONS, LAYOUT_CONFIGS } from "../../constants/options";
 import checkIcon from "../../assets/Check.svg";
 import { useMultiSelect } from "../../hooks/useMultiSelect";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import { usePatchUserProfileEdit, PatchProfileRequest } from "../../hooks/queries/usePatchUserProfileEdit";
 import { useNavigate } from "react-router-dom";
 
-/**
- * 프로필 수정 페이지 컴포넌트
- */
 const ProfileEditPage: React.FC = () => {
     const navigate = useNavigate();
     const { data: userProfile } = useGetUserProfile();
@@ -127,7 +124,7 @@ const ProfileEditPage: React.FC = () => {
                     {/* 입맛 선택 섹션 */}
                     <div className="space-y-4">
                         <SectionTitle title="입 맛 선택" />
-                        <TasteSelectionGrid
+                        <SelectionGrid
                             options={PROFILE_TASTE_OPTIONS}
                             selectedItems={tasteSelector.selectedItems}
                             onToggle={handleTasteToggle}
@@ -145,7 +142,7 @@ const ProfileEditPage: React.FC = () => {
                     {/* 음식종류 선택 섹션 */}
                     <div className="space-y-4">
                         <SectionTitle title="선호하는 음식종류 선택" />
-                        <TasteSelectionGrid
+                        <SelectionGrid
                             options={FOOD_TYPE_OPTIONS}
                             selectedItems={foodTypeSelector.selectedItems}
                             onToggle={handleFoodTypeToggle}

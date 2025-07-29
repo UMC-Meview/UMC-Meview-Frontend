@@ -2,7 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
 import { LoginRequest, LoginResponse, LoginError } from "../../types/auth";
 import { AxiosError } from "axios";
-import { setUserInfo, UserInfo } from "../../utils/auth";
+import { setUserInfo } from "../../utils/auth";
+import { UserInfo } from "../../types/auth";
 
 // 닉네임으로 로그인 요청 (신규 회원 여부 체크 포함)
 const loginWithNickname = async (loginData: LoginRequest): Promise<LoginResponse> => {

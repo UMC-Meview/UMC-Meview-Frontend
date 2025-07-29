@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button/Button.tsx";
 import Header from "../../components/common/Header.tsx";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
-import TasteSelectionGrid from "../../components/common/TasteSelectionGrid";
+import SelectionGrid from "../../components/common/SelectionGrid";
 import { useMultiSelect } from "../../hooks/useMultiSelect";
-import { SIGNUP_TASTE_OPTIONS, LAYOUT_CONFIGS } from "../../constants/tasteOptions";
+import { SIGNUP_TASTE_OPTIONS, LAYOUT_CONFIGS } from "../../constants/options";
 import { updateTempPreferences } from "../../utils/auth";
 
 const TastePreferencePage: React.FC = () => {
@@ -44,7 +44,7 @@ const TastePreferencePage: React.FC = () => {
                     </h2>
 
                     <div className="w-full mb-8 flex-1 flex flex-col justify-center mt-18">
-                        <TasteSelectionGrid
+                        <SelectionGrid
                             options={SIGNUP_TASTE_OPTIONS}
                             selectedItems={selectedTastes}
                             onToggle={toggleTaste}

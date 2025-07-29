@@ -8,7 +8,7 @@ import StoreMenuSection from "../../components/store/StoreMenuSection";
 import AddItemButton from "../../components/common/Button/AddItemButton";
 import ImageUpload from "../../components/common/ImageUpload";
 import ErrorMessage from "../../components/common/ErrorMessage";
-import { usePostStoreRegistration } from "../../hooks/queries/usePostStoreRegistration";
+import { useStoreRegistration } from "../../hooks/queries/usePostStoreRegistration";
 import { usePostMenuRegistration } from "../../hooks/queries/usePostMenuRegistration";
 import { StoreRegistrationRequest } from "../../types/store";
 
@@ -33,13 +33,13 @@ interface StoreFormData {
 
 const StoreRegistrationPage: React.FC = () => {
     const navigate = useNavigate();
-    const { registerStore, isLoading, error, isSuccess, data } = usePostStoreRegistration();
+    const { mutate, isLoading, isSuccess, data, error } = useStoreRegistration();
     const { registerMenu } = usePostMenuRegistration();
 
     // 폼 데이터 상태
     const [formData, setFormData] = useState<StoreFormData>({
         storeName: "",
-        category: "",
+        category: "한식",
         description: "",
         address: "",
         detailAddress: "",
@@ -107,45 +107,75 @@ const StoreRegistrationPage: React.FC = () => {
         }));
     };
 
-    // 폼 유효성 검사
+    // 폼 유효성 검사 (이미지 업로드 API 완성 후 mainImages.length > 0 조건 추가 예정)
     const isFormValid = () =>
         formData.storeName.trim() !== "" &&
         formData.address.trim() !== "";
+        // TODO: 이미지 업로드 API 완성 후 아래 조건 추가
+        // && formData.mainImages.length > 0;
+
+    // 이미지를 base64로 변환하는 함수
+    const convertToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.readAsDataURL(file);
+        });
+    };
 
     // 폼 제출
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log("=== 폼 제출 시작 ===");
         console.log("storeName:", formData.storeName);
         console.log("address:", formData.address);
         console.log("isFormValid:", isFormValid());
         
         if (isFormValid()) {
-            // API 요청 데이터 형식으로 변환
-            const requestData: StoreRegistrationRequest = {
-                location: {
-                    type: "Point",
-                    coordinates: [formData.longitude, formData.latitude],
-                },
-                name: formData.storeName.trim(),
-                category: formData.category || "음식점", // 기본값 설정
-                description: formData.description || "상세 설명 없음", // 기본값 설정
-                address: formData.address.trim(),
-                operatingHours: formData.openingHours.filter(hour => hour.trim() !== "").join(", ") || "영업시간 미정",
-            };
-            
-            // 디버깅: 실제 전송되는 데이터 확인
-            console.log("가게 등록 요청 데이터:", requestData);
-            console.log("폼 데이터 상태:", formData);
-            
-            registerStore(requestData);
+            try {
+                // API 요청 데이터 형식으로 변환
+                const requestData: StoreRegistrationRequest = {
+                    location: {
+                        type: "Point",
+                        coordinates: [formData.longitude, formData.latitude],
+                    },
+                    name: formData.storeName.trim(),
+                    category: formData.category || "음식점",
+                    description: formData.description || "상세 설명 없음",
+                    address: formData.address.trim(),
+                    operatingHours: formData.openingHours.filter(hour => hour.trim() !== "").join(", ") || "영업시간 미정",
+                    qrPrefix: "https://miview.com/stores/",
+                };
+
+                // 이미지가 있는 경우에만 mainImage 필드 추가
+                if (formData.mainImages.length > 0) {
+                    console.log("📸 이미지 변환 시작:", formData.mainImages.length, "개");
+                    const mainImageUrls = await Promise.all(formData.mainImages.map(convertToBase64));
+                    requestData.mainImage = mainImageUrls;
+                    console.log("✅ 이미지 변환 완료");
+                } else {
+                    console.log("📸 이미지 없음 - mainImage 필드 제외");
+                }
+                
+                // 디버깅: 실제 전송되는 데이터 확인
+                console.log("가게 등록 요청 데이터:", requestData);
+                console.log("폼 데이터 상태:", formData);
+                
+                mutate(requestData);
+            } catch (error) {
+                console.error("이미지 변환 실패:", error);
+                alert("이미지 처리 중 오류가 발생했습니다.");
+            }
         } else {
             console.log("폼 유효성 검사 실패");
+            alert("필수 항목을 모두 입력해주세요.");
         }
     };
 
-    // API 성공 시 QR 코드 페이지로 이동 (QR 코드 정보와 함께)
+    // API 성공 시 QR 코드 페이지로 이동
     useEffect(() => {
         if (isSuccess && data) {
+            console.log("🎉 가게 등록 성공, QR 코드 페이지로 이동");
+            
             // 가게 등록 성공 후 메뉴들 등록
             const validMenus = formData.menuList.filter(menu => 
                 menu.name.trim() !== "" && menu.price.trim() !== ""
@@ -165,15 +195,8 @@ const StoreRegistrationPage: React.FC = () => {
                 });
             }
             
-            // QR 코드 정보를 state로 전달
-            navigate("/qrcode", { 
-                state: { 
-                    qrCodeBase64: data.qrCodeBase64,
-                    qrCodeFilePath: data.qrCodeFilePath,
-                    storeName: data.name,
-                    storeId: data._id
-                } 
-            });
+            // QR 코드 페이지로 이동 (URL 파라미터 방식)
+            navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
         }
     }, [isSuccess, data, navigate, formData.menuList, registerMenu]);
 
@@ -187,10 +210,10 @@ const StoreRegistrationPage: React.FC = () => {
             />
             
             {/* 에러 메시지 표시 */}
-            {error && <ErrorMessage message={error.message} />}
+            {error && <ErrorMessage message={error} />}
             
-            {/* 메인 사진 업로드 */}
-            <div className="px-6 sm:px-8 md:px-10 lg:px-12 w-full max-w-screen-sm mx-auto" style={{ marginTop: "15px" }}>
+                            {/* 메인 사진 업로드 - 현재 선택사항 (이미지 업로드 API 완성 후 필수로 변경 예정) */}
+                <div className="px-6 sm:px-8 md:px-10 lg:px-12 w-full max-w-screen-sm mx-auto" style={{ marginTop: "15px" }}>
                 <div className="mb-6 flex flex-col items-center w-full">
                     <div className="flex gap-1.5 items-end justify-center">
                         {formData.mainImages.map((file: File, idx: number) => (
@@ -224,7 +247,7 @@ const StoreRegistrationPage: React.FC = () => {
                         )}
                     </div>
                     <p className="text-black text-[15px] mt-3 text-center w-full break-keep">
-                        메인 사진 첨부하기 <span className="text-gray-400">(최대 3개)</span>
+                        메인 사진 첨부하기 <span className="text-gray-400">(선택사항, 최대 3개)</span>
                     </p>
                 </div>
                 
@@ -238,6 +261,35 @@ const StoreRegistrationPage: React.FC = () => {
                             value={formData.storeName}
                             onChange={(value) => handleInputChange("storeName", value)}
                             variant="default"
+                        />
+                    </div>
+
+                    {/* 카테고리 */}
+                    <div>
+                        <label className="block text-gray-800 font-medium mb-2">카테고리</label>
+                        <select
+                            value={formData.category}
+                            onChange={(e) => handleInputChange("category", e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-[#FF774C] text-xs"
+                        >
+                            <option value="한식">한식</option>
+                            <option value="중식">중식</option>
+                            <option value="일식">일식</option>
+                            <option value="양식">양식</option>
+                            <option value="카페">카페</option>
+                            <option value="술집">술집</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+
+                    {/* 설명 */}
+                    <div>
+                        <label className="block text-gray-800 font-medium mb-2">가게 설명</label>
+                        <StoreFormInput
+                            placeholder="가게에 대한 설명을 입력해주세요"
+                            value={formData.description}
+                            onChange={(value) => handleInputChange("description", value)}
+                            variant="large"
                         />
                     </div>
 

@@ -20,6 +20,14 @@ import TastePreferencePage from "./pages/Auth/TastePreferencePage";
 import ProfileInfoPage from "./pages/Auth/ProfileInfoPage";
 import SignupCompletePage from "./pages/Auth/SignupCompletePage";
 import ProfileEditPage from "./pages/Auth/ProfileEditPage";
+import ReviewEntryPage from "./pages/Review/ReviewEntryPage";
+import ReviewDetailPage from "./pages/Review/ReviewDetailPage";
+import ReviewFeedbackPage from "./pages/Review/ReviewFeedbackPage";
+import ReviewSatisfactionRatingPage from "./pages/Review/ReviewSatisfactionRatingPage";
+import ReviewDissatisfactionRatingPage from "./pages/Review/ReviewDissatisfactionRatingPage";
+import ReviewCompletePage from "./pages/Review/ReviewCompletePage";
+import ReviewLoginPage from "./pages/Review/ReviewLoginPage";
+
 
 // public Routes: 인증 없이 접근 가능
 const publicRoutes: RouteObject[] = [
@@ -57,6 +65,36 @@ const publicRoutes: RouteObject[] = [
                 path: "profile/edit",
                 element: <ProfileEditPage />,
             },
+            {
+                path: "review/login",
+                element: <ReviewLoginPage />,
+            },
+            {
+                path: "review/entry",
+                element: <ReviewEntryPage />,
+            },
+            {
+                path: "review/detail",
+                element: <ReviewDetailPage />,
+            },
+            {
+                path: "review/feedback",
+                element: <ReviewFeedbackPage />,
+            },
+            {
+                path: "review/satisfaction-rating",
+                element: <ReviewSatisfactionRatingPage />,
+            },
+            {
+                path: "review/dissatisfaction-rating",
+                element: <ReviewDissatisfactionRatingPage />,
+            },
+            {
+                path: "review/complete",
+                element: <ReviewCompletePage />,
+            },
+
+
         ],
     },
 ];

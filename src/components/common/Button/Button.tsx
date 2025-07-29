@@ -3,7 +3,7 @@ import React from "react";
 interface ButtonProps {
     children: React.ReactNode;
     onClick?: () => void;
-    variant?: "primary" | "secondary" | "disabled" | "gray";
+    variant?: "primary" | "secondary" | "disabled" | "gray" | "compact";
     disabled?: boolean;
     className?: string;
 }
@@ -24,6 +24,7 @@ const Button: React.FC<ButtonProps> = ({
         secondary: "bg-white border border-gray-300",
         disabled: "bg-gray-300 text-gray-500 cursor-not-allowed",
         gray: "bg-[#D9D9D9]",
+        compact: "w-full h-12 text-lg font-bold rounded-full transition-colors bg-[#FF774C] px-15 py-0",
     };
 
     const hasCustomTextColor = /text-black|!text-black|text-white/.test(
@@ -36,6 +37,10 @@ const Button: React.FC<ButtonProps> = ({
                   : !hasCustomTextColor
                   ? "text-white"
                   : ""
+          } ${className}`
+        : variant === "compact"
+        ? `${variantStyles["compact"]} ${
+              !hasCustomTextColor ? "text-white" : ""
           } ${className}`
         : `${baseStyles} ${
               variantStyles[variant !== "disabled" ? variant : "gray"]

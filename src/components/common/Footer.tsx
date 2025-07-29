@@ -37,6 +37,9 @@ const Footer = () => {
             } else {
                 navigate("/login");
             }
+        } else if (tabId === "qrcode") {
+            // QR 버튼 클릭 시 리뷰 작성 페이지로 이동
+            navigate("/review/entry");
         } else {
             navigate(tabId === "" ? "/" : `/${tabId}`);
         }

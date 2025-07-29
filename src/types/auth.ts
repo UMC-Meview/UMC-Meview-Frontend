@@ -23,9 +23,9 @@ export interface UserApiResponse extends User {
     __v: number;
 }
 
-// 프로필 조회 API 응답 타입
+// 프로필 조회 API 응답 타입 (스웨거 문서 기준)
 export interface UserProfileResponse {
-    _id: string;
+    id: string; // 스웨거 문서에서 사용하는 필드명
     nickname: string;
     introduction: string;
     profileImageUrl: string;
@@ -34,17 +34,23 @@ export interface UserProfileResponse {
     favoriteCount: number;
 }
 
-// 프로필 수정 API 응답 타입
+// 프로필 수정 API 요청 타입 (스웨거 문서 기준)
+export interface PatchProfileRequest {
+    nickname?: string;
+    introduction?: string;
+    profileImageUrl?: string;
+    tastePreferences?: string[];
+}
+
+// 프로필 수정 API 응답 타입 (실제 서버 응답 기준)
 export interface PatchProfileResponse {
-    message: string;
-    user: {
-        nickname: string;
-        introduction: string;
-        profileImageUrl: string;
-        tastePreferences: string[];
-        reviewCount: number;
-        favoriteCount: number;
-    };
+    id: string;
+    nickname: string;
+    introduction: string;
+    profileImageUrl: string;
+    tastePreferences: string[];
+    reviewCount?: number;
+    favoriteCount?: number;
 }
 
 // 회원가입 관련 타입
@@ -67,3 +73,12 @@ export interface LoginResponse {
 export type SignupData = User;
 export type SignupError = ApiError;
 export type LoginError = ApiError;
+
+// localStorage용 UserInfo 타입 (id 필드 사용)
+export interface UserInfo {
+    id: string;
+    nickname: string;
+    tastePreferences: string[];
+    birthYear: string;
+    gender: string;
+}

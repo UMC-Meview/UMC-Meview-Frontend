@@ -4,7 +4,7 @@ import { logout } from "../../utils/auth";
 import Button from "../../components/common/Button/Button";
 import Header from "../../components/common/Header";
 import Footer from "../../components/common/Footer";
-import ProfileInfoSection from "../../components/common/auth/ProfileInfoSection";
+import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import ProfileDropdownMenu from "../../components/common/Button/ProfileDropdownMenu";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import UserReviewInfo from "../../components/store/UserReviewInfo";

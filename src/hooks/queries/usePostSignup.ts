@@ -2,7 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
 import { SignupRequest, SignupResponse, SignupError } from "../../types/auth";
 import { AxiosError } from "axios";
-import { setUserInfo, UserInfo } from "../../utils/auth";
+import { setUserInfo } from "../../utils/auth";
+import { UserInfo } from "../../types/auth";
 
 // 회원가입 API 요청
 const signupUser = async (signupData: SignupRequest): Promise<SignupResponse> => {

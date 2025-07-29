@@ -57,13 +57,42 @@ export const LAYOUT_CONFIGS: Record<string, LayoutConfig> = {
         rowDistribution: [4, 4, 3, 2]
     },
     
+    // 매장 평가 선택
+    STORE_REVIEW: {
+        type: 'custom',
+        rowDistribution: [2, 2, 2, 2, 2]
+    },
+    
+    // 음식 평가 선택
+    FOOD_REVIEW: {
+        type: 'custom',
+        rowDistribution: [3, 3, 3, 3, 3]
+    },
+    
     // 자동 레이아웃
     AUTO: {
         type: 'auto'
     }
 };
 
-// 타입 정의
+// 매장 평가 태그
+export const STORE_REVIEW_TAGS = [
+    "친절해요", "불친절해요", "위생이 깔끔해요", "위생이 더러워요", "서비스가 좋아요", "서비스가 별로에요",
+    "또 오고 싶어요", "다신 안올거에요", "분위기가 좋아요", "독특해요"
+] as const;
+
+// 음식 평가 태그
+export const FOOD_REVIEW_TAGS = [
+    "맛있어요", "별로에요", "자극적이에요",
+    "취향저격", "양이 많아요", "양이 적어요",
+    "적당히 매워요", "너무 매워요", "평범해요",
+    "달콤해요", "싱거워요", "호불호가 있어요",
+    "신선해요", "느끼해요", "향이 좋아요"
+] as const;
+
 export type SignupTasteOption = typeof SIGNUP_TASTE_OPTIONS[number];
 export type ProfileTasteOption = typeof PROFILE_TASTE_OPTIONS[number];
 export type FoodTypeOption = typeof FOOD_TYPE_OPTIONS[number]; 
+
+export type StoreReviewTag = typeof STORE_REVIEW_TAGS[number];
+export type FoodReviewTag = typeof FOOD_REVIEW_TAGS[number]; 

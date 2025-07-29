@@ -10,7 +10,7 @@ interface UserReviewInfoProps {
 const UserReviewInfo = ({ review, storeName = "모토이시" }: UserReviewInfoProps) => {
     const { isPositive, score, storeReviews, foodReviews, imageUrl } = review;
     
-    const scoreText = isPositive ? `내가 좋 보너스 ${score}만원` : `내가 할퀸 수 ${score}번`;
+    const scoreText = isPositive ? `내가 준 보너스 ${score}만원` : `내가 할퀸 수 ${score}번`;
 
     return (
         <div>

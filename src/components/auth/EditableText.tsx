@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import pencilIcon from "../../../assets/Pencil.svg";
+import pencilIcon from "../../assets/Pencil.svg";
 
 interface EditableTextProps {
     value: string;

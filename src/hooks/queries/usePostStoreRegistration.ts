@@ -1,74 +1,81 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
 import { StoreRegistrationRequest, StoreRegistrationResponse } from "../../types/store";
-import { AxiosError } from "axios";
 
-// 가게 등록 API 요청
+// 가게 등록 API 함수
 const registerStore = async (storeData: StoreRegistrationRequest): Promise<StoreRegistrationResponse> => {
-  try {
-    const response = await axiosClient.post("/stores", storeData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    console.log(" 가게 등록 요청:", storeData);
     
-    return response.data;
-  } catch (error: unknown) {
-    console.error("가게 등록 API 호출 실패:", error);
-    
-    if (error instanceof AxiosError && error.response) {
-      const status = error.response.status;
-      const errorData = error.response.data;
-      
-      console.error(`API 에러 - Status: ${status}`, errorData);
-      
-      // 400 Bad Request: 잘못된 요청 데이터
-      if (status === 400) {
-        throw new Error("입력 정보를 확인해주세요.");
-      }
-      
-      // 401 Unauthorized: 인증 실패
-      if (status === 401) {
-        throw new Error("로그인이 필요합니다.");
-      }
-      
-      // 409 Conflict: 중복된 가게명
-      if (status === 409) {
-        throw new Error("이미 등록된 가게명입니다.");
-      }
-      
-      throw new Error(errorData?.message || `가게 등록 실패 (${status})`);
+    try {
+        const response = await axiosClient.post<StoreRegistrationResponse>("/stores", storeData);
+        console.log(" 가게 등록 성공:", response.data);
+        return response.data;
+    } catch (error: unknown) {
+        console.error(" 가게 등록 실패:", error);
+        
+        // 413 Request Entity Too Large 에러 처리 (이미지가 너무 클 때)
+        if (error && typeof error === 'object' && 'response' in error && 
+            error.response && typeof error.response === 'object' && 'status' in error.response &&
+            error.response.status === 413) {
+            console.log(" 이미지 크기 초과, 이미지 없이 재시도");
+            
+            // 이미지 필드를 제거하고 재시도
+            const retryData = { ...storeData };
+            delete retryData.mainImage;
+            delete retryData.images;
+            
+            const retryResponse = await axiosClient.post<StoreRegistrationResponse>("/stores", retryData);
+            console.log(" 이미지 없이 가게 등록 성공:", retryResponse.data);
+            return retryResponse.data;
+        }
+        
+        // 기타 에러의 경우 에러를 다시 던짐
+        throw error;
     }
-    
-    throw new Error("네트워크 에러가 발생했습니다. 다시 시도해주세요.");
-  }
 };
 
-// 가게 등록 훅 반환 타입
-export interface UsePostStoreRegistrationResult {
-  registerStore: (data: StoreRegistrationRequest) => void;
-  isLoading: boolean;
-  error: { message: string } | null;
-  isSuccess: boolean;
-  data: StoreRegistrationResponse | undefined;
+// 가게 등록 mutation 훅 반환 타입
+export interface UseStoreRegistrationResult {
+    mutate: (storeData: StoreRegistrationRequest) => void;
+    mutateAsync: (storeData: StoreRegistrationRequest) => Promise<StoreRegistrationResponse>;
+    isLoading: boolean;
+    isError: boolean;
+    isSuccess: boolean;
+    error: string | null;
+    data: StoreRegistrationResponse | undefined;
+    reset: () => void;
 }
 
-export const usePostStoreRegistration = (): UsePostStoreRegistrationResult => {
-  const mutation = useMutation<StoreRegistrationResponse, Error, StoreRegistrationRequest>({
-    mutationFn: registerStore,
-    onSuccess: (data) => {
-      console.log("가게 등록 성공:", data);
-    },
-    onError: (error) => {
-      console.error("가게 등록 에러:", error);
-    },
-  });
+/**
+ * 가게 등록 mutation 훅
+ */
+export const useStoreRegistration = (): UseStoreRegistrationResult => {
+    const queryClient = useQueryClient();
 
-  return {
-    registerStore: mutation.mutate,
-    isLoading: mutation.isPending,
-    error: mutation.error ? { message: mutation.error.message } : null,
-    isSuccess: mutation.isSuccess,
-    data: mutation.data,
-  };
+    const mutation = useMutation<StoreRegistrationResponse, Error, StoreRegistrationRequest>({
+        mutationFn: registerStore,
+        onSuccess: (data) => {
+            console.log("🎉 가게 등록 완료:", data);
+            
+            // 가게 목록 캐시 무효화 (새로운 가게가 추가되었으므로)
+            queryClient.invalidateQueries({ queryKey: ["stores"] });
+            
+            // 새로 등록된 가게 정보를 캐시에 추가
+            queryClient.setQueryData(["store", data._id], data);
+        },
+        onError: (error) => {
+            console.error("❌ 가게 등록 실패:", error);
+        },
+    });
+
+    return {
+        mutate: mutation.mutate,
+        mutateAsync: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+        isError: mutation.isError,
+        isSuccess: mutation.isSuccess,
+        error: mutation.error?.message || null,
+        data: mutation.data,
+        reset: mutation.reset,
+    };
 }; 

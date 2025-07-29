@@ -1,13 +1,5 @@
 // 인증 관련 localStorage 관리 유틸리티
-import { SignupData } from "../types/auth";
-
-export interface UserInfo {
-  id: string;
-  nickname: string;
-  tastePreferences: string[];
-  birthYear: string;
-  gender: string;
-}
+import { SignupData, UserInfo } from "../types/auth";
 
 // 사용자 정보 관리
 export const getUserInfo = (): UserInfo | null => {

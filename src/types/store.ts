@@ -38,8 +38,9 @@ export interface StoreRegistrationRequest {
     description: string;
     address: string;
     operatingHours: string;
-    mainImage?: string; // 선택사항으로 변경
-    images?: string[];  // 선택사항으로 변경
+    mainImage?: string[]; // 선택사항 (이미지 업로드 API 완성 후 필수로 변경 예정)
+    images?: string[];  // 선택사항
+    qrPrefix: string; // QR 코드 prefix
 }
 
 export interface StoreRegistrationResponse {
@@ -50,7 +51,7 @@ export interface StoreRegistrationResponse {
     description: string;
     address: string;
     operatingHours: string;
-    mainImage: string;
+    mainImage: string[];
     images: string[];
     createdAt: string;
     updatedAt: string;
@@ -62,7 +63,7 @@ export interface StoreRegistrationResponse {
     favoriteCount: number;
     isFavorited: boolean;
     qrCodeBase64: string;
-    qrCodeFilePath: string;
+    distance: number;
 }
 
 export type StoreResponseDto = StoreDetail[];

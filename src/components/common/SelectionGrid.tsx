@@ -1,13 +1,13 @@
 import React from "react";
 import SelectableButton from "./Button/SelectableButton";
-import { LayoutConfig } from "../../constants/tasteOptions";
+import { LayoutConfig } from "../../constants/options";
 
 interface TasteOption {
     name: string;
     emoji?: string;
 }
 
-type TasteSelectionGridProps = {
+type SelectionGridProps = {
     options: readonly (string | TasteOption)[] | (string | TasteOption)[];
     selectedItems: string[];
     onToggle: (item: string) => void;
@@ -20,7 +20,7 @@ type TasteSelectionGridProps = {
     layout?: LayoutConfig; // 레이아웃 설정 객체
 };
 
-const TasteSelectionGrid: React.FC<TasteSelectionGridProps> = ({
+const SelectionGrid: React.FC<SelectionGridProps> = ({
     options,
     selectedItems,
     onToggle,
@@ -123,4 +123,4 @@ const TasteSelectionGrid: React.FC<TasteSelectionGridProps> = ({
     );
 };
 
-export default TasteSelectionGrid; 
+export default SelectionGrid; 
