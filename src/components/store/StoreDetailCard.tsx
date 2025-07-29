@@ -38,11 +38,15 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
         );
     }
 
+    // BottomSheet context가 없으면 항상 표시 (일반 페이지용)
+    // BottomSheet context가 있으면 확장된 상태에서만 표시 (BottomSheet용)
+    const shouldShowContent = !bottomSheetContext || isExpanded || isFullScreen;
+
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full max-w-[390px] min-w-[300px] overflow-y-auto">
             {loading && <StoreDetailSkeleton />}
 
-            {(isExpanded || isFullScreen) && store && (
+            {shouldShowContent && store && (
                 <div className="flex-1">
                     {/* 가게 이미지 */}
                     <div className="flex space-x-2 overflow-x-auto">

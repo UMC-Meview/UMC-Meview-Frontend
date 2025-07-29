@@ -49,7 +49,7 @@ const StoreList: React.FC<StoreListProps> = ({
             }
             case "가까운 순": {
                 console.log(store.distance);
-                return `현재 위치에서 ${store.distance?.toFixed(1)}km`;
+                return `현재 위치에서 ${store.distance?.toFixed(0)}km`;
             }
             case "찜 많은 순":
                 return `찜 ${store.favoriteCount || 0}개`;
@@ -131,24 +131,24 @@ const StoreList: React.FC<StoreListProps> = ({
                                     className="w-20 h-20 rounded-lg object-cover"
                                 />
 
-                                <div className="flex-1 space-y-1">
+                                <div className="flex-1 space-y-1 min-w-0">
                                     <div className="flex items-center space-x-2 justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <span className="font-semibold text-gray-900">
+                                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                            <span className="font-semibold text-gray-900 truncate">
                                                 {store.name}
                                             </span>
-                                            <span className="text-sm text-gray-500">
+                                            <span className="text-sm text-gray-500 truncate">
                                                 {store.category}
                                             </span>
                                         </div>
-                                        <span className="text-sm text-[#FF5436]">
+                                        <span className="text-sm text-[#FF5436] flex-shrink-0">
                                             {renderSortInfo(store)}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center space-x-2">
                                         <MapPin className="w-[14px] h-[14px] text-gray-500 flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm text-gray-700">
+                                        <span className="text-sm text-gray-700 truncate">
                                             {store.address}
                                         </span>
                                     </div>
@@ -156,7 +156,7 @@ const StoreList: React.FC<StoreListProps> = ({
                                     <div className="mb-3">
                                         <div className="flex items-start space-x-2">
                                             <Clock className="w-[14px] h-[14px] text-gray-500 flex-shrink-0 mt-0.5" />
-                                            <div className="flex-1">
+                                            <div className="flex-1 min-w-0">
                                                 <div className="space-y-1 text-sm text-gray-600">
                                                     {store.operatingHours
                                                         .split(",")
@@ -167,6 +167,7 @@ const StoreList: React.FC<StoreListProps> = ({
                                                             ) => (
                                                                 <div
                                                                     key={index}
+                                                                    className="truncate"
                                                                 >
                                                                     {hours.trim()}
                                                                 </div>
