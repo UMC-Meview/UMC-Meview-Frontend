@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import {
-    useStores,
     mapClientSortToServer,
+    useHomeStores,
 } from "../../hooks/queries/useGetStoreList";
 import { SortType, StoreDetail } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { Clock, MapPin } from "lucide-react";
+import SafeImage from "../common/SafeImage";
 
 interface StoreListProps {
     bottomSheetContext?: BottomSheetContext;
@@ -23,8 +24,9 @@ const StoreList: React.FC<StoreListProps> = ({
     const isExpanded = bottomSheetContext?.isExpanded || false;
     const isFullScreen = bottomSheetContext?.isFullScreen || false;
 
-    const { stores, loading, error } = useStores(
-        { sortBy: mapClientSortToServer(selectedSort) },
+    const { stores, loading, error } = useHomeStores(
+        mapClientSortToServer(selectedSort),
+        { latitude: 37.5665, longitude: 126.978 },
         isExpanded || isFullScreen // 확장되거나 풀스크린일 때만 API 호출
     );
 
@@ -45,9 +47,8 @@ const StoreList: React.FC<StoreListProps> = ({
                 return `리뷰 ${reviewCount.toLocaleString()}개`;
             }
             case "가까운 순": {
-                // 거리 정보가 없으므로 임시로 랜덤 거리 표시
-                const distanceInMeters = Math.round(Math.random() * 2000);
-                return `현재 위치에서 ${distanceInMeters}m`;
+                console.log(store.distance);
+                return `현재 위치에서 ${store.distance?.toFixed(1)}km`;
             }
             case "찜 많은 순":
                 return `찜 ${store.favoriteCount || 0}개`;
@@ -129,20 +130,10 @@ const StoreList: React.FC<StoreListProps> = ({
                                 className="flex items-start space-x-3 py-3 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors"
                                 onClick={() => handleStoreClick(store._id)}
                             >
-                                <img
+                                <SafeImage
                                     src={store.mainImage}
                                     alt={store.name}
-                                    className="w-20 h-20 rounded-lg object-cover bg-gray-200"
-                                    onError={(e) => {
-                                        const target =
-                                            e.target as HTMLImageElement;
-                                        if (
-                                            !target.src.includes("data:image")
-                                        ) {
-                                            target.src =
-                                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0yOCAzNkgyOFYzNkg1MlY1Nkg0NEw0MCA0NEwzNiA0OEgzMkwyOCAzNloiIGZpbGw9IiM2NjY2NjYiLz4KPHN2Zz4K";
-                                        }
-                                    }}
+                                    className="w-20 h-20 rounded-lg object-cover"
                                 />
 
                                 <div className="flex-1 space-y-1">
