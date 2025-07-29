@@ -7,7 +7,8 @@ export type ServerSortType =
     | "reviews"
     | "favorites"
     | "distance"
-    | "positiveScore";
+    | "positiveScore"
+    | "ranking";
 
 // 검색/목록 조회 파라미터 인터페이스
 export interface StoresParams {
@@ -86,6 +87,7 @@ const DUMMY_STORES: StoreDetail[] = [
         averageNegativeScore: 3.2,
         favoriteCount: 15,
         isFavorited: false,
+        distance: 0,
     },
     {
         _id: "2",
@@ -110,6 +112,7 @@ const DUMMY_STORES: StoreDetail[] = [
         averageNegativeScore: 2.8,
         favoriteCount: 32,
         isFavorited: true,
+        distance: 1000,
     },
     {
         _id: "3",
@@ -134,6 +137,7 @@ const DUMMY_STORES: StoreDetail[] = [
         averageNegativeScore: 1.5,
         favoriteCount: 8,
         isFavorited: false,
+        distance: 2000,
     },
 ];
 
@@ -184,7 +188,7 @@ export const useStores = (
 
 // 각 페이지별 편의 함수들
 export const useRankingStores = (enabled: boolean = true) => {
-    return useStores({ sortBy: "positiveScore" }, enabled);
+    return useStores({ sortBy: "ranking" }, enabled);
 };
 
 export const useHomeStores = (
@@ -208,10 +212,4 @@ export const useSearchStores = (
     enabled: boolean = true
 ) => {
     return useStores({ keyword, category }, enabled && !!keyword);
-};
-
-export const useFavoriteStores = (userId: string, enabled: boolean = true) => {
-    // 찜한 가게는 서버에서 userId로 필터링하거나, 별도 엔드포인트가 있을 수 있음
-    // 현재는 기본 API를 사용하되 userId를 전달
-    return useStores({ userId, sortBy: "favorites" }, enabled && !!userId);
 };

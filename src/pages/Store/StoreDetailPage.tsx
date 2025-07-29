@@ -7,6 +7,7 @@ import MenuInfo from "../../components/store/MenuInfo";
 import Divider from "../../components/common/Divider";
 import ImagesInfo from "../../components/store/ImagesInfo";
 import ReviewInfo from "../../components/store/ReviewInfo";
+import SafeImage from "../../components/common/SafeImage";
 
 const StoreDetailPage: React.FC = () => {
     const { storeId } = useParams<{ storeId: string }>();
@@ -85,7 +86,7 @@ const StoreDetailPage: React.FC = () => {
                             key={index}
                             className="flex-shrink-0 w-full h-full snap-start"
                         >
-                            <img
+                            <SafeImage
                                 src={image}
                                 alt={`${store.name} ${
                                     index === 0 ? "대표" : index + "번째"

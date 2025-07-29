@@ -4,6 +4,7 @@ import { BottomSheetContext } from "../common/BottomSheet";
 import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
 import { ChevronLeft } from "lucide-react";
 import StoreInfo from "./StoreInfo";
+import SafeImage from "../common/SafeImage";
 
 interface StoreDetailProps {
     storeId: string;
@@ -88,7 +89,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                                 "flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] border-gray-200"
                             }
                         >
-                            <img
+                            <SafeImage
                                 src={store.mainImage}
                                 alt={`${store.name} 대표 이미지`}
                                 className="w-full h-full object-cover"
@@ -106,7 +107,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                                         : "border-gray-200"
                                 }`}
                             >
-                                <img
+                                <SafeImage
                                     src={image}
                                     alt={`${store.name} ${
                                         index + 1

@@ -25,6 +25,7 @@ export interface StoreDetail {
     averageNegativeScore?: number;
     favoriteCount?: number;
     isFavorited?: boolean;
+    distance?: number;
 }
 
 export type StoreResponseDto = StoreDetail[];

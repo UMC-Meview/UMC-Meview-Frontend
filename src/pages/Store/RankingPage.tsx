@@ -12,12 +12,14 @@ const RankingPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            {/* 헤더 */}
-            <Header onBack={() => navigate("/")} center={<div>랭킹</div>} />
+        <div className="h-screen bg-white flex flex-col">
+            {/* 헤더 - 고정 */}
+            <div className="flex-shrink-0">
+                <Header onBack={() => navigate("/")} center={<div>랭킹</div>} />
+            </div>
 
             {/* 랭킹 리스트 */}
-            <div className="bg-white">
+            <div className="flex-1 overflow-y-auto bg-white">
                 {loading && (
                     <div className="flex justify-center items-center py-8">
                         <div className="text-gray-500">

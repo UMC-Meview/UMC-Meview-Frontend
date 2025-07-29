@@ -2,6 +2,7 @@ import React from "react";
 import ranking1st from "../../assets/ranking-1st.svg";
 import ranking2nd from "../../assets/ranking-2nd.svg";
 import ranking3rd from "../../assets/ranking-3rd.svg";
+import SafeImage from "../common/SafeImage";
 
 interface RankingItemProps {
     rank: number;
@@ -72,17 +73,10 @@ const RankingItem: React.FC<RankingItemProps> = ({
 
             {/* 가게 이미지 */}
             <div className="flex-shrink-0 mr-4">
-                <img
+                <SafeImage
                     src={image}
                     alt={storeName}
-                    className="w-[20vw] h-[20vw] max-w-[95px] max-h-[95px] min-w-[60px] min-h-[60px] rounded-lg object-cover bg-gray-200"
-                    onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        if (!target.src.includes("data:image")) {
-                            target.src =
-                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0yMiAyOEgyMlYyOEg0MlY0Nkg0MkgzNkwzMiAzNkwyOCAzNkgyNEgyMiAyOFoiIGZpbGw9IiM2NjY2NjYiLz4KPHN2Zz4K";
-                        }
-                    }}
+                    className="w-[20vw] h-[20vw] max-w-[95px] max-h-[95px] min-w-[60px] min-h-[60px] rounded-lg object-cover"
                 />
             </div>
 

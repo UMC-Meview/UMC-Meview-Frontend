@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SafeImage from "./SafeImage";
 
 interface GalleryItem {
     id: string;
@@ -74,17 +75,10 @@ const Gallery: React.FC<GalleryProps> = ({
                     <div key={item.id} className="flex flex-col items-center">
                         {/* 이미지 */}
                         <div className="w-full overflow-hidden rounded-[1px] border border-gray-200 mb-2">
-                            <img
+                            <SafeImage
                                 src={item.image}
                                 alt={item.alt || item.name || "이미지"}
                                 className="w-full aspect-square object-cover cursor-pointer"
-                                onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    if (!target.src.includes("data:image")) {
-                                        target.src =
-                                            "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjBGMEYwIi8+CjxwYXRoIGQ9Ik0zNSA0NUgzNVY0NUg2NVY2NUg1NUw1MCA1NUw0NSA2MEg0MEwzNSA0NVoiIGZpbGw9IiM2NjY2NjYiLz4KPHN2Zz4K";
-                                    }
-                                }}
                             />
                         </div>
 
