@@ -48,7 +48,7 @@ const Footer = () => {
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 shadow-lg bg-gradient-to-t from-[#FF774C] to-[#FF694F]">
             <div className="flex justify-center items-center p-3">
-                <div className="flex space-x-4 justify-center items-center">
+                <div className="flex gap-2 sm:gap-4 justify-center items-center w-full max-w-md">
                     {tabs.map((tab) => {
                         const Icon = tab.icon;
                         const isSelected = selectedTab === tab.id;
@@ -57,7 +57,7 @@ const Footer = () => {
                             <button
                                 key={tab.id || "map"}
                                 onClick={() => handleTabClick(tab.id)}
-                                className={`flex items-center flex-col w-[55px] h-[55px] justify-center rounded-full transition-all duration-200 ${
+                                className={`flex-1 flex items-center flex-col min-w-[45px] max-w-[55px] h-[55px] justify-center rounded-full transition-all duration-200 ${
                                     isSelected
                                         ? "bg-white/20 scale-105"
                                         : "hover:bg-white/10"
@@ -69,7 +69,7 @@ const Footer = () => {
                                     strokeWidth={isSelected ? 2.5 : 2}
                                 />
                                 <span
-                                    className={`font-bold text-xs mt-1 transition-colors ${
+                                    className={`font-bold text-xs mt-1 transition-colors text-center leading-tight ${
                                         isSelected
                                             ? "text-[#FFF5F0]"
                                             : "text-white"

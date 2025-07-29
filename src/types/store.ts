@@ -25,6 +25,7 @@ export interface StoreDetail {
     averageNegativeScore?: number;
     favoriteCount?: number;
     isFavorited?: boolean;
+    distance?: number;
 }
 
 // 가게 등록 관련 타입들 (백엔드 API 명세에 맞춤)

@@ -3,7 +3,7 @@ import { useState } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
-import { useStores } from "../../hooks/queries/useGetStoreList";
+import { useHomeStores } from "../../hooks/queries/useGetStoreList";
 
 // 가게의 averagePositiveScore를 기반으로 레벨 생성 (1-5)
 const getStoreLevel = (averagePositiveScore?: number): number => {
@@ -27,11 +27,12 @@ const Homepage = () => {
         useState(false);
 
     // 가게 목록 가져오기
-    const { stores } = useStores({
-        latitude: lat,
-        longitude: lng,
-        radius: 2000,
-    });
+    const { stores } = useHomeStores(
+        "positiveScore", // 보너스금액 기준 정렬
+        { latitude: lat, longitude: lng }
+    );
+
+    console.log(stores.map((store) => store));
 
     const handleBottomSheetFullScreenChange = (isFullScreen: boolean) => {
         setIsBottomSheetFullScreen(isFullScreen);
@@ -95,7 +96,6 @@ const Homepage = () => {
                 {/* 가게 마커들 렌더링 */}
                 {stores.map((store) => {
                     const level = getStoreLevel(store.averagePositiveScore);
-                    console.log(store.location.coordinates);
                     return (
                         <MapMarker
                             key={store._id}

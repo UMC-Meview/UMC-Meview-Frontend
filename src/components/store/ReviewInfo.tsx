@@ -1,5 +1,6 @@
 import { ReviewResponseDto } from "../../types/review";
 import ReviewTag from "../common/ReviewTag";
+import SafeImage from "../common/SafeImage";
 
 interface ReviewInfoProps {
     review: ReviewResponseDto;
@@ -52,10 +53,10 @@ const ReviewInfo = ({ review }: ReviewInfoProps) => {
                 {imageUrl && (
                     <div className="flex gap-2">
                         <div className="flex-1">
-                            <img
+                            <SafeImage
                                 src={imageUrl}
                                 alt="리뷰 이미지"
-                                className="w-full h-[187px] object-cover rounded-sm bg-gray-200"
+                                className="w-full h-[187px] object-cover rounded-sm"
                             />
                         </div>
                     </div>
