@@ -32,8 +32,6 @@ const Homepage = () => {
         { latitude: lat, longitude: lng }
     );
 
-    console.log(stores.map((store) => store));
-
     const handleBottomSheetFullScreenChange = (isFullScreen: boolean) => {
         setIsBottomSheetFullScreen(isFullScreen);
     };

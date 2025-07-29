@@ -7,6 +7,7 @@ import { SortType, StoreDetail } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { Clock, MapPin } from "lucide-react";
 import SafeImage from "../common/SafeImage";
+import StoreListSkeleton from "./StoreListSkeleton";
 
 interface StoreListProps {
     bottomSheetContext?: BottomSheetContext;
@@ -74,16 +75,16 @@ const StoreList: React.FC<StoreListProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full max-w-[390px] mx-auto">
             {/* 정렬 옵션 */}
             <div
-                className="px-2 flex-shrink-0"
+                className="flex-shrink-0"
                 onTouchStart={(e) => e.stopPropagation()}
                 onTouchMove={(e) => e.stopPropagation()}
                 onTouchEnd={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <div className="flex space-x-1 overflow-x-auto p-2">
+                <div className="flex space-x-1 overflow-x-auto py-2">
                     {sortOptions.map((option) => (
                         <button
                             key={option}
@@ -102,14 +103,8 @@ const StoreList: React.FC<StoreListProps> = ({
 
             {/* 가게 리스트 */}
             {(isExpanded || isFullScreen) && (
-                <div className="flex-1 overflow-y-auto px-4 min-h-0">
-                    {loading && (
-                        <div className="flex justify-center items-center py-8">
-                            <div className="text-gray-500">
-                                가게 정보를 불러오는 중...
-                            </div>
-                        </div>
-                    )}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                    {loading && <StoreListSkeleton count={5} />}
 
                     {error && (
                         <div className="flex justify-center items-center py-4">
