@@ -24,7 +24,7 @@ interface ReviewContentLayoutProps {
         {/* 중앙+하단 */}
         <div className="flex-1 relative z-0 flex flex-col justify-center items-center">
             <div className="translate-y-[-80px]">{buildingImage}</div>
-            {bottomImage && <div className="translate-y-[-80px]">{bottomImage}</div>}
+            {bottomImage && <div className="translate-y-[-200px]">{bottomImage}</div>}
         </div>
         
         </div>
