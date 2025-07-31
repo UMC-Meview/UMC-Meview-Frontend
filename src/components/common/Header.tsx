@@ -13,23 +13,47 @@ interface HeaderProps {
     page?: number;
 }
 
-const Header: React.FC<HeaderProps> = ({ onBack, center, right, showLogo, currentStep, totalSteps, page }) => {
+const Header: React.FC<HeaderProps> = ({
+    onBack,
+    center,
+    right,
+    showLogo,
+    currentStep,
+    totalSteps,
+    page,
+}) => {
     const renderCenter = () => {
         if (showLogo) {
             return <img src={logoIcon} alt="Meview Logo" className="w-6 h-6" />;
         }
-        if (typeof center === 'string') {
-            return <h1 className="text-[19px] font-bold text-black">{center}</h1>;
+        if (typeof center === "string") {
+            return (
+                <h1 className="text-[18px] font-semibold text-black">
+                    {center}
+                </h1>
+            );
         }
         return center;
     };
 
     const renderRight = () => {
         if (page && page >= 1 && page <= 3) {
-            return <StepIndicator currentStep={page} totalSteps={3} className="scale-110" />;
+            return (
+                <StepIndicator
+                    currentStep={page}
+                    totalSteps={3}
+                    className="scale-110"
+                />
+            );
         }
         if (currentStep && totalSteps) {
-            return <StepIndicator currentStep={currentStep} totalSteps={totalSteps} className="scale-110" />;
+            return (
+                <StepIndicator
+                    currentStep={currentStep}
+                    totalSteps={totalSteps}
+                    className="scale-110"
+                />
+            );
         }
         if (right) {
             return right;
@@ -39,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ onBack, center, right, showLogo, curren
     };
 
     return (
-        <div className="sticky top-0 bg-white z-10" style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top))' }}>
+        <div className="sticky top-0 bg-white z-10">
             <div className="h-[64px]"></div>
             <div className="flex items-center justify-between px-4 py-3 bg-white">
                 <div className="flex-1 flex justify-start min-w-0">

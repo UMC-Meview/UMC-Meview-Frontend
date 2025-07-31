@@ -214,7 +214,7 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
             </div>
 
             <div className="flex-1 overflow-hidden">
-                <div className="max-w-[500px] mx-auto h-full">
+                <div className="max-w-[390px] mx-auto h-full px-4">
                     {React.Children.map(children, (child) =>
                         React.isValidElement(child)
                             ? React.cloneElement(child, {

@@ -2,20 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
-import { ChevronLeft } from "lucide-react";
 import StoreInfo from "./StoreInfo";
 import SafeImage from "../common/SafeImage";
+import StoreDetailSkeleton from "./StoreDetailSkeleton";
 
 interface StoreDetailProps {
     storeId: string;
     bottomSheetContext?: BottomSheetContext;
-    onBackToList?: () => void;
 }
 
 const StoreDetail: React.FC<StoreDetailProps> = ({
     storeId,
     bottomSheetContext,
-    onBackToList,
 }) => {
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const navigate = useNavigate();
@@ -32,20 +30,6 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
         }
     }, [isFullScreen, storeId, store, navigate]);
 
-    const toggleFavorite = () => {
-        if (store) {
-            console.log("찜하기 토글 - 추후 구현 예정");
-        }
-    };
-
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center py-8">
-                <div className="text-gray-500">상세 정보를 불러오는 중...</div>
-            </div>
-        );
-    }
-
     if (error) {
         return (
             <div className="flex justify-center items-center py-8">
@@ -54,32 +38,16 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
         );
     }
 
-    if (!store) {
-        return (
-            <div className="flex justify-center items-center py-8">
-                <div className="text-red-500">
-                    가게 정보를 찾을 수 없습니다.
-                </div>
-            </div>
-        );
-    }
+    // BottomSheet context가 없으면 항상 표시 (일반 페이지용)
+    // BottomSheet context가 있으면 확장된 상태에서만 표시 (BottomSheet용)
+    const shouldShowContent = !bottomSheetContext || isExpanded || isFullScreen;
 
     return (
-        <div className="flex flex-col h-full px-4">
-            {/* 헤더 영역 (고정) */}
-            <div className="flex-shrink-0">
-                <div className="flex items-center justify-between py-1">
-                    <button
-                        onClick={onBackToList}
-                        className="py-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
-                    >
-                        <ChevronLeft size={24} />
-                    </button>
-                </div>
-            </div>
+        <div className="flex flex-col h-full max-w-[390px] min-w-[300px] overflow-y-auto">
+            {loading && <StoreDetailSkeleton />}
 
-            {(isExpanded || isFullScreen) && store && (
-                <div className="flex-1 overflow-y-auto">
+            {shouldShowContent && store && (
+                <div className="flex-1">
                     {/* 가게 이미지 */}
                     <div className="flex space-x-2 overflow-x-auto">
                         {/* 대표 이미지*/}
@@ -96,33 +64,48 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                             />
                         </button>
 
-                        {/* 일반 이미지들 */}
-                        {store.images?.map((image, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setActiveImageIndex(index + 1)}
-                                className={`flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] ${
-                                    activeImageIndex === index + 1
-                                        ? "border-[#FF694F]"
-                                        : "border-gray-200"
-                                }`}
-                            >
-                                <SafeImage
-                                    src={image}
-                                    alt={`${store.name} ${
-                                        index + 1
-                                    }번째 이미지`}
-                                    className="w-full h-full object-cover"
-                                />
-                            </button>
-                        ))}
+                        {/* 일반 이미지 슬롯 2개 (총 3개가 되도록) */}
+                        {Array(2)
+                            .fill(null)
+                            .map((_, index) => {
+                                const imageIndex = index;
+                                const hasImage =
+                                    store.images && store.images[imageIndex];
+
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() =>
+                                            setActiveImageIndex(index + 1)
+                                        }
+                                        className={`flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] ${
+                                            activeImageIndex === index + 1
+                                                ? "border-[#FF694F]"
+                                                : "border-gray-200"
+                                        }`}
+                                    >
+                                        <SafeImage
+                                            src={
+                                                hasImage
+                                                    ? store.images?.[imageIndex]
+                                                    : undefined
+                                            }
+                                            alt={
+                                                hasImage
+                                                    ? `${store.name} ${
+                                                          index + 1
+                                                      }번째 이미지`
+                                                    : `${store.name} 이미지 없음`
+                                            }
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </button>
+                                );
+                            })}
                     </div>
 
                     {/* 가게 상세 정보 */}
-                    <StoreInfo
-                        store={store}
-                        onToggleFavorite={toggleFavorite}
-                    />
+                    <StoreInfo store={store} />
                 </div>
             )}
         </div>

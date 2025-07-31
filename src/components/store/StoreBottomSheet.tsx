@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import BottomSheet from "../common/BottomSheet";
+import BottomSheet, { BottomSheetContext } from "../common/BottomSheet";
 import StoreList from "./StoreList";
-import StoreDetail from "./StoreDetailCard";
+import StoreDetailCard from "./StoreDetailCard";
+import BottomSheetHeader from "../common/BottomSheetHeader";
 
 interface StoreBottomSheetProps {
     onFullScreenChange: (isFullScreen: boolean) => void;
@@ -9,6 +10,22 @@ interface StoreBottomSheetProps {
     shouldExpand?: boolean;
     onExpandedChange?: (isExpanded: boolean) => void;
 }
+
+const StoreDetailContainer: React.FC<{
+    storeId: string;
+    onBackToList: () => void;
+    bottomSheetContext?: BottomSheetContext;
+}> = ({ storeId, onBackToList, bottomSheetContext }) => {
+    return (
+        <div className="flex flex-col h-full">
+            <BottomSheetHeader onBack={onBackToList} />
+            <StoreDetailCard
+                storeId={storeId}
+                bottomSheetContext={bottomSheetContext}
+            />
+        </div>
+    );
+};
 
 const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     onFullScreenChange,
@@ -56,7 +73,7 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
             {mode === "list" ? (
                 <StoreList onStoreSelect={handleStoreSelect} />
             ) : (
-                <StoreDetail
+                <StoreDetailContainer
                     storeId={internalSelectedStoreId}
                     onBackToList={handleBackToList}
                 />

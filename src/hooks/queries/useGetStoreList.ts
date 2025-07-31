@@ -63,7 +63,7 @@ const fetchStores = async (params: StoresParams): Promise<StoreDetail[]> => {
 };
 
 // 더미 데이터 (API 오류 시 사용)
-const DUMMY_STORES: StoreDetail[] = [
+export const DUMMY_STORES: StoreDetail[] = [
     {
         _id: "1",
         location: {

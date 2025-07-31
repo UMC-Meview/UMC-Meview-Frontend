@@ -7,6 +7,7 @@ import { SortType, StoreDetail } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { Clock, MapPin } from "lucide-react";
 import SafeImage from "../common/SafeImage";
+import StoreListSkeleton from "./StoreListSkeleton";
 
 interface StoreListProps {
     bottomSheetContext?: BottomSheetContext;
@@ -48,7 +49,7 @@ const StoreList: React.FC<StoreListProps> = ({
             }
             case "가까운 순": {
                 console.log(store.distance);
-                return `현재 위치에서 ${store.distance?.toFixed(1)}km`;
+                return `현재 위치에서 ${store.distance?.toFixed(0)}km`;
             }
             case "찜 많은 순":
                 return `찜 ${store.favoriteCount || 0}개`;
@@ -74,16 +75,16 @@ const StoreList: React.FC<StoreListProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full max-w-[390px] mx-auto">
             {/* 정렬 옵션 */}
             <div
-                className="px-2 flex-shrink-0"
+                className="flex-shrink-0"
                 onTouchStart={(e) => e.stopPropagation()}
                 onTouchMove={(e) => e.stopPropagation()}
                 onTouchEnd={(e) => e.stopPropagation()}
                 onMouseDown={(e) => e.stopPropagation()}
             >
-                <div className="flex space-x-1 overflow-x-auto p-2">
+                <div className="flex space-x-1 overflow-x-auto py-2">
                     {sortOptions.map((option) => (
                         <button
                             key={option}
@@ -102,14 +103,8 @@ const StoreList: React.FC<StoreListProps> = ({
 
             {/* 가게 리스트 */}
             {(isExpanded || isFullScreen) && (
-                <div className="flex-1 overflow-y-auto px-4 min-h-0">
-                    {loading && (
-                        <div className="flex justify-center items-center py-8">
-                            <div className="text-gray-500">
-                                가게 정보를 불러오는 중...
-                            </div>
-                        </div>
-                    )}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                    {loading && <StoreListSkeleton count={5} />}
 
                     {error && (
                         <div className="flex justify-center items-center py-4">
@@ -136,24 +131,24 @@ const StoreList: React.FC<StoreListProps> = ({
                                     className="w-20 h-20 rounded-lg object-cover"
                                 />
 
-                                <div className="flex-1 space-y-1">
+                                <div className="flex-1 space-y-1 min-w-0">
                                     <div className="flex items-center space-x-2 justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <span className="font-semibold text-gray-900">
+                                        <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                            <span className="font-semibold text-gray-900 truncate">
                                                 {store.name}
                                             </span>
-                                            <span className="text-sm text-gray-500">
+                                            <span className="text-sm text-gray-500 truncate">
                                                 {store.category}
                                             </span>
                                         </div>
-                                        <span className="text-sm text-[#FF5436]">
+                                        <span className="text-sm text-[#FF5436] flex-shrink-0">
                                             {renderSortInfo(store)}
                                         </span>
                                     </div>
 
                                     <div className="flex items-center space-x-2">
                                         <MapPin className="w-[14px] h-[14px] text-gray-500 flex-shrink-0 mt-0.5" />
-                                        <span className="text-sm text-gray-700">
+                                        <span className="text-sm text-gray-700 truncate">
                                             {store.address}
                                         </span>
                                     </div>
@@ -161,7 +156,7 @@ const StoreList: React.FC<StoreListProps> = ({
                                     <div className="mb-3">
                                         <div className="flex items-start space-x-2">
                                             <Clock className="w-[14px] h-[14px] text-gray-500 flex-shrink-0 mt-0.5" />
-                                            <div className="flex-1">
+                                            <div className="flex-1 min-w-0">
                                                 <div className="space-y-1 text-sm text-gray-600">
                                                     {store.operatingHours
                                                         .split(",")
@@ -172,6 +167,7 @@ const StoreList: React.FC<StoreListProps> = ({
                                                             ) => (
                                                                 <div
                                                                     key={index}
+                                                                    className="truncate"
                                                                 >
                                                                     {hours.trim()}
                                                                 </div>
