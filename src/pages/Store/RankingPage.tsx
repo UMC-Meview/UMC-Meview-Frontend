@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import RankingItem from "../../components/store/RankingItem";
 import { useRankingStores } from "../../hooks/queries/useGetStoreList";
+import StoreListSkeleton from "../../components/store/StoreListSkeleton";
 
 const RankingPage = () => {
     const navigate = useNavigate();
@@ -12,19 +13,17 @@ const RankingPage = () => {
     };
 
     return (
-        <div className="h-screen bg-white flex flex-col">
+        <div className="h-screen bg-white flex flex-col mx-auto max-w-[450px]">
             {/* 헤더 - 고정 */}
             <div className="flex-shrink-0">
-                <Header onBack={() => navigate("/")} center={<div>랭킹</div>} />
+                <Header onBack={() => navigate("/")} center={"랭킹"} />
             </div>
 
             {/* 랭킹 리스트 */}
             <div className="flex-1 overflow-y-auto bg-white">
                 {loading && (
-                    <div className="flex justify-center items-center py-8">
-                        <div className="text-gray-500">
-                            랭킹을 불러오는 중...
-                        </div>
+                    <div className="px-4">
+                        <StoreListSkeleton />
                     </div>
                 )}
 

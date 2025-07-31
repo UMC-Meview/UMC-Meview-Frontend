@@ -131,14 +131,23 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
                     {/* 찜하기 버튼 */}
                     <button
                         onClick={handleToggleFavorite}
-                        className="flex items-center space-x-1 py-[17px] px-2 rounded-lg hover:bg-gray-50 transition-colors flex-shrink-0 self-start"
+                        className="flex items-start space-x-1 py-[17px] px-2 rounded-lg hover:bg-gray-50 transition-colors flex-shrink-0 self-start"
                     >
                         <span className="text-sm text-gray-700">찜</span>
-                        {store.isFavorited ? (
-                            <Heart size={20} fill="#FF694F" color="#FF694F" />
-                        ) : (
-                            <Heart size={20} className="text-gray-700" />
-                        )}
+                        <div className="flex flex-col items-center">
+                            {store.isFavorited ? (
+                                <Heart
+                                    size={20}
+                                    fill="#FF694F"
+                                    color="#FF694F"
+                                />
+                            ) : (
+                                <Heart size={20} className="text-gray-700" />
+                            )}
+                            <span className="text-xs text-gray-600 min-w-[20px] text-center leading-tigh pt-[1px]">
+                                {store.favoriteCount || 0}
+                            </span>
+                        </div>
                     </button>
                 </div>
             </div>

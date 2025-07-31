@@ -9,7 +9,7 @@ const FavoritePage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="bg-white">
+        <div className="bg-white mx-auto max-w-[390px]">
             {/* 고정 헤더 */}
             <div className="sticky top-0 z-30 bg-white">
                 <Header

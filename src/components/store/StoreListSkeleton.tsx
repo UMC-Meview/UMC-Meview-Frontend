@@ -33,7 +33,7 @@ const StoreListSkeleton: React.FC<StoreListSkeletonProps> = ({ count = 5 }) => {
                         {/* 주소 영역 */}
                         <div className="flex items-center space-x-2">
                             <Skeleton width={14} height={14} />
-                            <Skeleton width={200} height={16} />
+                            <Skeleton width={180} height={16} />
                         </div>
 
                         {/* 운영시간 영역 */}

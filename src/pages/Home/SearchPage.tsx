@@ -80,7 +80,7 @@ const SearchPage = () => {
     return (
         <div className="h-screen bg-white overflow-hidden">
             {/* 헤더 영역 */}
-            <div className="header absolute left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm">
+            <div className="header absolute left-1/2 transform -translate-x-1/2 z-50 w-full max-w-sm mt-[64px]">
                 <div className="flex items-center py-3 px-3">
                     <BackButton onClick={() => navigate("/")} />
                     <div className="bg-white rounded-[24.5px] shadow-lg flex items-center px-4 h-[40px] cursor-pointer flex-1">
@@ -120,7 +120,7 @@ const SearchPage = () => {
                             </div>
                         ) : stores.length > 0 ? (
                             <div className="max-h-[calc(100vh-160px)] overflow-y-auto pb-4 -mx-4">
-                                <h2 className="text-lg font-semibold text-gray-900 mb-4 px-4">
+                                <h2 className="text-lg font-semibold text-gray-900 mb-4 px-4 mt-4">
                                     '{searchParams.keyword}' 자동 완성 (
                                     {stores.length})
                                 </h2>
@@ -168,7 +168,7 @@ const SearchPage = () => {
                 ) : recentSearches.length > 0 ? (
                     // 최근 검색어가 있을 때
                     <div>
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                        <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-4">
                             최근 검색어
                         </h2>
                         <div className="space-y-0 max-h-[calc(100vh-160px)] overflow-y-auto pb-4">

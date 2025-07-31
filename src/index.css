@@ -23,7 +23,7 @@ body {
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    background-color: #fafafa;
+    background-color: white;
 }
 
 /* 모든 스크롤바 숨김 - 모든 브라우저 지원 */

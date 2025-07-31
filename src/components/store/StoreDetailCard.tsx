@@ -64,26 +64,44 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                             />
                         </button>
 
-                        {/* 일반 이미지들 */}
-                        {store.images?.map((image, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setActiveImageIndex(index + 1)}
-                                className={`flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] ${
-                                    activeImageIndex === index + 1
-                                        ? "border-[#FF694F]"
-                                        : "border-gray-200"
-                                }`}
-                            >
-                                <SafeImage
-                                    src={image}
-                                    alt={`${store.name} ${
-                                        index + 1
-                                    }번째 이미지`}
-                                    className="w-full h-full object-cover"
-                                />
-                            </button>
-                        ))}
+                        {/* 일반 이미지 슬롯 2개 (총 3개가 되도록) */}
+                        {Array(2)
+                            .fill(null)
+                            .map((_, index) => {
+                                const imageIndex = index;
+                                const hasImage =
+                                    store.images && store.images[imageIndex];
+
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() =>
+                                            setActiveImageIndex(index + 1)
+                                        }
+                                        className={`flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] ${
+                                            activeImageIndex === index + 1
+                                                ? "border-[#FF694F]"
+                                                : "border-gray-200"
+                                        }`}
+                                    >
+                                        <SafeImage
+                                            src={
+                                                hasImage
+                                                    ? store.images?.[imageIndex]
+                                                    : undefined
+                                            }
+                                            alt={
+                                                hasImage
+                                                    ? `${store.name} ${
+                                                          index + 1
+                                                      }번째 이미지`
+                                                    : `${store.name} 이미지 없음`
+                                            }
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </button>
+                                );
+                            })}
                     </div>
 
                     {/* 가게 상세 정보 */}
