@@ -4,7 +4,8 @@ import { logout } from "../../utils/auth";
 
 export const axiosClient = axios.create({
     baseURL:
-        process.env.NODE_ENV === "development"
+        // process.env.NODE_ENV === "development"
+        import.meta.env.MODE === "development"
             ? "/api"
             : "https://miview-api.vercel.app",
     timeout: 10000,
