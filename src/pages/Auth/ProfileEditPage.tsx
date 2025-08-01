@@ -4,22 +4,31 @@ import BottomFixedButton from "../../components/common/Button/BottomFixedButton"
 import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import SelectionGrid from "../../components/common/SelectionGrid";
 import ThinDivider from "../../components/common/ThinDivider";
-import { PROFILE_TASTE_OPTIONS, FOOD_TYPE_OPTIONS, LAYOUT_CONFIGS } from "../../constants/options";
+import {
+    PROFILE_TASTE_OPTIONS,
+    FOOD_TYPE_OPTIONS,
+    LAYOUT_CONFIGS,
+} from "../../constants/options";
 import checkIcon from "../../assets/Check.svg";
 import { useMultiSelect } from "../../hooks/useMultiSelect";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
-import { usePatchUserProfileEdit, PatchProfileRequest } from "../../hooks/queries/usePatchUserProfileEdit";
+import { usePatchUserProfileEdit } from "../../hooks/queries/usePatchUserProfileEdit";
+import { PatchProfileRequest } from "../../types/auth";
 import { useNavigate } from "react-router-dom";
 
 const ProfileEditPage: React.FC = () => {
     const navigate = useNavigate();
     const { data: userProfile } = useGetUserProfile();
-    const { patchProfile, isLoading: isUpdating, isSuccess } = usePatchUserProfileEdit();
-    
+    const {
+        patchProfile,
+        isLoading: isUpdating,
+        isSuccess,
+    } = usePatchUserProfileEdit();
+
     // 멀티 선택 훅 초기화
     const tasteSelector = useMultiSelect({ maxSelections: 3 });
     const foodTypeSelector = useMultiSelect({ maxSelections: 3 });
-    
+
     // 로컬 상태 관리
     const [userName, setUserName] = useState("");
     const [userDescription, setUserDescription] = useState("");
@@ -34,13 +43,21 @@ const ProfileEditPage: React.FC = () => {
             setUserName(userProfile.nickname || "");
             setUserDescription(userProfile.introduction || "");
             setProfileImageUrl(userProfile.profileImageUrl || "");
-            
+
             // 기존 선택된 취향 설정
             const existingPreferences = userProfile.tastePreferences || [];
-            existingPreferences.forEach(preference => {
-                if (PROFILE_TASTE_OPTIONS.some(option => option === preference)) {
+            existingPreferences.forEach((preference) => {
+                if (
+                    PROFILE_TASTE_OPTIONS.some(
+                        (option) => option === preference
+                    )
+                ) {
                     tasteSelector.toggleItem(preference);
-                } else if (FOOD_TYPE_OPTIONS.some(option => option.name === preference)) {
+                } else if (
+                    FOOD_TYPE_OPTIONS.some(
+                        (option) => option.name === preference
+                    )
+                ) {
                     foodTypeSelector.toggleItem(preference);
                 }
             });
@@ -159,7 +176,7 @@ const ProfileEditPage: React.FC = () => {
             </div>
 
             {/* 하단 완료 버튼 */}
-            <BottomFixedButton 
+            <BottomFixedButton
                 onClick={handleEditComplete}
                 variant={totalSelections >= 3 && !isUpdating ? "primary" : "gray"}
                 disabled={isUpdating || totalSelections < 3}
