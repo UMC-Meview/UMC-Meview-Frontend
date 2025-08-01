@@ -1,19 +1,4 @@
 {
-    "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "/index.html"
-        }
-    ],
-    "headers": [
-        {
-            "source": "/service-worker.js",
-            "headers": [
-                {
-                    "key": "Cache-Control",
-                    "value": "public, max-age=0, must-revalidate"
-                }
-            ]
-        }
-    ]
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
