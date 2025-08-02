@@ -31,7 +31,7 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
     });
 
     return (
-        <div className="min-h-screen bg-white px-6 sm:px-8 md:px-10 lg:px-12">
+        <div className="min-h-screen bg-white px-0">
             <Header 
                 onBack={() => navigate(-1)}
                 center="평가하기"

@@ -48,17 +48,6 @@ const DissatisfactionVisual = ({
         setIsShaking(true);
         animationRef.current = window.setTimeout(() => setIsShaking(false), 800);
 
-        // 할퀴기 효과
-        setShowScratch(false);
-        requestAnimationFrame(() => {
-            setScratchIndexes([
-                Math.floor(Math.random() * 9),
-                Math.floor(Math.random() * 9)
-            ]);
-            setShowScratch(true);
-            animationRef.current = window.setTimeout(() => setShowScratch(false), 800);
-        });
-
         // 먼지 효과
         setShowDust(false);
         requestAnimationFrame(() => {
@@ -75,8 +64,29 @@ const DissatisfactionVisual = ({
         onStoreClick();
     }, [clickCount, maxClicks, onStoreClick]);
 
+    const handleCatPawClick = useCallback(() => {
+        if (clickCount >= maxClicks) return;
+
+        if (animationRef.current) clearTimeout(animationRef.current);
+
+        // 할퀴기 효과
+        setShowScratch(false);
+        requestAnimationFrame(() => {
+            setScratchIndexes([
+                Math.floor(Math.random() * 9),
+                Math.floor(Math.random() * 9)
+            ]);
+            setShowScratch(true);
+            animationRef.current = window.setTimeout(() => setShowScratch(false), 800);
+        });
+
+        onStoreClick();
+    }, [clickCount, maxClicks, onStoreClick]);
+
     return {
-        topEffect: <div className="h-0" />,
+        topEffect: (
+            <div className="h-0" />
+        ),
         buildingImage: (
             <motion.div
                 className="relative cursor-pointer"
@@ -104,6 +114,28 @@ const DissatisfactionVisual = ({
                         x: { duration: 0.8, ease: "easeOut" },
                         y: { duration: 0.8, ease: "easeOut" },
                         rotate: { duration: 0.8, ease: "easeOut" }
+                    }}
+                />
+
+                {/* 화이트 그라데이션 오버레이 - 경계선 숨기기 */}
+                <div 
+                    className="absolute bottom-0 left-0 right-0 pointer-events-none"
+                    style={{
+                        height: '40px',
+                        background: 'linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.6) 60%, rgba(255, 255, 255, 0.9) 100%)',
+                        zIndex: 1
+                    }}
+                />
+                
+                {/* 좌우 화이트 그라데이션 오버레이 - 측면 경계선 숨기기 */}
+                <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        background: `
+                            linear-gradient(to right, rgba(255, 255, 255, 0.3) 0%, transparent 8%, transparent 92%, rgba(255, 255, 255, 0.3) 100%),
+                            linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.4) 70%, rgba(255, 255, 255, 0.8) 100%)
+                        `,
+                        zIndex: 1
                     }}
                 />
                 
@@ -162,22 +194,27 @@ const DissatisfactionVisual = ({
             </motion.div>
         ),
         bottomImage: (
-            <motion.img
-                src={getCatPawImage(clickCount)}
-                alt="할퀴기"
-                className="w-25 h-25"
-                animate={{ 
-                    rotate: [0, 12, -12, 0],
-                    y: [0, -6, 0]
-                }}
-                transition={{ 
-                    rotate: { duration: 1.5, repeat: Infinity, repeatType: "reverse" },
-                    y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-                }}
-                whileHover={{ scale: 1.3, rotate: 20 }}
-                whileTap={{ scale: 0.8 }}
-                style={{ filter: "drop-shadow(0 0 12px rgba(255, 0, 0, 0.4))" }}
-            />
+            <motion.div
+                className="relative mt-8"
+            >
+                <motion.img
+                    src={getCatPawImage(clickCount)}
+                    alt="할퀴기"
+                    className="w-25 h-25 cursor-pointer"
+                    onClick={handleCatPawClick}
+                    animate={{ 
+                        rotate: [0, 12, -12, 0],
+                        y: [0, -6, 0]
+                    }}
+                    transition={{ 
+                        rotate: { duration: 1.5, repeat: Infinity, repeatType: "reverse" },
+                        y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+                    }}
+                    whileHover={{ scale: 1.3, rotate: 20 }}
+                    whileTap={{ scale: 0.8 }}
+                    style={{ filter: "drop-shadow(0 0 12px rgba(255, 0, 0, 0.4))" }}
+                />
+            </motion.div>
         )
     };
 };
