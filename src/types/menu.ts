@@ -8,3 +8,11 @@ export interface MenuResponseDto {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface MenuRegistrationRequest {
+    name: string;
+    image?: string;
+    description: string;
+    price: number;
+    storeId: string;
+}

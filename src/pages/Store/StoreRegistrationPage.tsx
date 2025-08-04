@@ -17,7 +17,7 @@ import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 const StoreRegistrationPage: React.FC = () => {
     const navigate = useNavigate();
     const { mutate, isLoading, isSuccess, data, error } = useStoreRegistration();
-    const { registerMenu } = usePostMenuRegistration();
+    const { registerMenuAsync } = usePostMenuRegistration();
     const isKeyboardVisible = useKeyboardDetection();
 
     // 폼 상태 관리 훅 사용
@@ -38,11 +38,6 @@ const StoreRegistrationPage: React.FC = () => {
 
     // 폼 제출
     const handleSubmit = async () => {
-        console.log("=== 폼 제출 시작 ===");
-        console.log("storeName:", formData.storeName);
-        console.log("address:", formData.address);
-        console.log("isFormValid:", isFormValid());
-        
         if (isFormValid()) {
             try {
                 // API 요청 데이터 형식으로 변환
@@ -54,24 +49,18 @@ const StoreRegistrationPage: React.FC = () => {
                     name: formData.storeName.trim(),
                     category: formData.category || "음식점",
                     description: formData.description || "상세 설명 없음",
-                    address: formData.address.trim(),
+                    address: formData.detailAddress 
+                        ? `${formData.address.trim()} ${formData.detailAddress.trim()}`
+                        : formData.address.trim(),
                     operatingHours: formData.openingHours.filter(hour => hour.trim() !== "").join(", ") || "영업시간 미정",
                     qrPrefix: "https://miview.com/stores/",
                 };
 
                 // 이미지가 있는 경우에만 mainImage 필드 추가
                 if (formData.mainImages.length > 0) {
-                    console.log("📸 이미지 변환 시작:", formData.mainImages.length, "개");
                     const mainImageUrls = await Promise.all(formData.mainImages.map(convertToBase64));
                     requestData.mainImage = mainImageUrls;
-                    console.log("✅ 이미지 변환 완료");
-                } else {
-                    console.log("📸 이미지 없음 - mainImage 필드 제외");
                 }
-                
-                // 디버깅: 실제 전송되는 데이터 확인
-                console.log("가게 등록 요청 데이터:", requestData);
-                console.log("폼 데이터 상태:", formData);
                 
                 mutate(requestData);
             } catch (error) {
@@ -79,24 +68,21 @@ const StoreRegistrationPage: React.FC = () => {
                 alert("이미지 처리 중 오류가 발생했습니다.");
             }
         } else {
-            console.log("폼 유효성 검사 실패");
             alert("필수 항목을 모두 입력해주세요.");
         }
     };
 
-    // API 성공 시 QR 코드 페이지로 이동
+        // API 성공 시 메뉴 등록 후 QR 코드 페이지로 이동
     useEffect(() => {
         if (isSuccess && data) {
-            console.log("🎉 가게 등록 성공, QR 코드 페이지로 이동");
-            
             // 가게 등록 성공 후 메뉴들 등록
             const validMenus = formData.menuList.filter(menu => 
                 menu.name.trim() !== "" && menu.price.trim() !== ""
             );
             
             if (validMenus.length > 0) {
-                // 각 메뉴를 순차적으로 등록
-                validMenus.forEach(menu => {
+                // 모든 메뉴 등록을 Promise.all로 병렬 처리
+                const menuPromises = validMenus.map(menu => {
                     const menuData = {
                         name: menu.name,
                         description: menu.detail || "상세 설명 없음",
@@ -104,14 +90,25 @@ const StoreRegistrationPage: React.FC = () => {
                         storeId: data._id,
                         image: menu.image ? `https://example.com/menu-${menu.name}.jpg` : undefined,
                     };
-                    registerMenu(menuData);
+                    return registerMenuAsync(menuData);
                 });
+                
+                // 모든 메뉴 등록 완료 후 QR 페이지로 이동
+                Promise.all(menuPromises)
+                    .then(() => {
+                        navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
+                    })
+                    .catch((error) => {
+                        console.error("메뉴 등록 중 오류:", error);
+                        // 메뉴 등록 실패해도 QR 페이지로 이동 (가게는 등록됨)
+                        navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
+                    });
+            } else {
+                // 메뉴가 없으면 바로 QR 페이지로 이동
+                navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
             }
-            
-            // QR 코드 페이지로 이동 (URL 파라미터 방식)
-            navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
         }
-    }, [isSuccess, data, navigate, formData.menuList, registerMenu]);
+    }, [isSuccess, data, navigate, formData.menuList, registerMenuAsync]);
 
     const handleBack = () => navigate('/login');
 

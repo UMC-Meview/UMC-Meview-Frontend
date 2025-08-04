@@ -1,67 +1,75 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
-import { MenuRegistrationRequest, MenuRegistrationResponse } from "../../types/store";
-import { AxiosError } from "axios";
+import { MenuRegistrationRequest, MenuResponseDto } from "../../types/menu";
 
-// 메뉴 등록 API 요청
-const registerMenu = async (menuData: MenuRegistrationRequest): Promise<MenuRegistrationResponse> => {
-  try {
-    const response = await axiosClient.post("/menus", menuData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    
-    return response.data;
-  } catch (error: unknown) {
-    console.error("메뉴 등록 API 호출 실패:", error);
-    
-    if (error instanceof AxiosError && error.response) {
-      const status = error.response.status;
-      const errorData = error.response.data;
-      
-      console.error(`API 에러 - Status: ${status}`, errorData);
-      
-      if (status === 400) {
-        throw new Error("메뉴 정보를 확인해주세요.");
-      }
-      
-      if (status === 401) {
-        throw new Error("로그인이 필요합니다.");
-      }
-      
-      throw new Error(errorData?.message || `메뉴 등록 실패 (${status})`);
+// 메뉴 등록 API 함수
+const registerMenu = async (menuData: MenuRegistrationRequest): Promise<MenuResponseDto> => {
+    try {
+        const response = await axiosClient.post<MenuResponseDto>("/menus", menuData);
+        return response.data;
+    } catch (error: unknown) {
+        // 413 Request Entity Too Large 에러 처리 (이미지가 너무 클 때)
+        if (error && typeof error === 'object' && 'response' in error && 
+            error.response && typeof error.response === 'object' && 'status' in error.response &&
+            error.response.status === 413) {
+            // 이미지 필드를 제거하고 재시도
+            const retryData = { ...menuData };
+            delete retryData.image;
+            
+            const retryResponse = await axiosClient.post<MenuResponseDto>("/menus", retryData);
+            return retryResponse.data;
+        }
+        
+        // 기타 에러의 경우 에러를 다시 던짐
+        throw error;
     }
-    
-    throw new Error("네트워크 에러가 발생했습니다. 다시 시도해주세요.");
-  }
 };
 
-// 메뉴 등록 훅 반환 타입
-export interface UsePostMenuRegistrationResult {
-  registerMenu: (data: MenuRegistrationRequest) => void;
-  isLoading: boolean;
-  error: { message: string } | null;
-  isSuccess: boolean;
-  data: MenuRegistrationResponse | undefined;
+// 메뉴 등록 mutation 훅 반환 타입
+export interface UseMenuRegistrationResult {
+    registerMenu: (menuData: MenuRegistrationRequest) => void;
+    registerMenuAsync: (menuData: MenuRegistrationRequest) => Promise<MenuResponseDto>;
+    isLoading: boolean;
+    isError: boolean;
+    isSuccess: boolean;
+    error: string | null;
+    data: MenuResponseDto | undefined;
+    reset: () => void;
 }
 
-export const usePostMenuRegistration = (): UsePostMenuRegistrationResult => {
-  const mutation = useMutation<MenuRegistrationResponse, Error, MenuRegistrationRequest>({
-    mutationFn: registerMenu,
-    onSuccess: (data) => {
-      console.log("메뉴 등록 성공:", data);
-    },
-    onError: (error) => {
-      console.error("메뉴 등록 에러:", error);
-    },
-  });
+/**
+ * 메뉴 등록 mutation 훅
+ */
+export const usePostMenuRegistration = (): UseMenuRegistrationResult => {
+    const queryClient = useQueryClient();
 
-  return {
-    registerMenu: mutation.mutate,
-    isLoading: mutation.isPending,
-    error: mutation.error ? { message: mutation.error.message } : null,
-    isSuccess: mutation.isSuccess,
-    data: mutation.data,
-  };
+    const mutation = useMutation<MenuResponseDto, Error, MenuRegistrationRequest>({
+        mutationFn: registerMenu,
+        onSuccess: (data) => {
+            console.log("메뉴 등록 완료:", data);
+            
+            // 메뉴 목록 캐시 무효화 (새로운 메뉴가 추가되었으므로)
+            queryClient.invalidateQueries({ queryKey: ["menus"] });
+            
+            // 특정 가게의 메뉴 목록 캐시도 무효화
+            queryClient.invalidateQueries({ queryKey: ["store", data.storeId, "menus"] });
+            
+            // 새로 등록된 메뉴 정보를 캐시에 추가
+            queryClient.setQueryData(["menu", data._id], data);
+        },
+        onError: (error) => {
+            console.error("메뉴 등록 실패:", error);
+        },
+    });
+
+    return {
+        registerMenu: mutation.mutate,
+        registerMenuAsync: mutation.mutateAsync,
+        isLoading: mutation.isPending,
+        isError: mutation.isError,
+        isSuccess: mutation.isSuccess,
+        error: mutation.error?.message || null,
+        data: mutation.data,
+        reset: mutation.reset,
+    };
 }; 

@@ -4,28 +4,20 @@ import { StoreRegistrationRequest, StoreRegistrationResponse } from "../../types
 
 // 가게 등록 API 함수
 const registerStore = async (storeData: StoreRegistrationRequest): Promise<StoreRegistrationResponse> => {
-    console.log(" 가게 등록 요청:", storeData);
-    
     try {
         const response = await axiosClient.post<StoreRegistrationResponse>("/stores", storeData);
-        console.log(" 가게 등록 성공:", response.data);
         return response.data;
     } catch (error: unknown) {
-        console.error(" 가게 등록 실패:", error);
-        
         // 413 Request Entity Too Large 에러 처리 (이미지가 너무 클 때)
         if (error && typeof error === 'object' && 'response' in error && 
             error.response && typeof error.response === 'object' && 'status' in error.response &&
             error.response.status === 413) {
-            console.log(" 이미지 크기 초과, 이미지 없이 재시도");
-            
             // 이미지 필드를 제거하고 재시도
             const retryData = { ...storeData };
             delete retryData.mainImage;
             delete retryData.images;
             
             const retryResponse = await axiosClient.post<StoreRegistrationResponse>("/stores", retryData);
-            console.log(" 이미지 없이 가게 등록 성공:", retryResponse.data);
             return retryResponse.data;
         }
         
@@ -55,7 +47,7 @@ export const useStoreRegistration = (): UseStoreRegistrationResult => {
     const mutation = useMutation<StoreRegistrationResponse, Error, StoreRegistrationRequest>({
         mutationFn: registerStore,
         onSuccess: (data) => {
-            console.log("🎉 가게 등록 완료:", data);
+            console.log("가게 등록 완료:", data);
             
             // 가게 목록 캐시 무효화 (새로운 가게가 추가되었으므로)
             queryClient.invalidateQueries({ queryKey: ["stores"] });
@@ -64,7 +56,7 @@ export const useStoreRegistration = (): UseStoreRegistrationResult => {
             queryClient.setQueryData(["store", data._id], data);
         },
         onError: (error) => {
-            console.error("❌ 가게 등록 실패:", error);
+            console.error("가게 등록 실패:", error);
         },
     });
 
