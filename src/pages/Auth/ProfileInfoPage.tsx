@@ -6,12 +6,14 @@ import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import { getTempSignupData, updateTempProfile } from "../../utils/auth";
 import { usePostSignup } from "../../hooks/queries/usePostSignup";
+import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 
 const ProfileInfoPage: React.FC = () => {
     const signupData = getTempSignupData();
     const { signup, isLoading, error, isSuccess } = usePostSignup();
     const [birthYear, setBirthYear] = useState<string>(signupData.birthYear || "");
     const [selectedGender, setSelectedGender] = useState<string>(signupData.gender || "");
+    const isKeyboardVisible = useKeyboardDetection();
     const navigate = useNavigate();
 
     // 회원가입 성공 시 완료 페이지로 이동
@@ -98,15 +100,17 @@ const ProfileInfoPage: React.FC = () => {
 
             {error && <ErrorMessage message={error.message} />}
             
-            <BottomFixedWrapper>
-                <Button
-                    onClick={handleNext}
-                    disabled={!isFormValid || isLoading}
-                    variant={isFormValid && !isLoading ? "primary" : "disabled"}
-                >
-                    {isLoading ? "가입 중..." : "가입완료"}
-                </Button>
-            </BottomFixedWrapper>
+            {!isKeyboardVisible && (
+                <BottomFixedWrapper>
+                    <Button
+                        onClick={handleNext}
+                        disabled={!isFormValid || isLoading}
+                        variant={isFormValid && !isLoading ? "primary" : "disabled"}
+                    >
+                        {isLoading ? "가입 중..." : "가입완료"}
+                    </Button>
+                </BottomFixedWrapper>
+            )}
         </div>
     );
 };

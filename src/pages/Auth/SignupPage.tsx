@@ -8,10 +8,12 @@ import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import { updateTempNickname } from "../../utils/auth";
 import { usePostLogin } from "../../hooks/queries/usePostLogin";
+import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 
 const SignupPage: React.FC = () => {
     const { login, isLoading, error, isSuccess, data, isNewUser } = usePostLogin();
     const [nickname, setNickname] = useState("");
+    const isKeyboardVisible = useKeyboardDetection();
     const navigate = useNavigate();
 
     const isValidNickname = nickname.length >= 2 && nickname.length <= 12;
@@ -88,16 +90,18 @@ const SignupPage: React.FC = () => {
             {error && <ErrorMessage message={error.message} />}
 
             {/* 하단 버튼 */}
-            <BottomFixedWrapper>
-                <Button
-                    onClick={handleNext}
-                    disabled={!isValidNickname || isLoading}
-                    variant={isValidNickname && !isLoading ? "primary" : "disabled"}
-                    className="w-[333px] h-[59px] text-lg font-bold rounded-full"
-                >
-                    {isLoading ? "확인 중..." : "다음"}
-                </Button>
-            </BottomFixedWrapper>
+            {!isKeyboardVisible && (
+                <BottomFixedWrapper>
+                    <Button
+                        onClick={handleNext}
+                        disabled={!isValidNickname || isLoading}
+                        variant={isValidNickname && !isLoading ? "primary" : "disabled"}
+                        className="w-[333px] h-[59px] text-lg font-bold rounded-full"
+                    >
+                        {isLoading ? "확인 중..." : "다음"}
+                    </Button>
+                </BottomFixedWrapper>
+            )}
         </div>
     );
 };

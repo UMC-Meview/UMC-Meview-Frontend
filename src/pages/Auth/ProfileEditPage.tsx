@@ -15,6 +15,7 @@ import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import { usePatchUserProfileEdit } from "../../hooks/queries/usePatchUserProfileEdit";
 import { PatchProfileRequest } from "../../types/auth";
 import { useNavigate } from "react-router-dom";
+import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 
 const ProfileEditPage: React.FC = () => {
     const navigate = useNavigate();
@@ -24,6 +25,7 @@ const ProfileEditPage: React.FC = () => {
         isLoading: isUpdating,
         isSuccess,
     } = usePatchUserProfileEdit();
+    const isKeyboardVisible = useKeyboardDetection();
 
     // 멀티 선택 훅 초기화
     const tasteSelector = useMultiSelect({ maxSelections: 3 });
@@ -176,13 +178,15 @@ const ProfileEditPage: React.FC = () => {
             </div>
 
             {/* 하단 완료 버튼 */}
-            <BottomFixedButton
-                onClick={handleEditComplete}
-                variant={totalSelections >= 3 && !isUpdating ? "primary" : "gray"}
-                disabled={isUpdating || totalSelections < 3}
-            >
-                {isUpdating ? "수정 중..." : "수정완료"}
-            </BottomFixedButton>
+            {!isKeyboardVisible && (
+                <BottomFixedButton
+                    onClick={handleEditComplete}
+                    variant={totalSelections >= 3 && !isUpdating ? "primary" : "gray"}
+                    disabled={isUpdating || totalSelections < 3}
+                >
+                    {isUpdating ? "수정 중..." : "수정완료"}
+                </BottomFixedButton>
+            )}
         </div>
     );
 };

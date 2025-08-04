@@ -95,3 +95,23 @@ export interface MenuRegistrationResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+// 가게 등록 페이지 폼 데이터 타입
+export interface StoreFormData {
+  storeName: string;
+  category: string;
+  description: string;
+  address: string;
+  detailAddress: string;
+  postalCode: string;
+  latitude: number;
+  longitude: number;
+  openingHours: string[];
+  mainImages: File[];
+  menuList: {
+    name: string;
+    price: string;
+    detail: string;
+    image: File | null;
+  }[];
+}

@@ -10,7 +10,6 @@ import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import UserReviewInfo from "../../components/store/UserReviewInfo";
 import OrangePencilIcon from "../../assets/Orangepencil.svg";
 
-
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);

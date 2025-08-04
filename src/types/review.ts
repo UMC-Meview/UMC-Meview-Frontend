@@ -34,4 +34,31 @@ export interface ReviewSummaryResponseDto {
     avgNegativeScore: number;
 }
 
+// 시각적 효과 관련 타입들
+export interface VisualProps {
+    clickCount: number;
+    maxClicks: number;
+    onStoreClick: () => void;
+}
+
+export interface VisualReturn {
+    topEffect: React.ReactNode;
+    buildingImage: React.ReactNode;
+    bottomImage: React.ReactNode;
+}
+
+export interface FloatingItem {
+    id: number;
+    x: number;
+    y: number;
+    type: 'coin' | 'money';
+}
+
+export interface DustParticle {
+    id: number;
+    x: number;
+    y: number;
+    index: number;
+}
+
 

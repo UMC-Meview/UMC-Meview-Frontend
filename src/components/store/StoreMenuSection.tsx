@@ -1,6 +1,7 @@
 import React from "react";
 import ImageUpload from "../common/ImageUpload";
 import StoreFormInput from "./StoreFormInput";
+import AddItemButton from "../common/Button/AddItemButton";
 
 export interface MenuItem {
   image: File | null;
@@ -12,9 +13,10 @@ export interface MenuItem {
 interface StoreMenuSectionProps {
   menus: MenuItem[];
   onMenuChange: (menus: MenuItem[]) => void;
+  onAddMenu: () => void;
 }
 
-const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange }) => {
+const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange, onAddMenu }) => {
   const handleMenuImageSelect = (idx: number, file: File) => {
     const newMenus = [...menus];
     newMenus[idx] = { ...newMenus[idx], image: file };
@@ -80,7 +82,11 @@ const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange
             />
           </div>
         ))}
-      </div>
+      </div  >
+      {/* 메뉴 추가하기 버튼 */}
+      <AddItemButton onClick={onAddMenu} variant="full">
+        메뉴 추가하기 +
+      </AddItemButton>
     </div>
   );
 };
