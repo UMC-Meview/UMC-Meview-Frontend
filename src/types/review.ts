@@ -61,4 +61,31 @@ export interface DustParticle {
     index: number;
 }
 
+// 사용자 리뷰 목록 조회 API 응답 타입
+export interface UserReview {
+    _id: string;
+    store: string;
+    content: string;
+    score: number;
+    isPositive: boolean;
+    createdAt: string;
+}
+
+export interface UserReviewsResponse {
+    reviews: UserReview[];
+    averagePositiveScore: number;
+    averageNegativeScore: number;
+}
+
+// 사용자 리뷰 목록 조회 훅 반환 타입
+export interface UseGetUserReviewsResult {
+    reviews: UserReview[];
+    averagePositiveScore: number;
+    averageNegativeScore: number;
+    isLoading: boolean;
+    error: string | null;
+    isSuccess: boolean;
+    refetch: () => void;
+}
+
 
