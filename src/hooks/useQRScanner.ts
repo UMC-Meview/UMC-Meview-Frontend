@@ -15,7 +15,7 @@ export const useQRScanner = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const qrScannerRef = useRef<QrScanner | null>(null);
     const isMountedRef = useRef(true);
-    const scanTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 추가
+    const scanTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const [state, setState] = useState<QRScannerState>({
         isLoading: true,
