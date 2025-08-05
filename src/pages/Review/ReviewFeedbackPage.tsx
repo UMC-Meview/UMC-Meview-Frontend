@@ -18,7 +18,7 @@ const ReviewFeedbackPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-white">
             <Header 
-                onBack={() => navigate(-1)} 
+                onBack={() => navigate("/")} 
                 center="평가하기" 
             />
             
