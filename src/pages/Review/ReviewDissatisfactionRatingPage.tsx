@@ -64,7 +64,15 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
     }, [clickCount, maxClicks]);
 
     const handleNext = () => {
-        navigate("/review/detail");
+        // 불만족 리뷰 데이터와 함께 다음 페이지로 이동
+        navigate("/review/detail", {
+            state: {
+                storeId: "temp-store-id", // 실제로는 QR 코드나 URL에서 가져올 예정
+                storeName: "모토이시", // 실제로는 API에서 가져올 예정
+                isPositive: false,
+                score: Math.max(1, Math.min(10, 11 - clickCount)), // 클릭 횟수가 많을수록 낮은 점수 (1~10)
+            }
+        });
     };
 
     return (

@@ -61,7 +61,6 @@ export interface DustParticle {
     index: number;
 }
 
-// 사용자 리뷰 목록 조회 API 응답 타입
 export interface UserReview {
     _id: string;
     store: string;
@@ -77,7 +76,6 @@ export interface UserReviewsResponse {
     averageNegativeScore: number;
 }
 
-// 사용자 리뷰 목록 조회 훅 반환 타입
 export interface UseGetUserReviewsResult {
     reviews: UserReview[];
     averagePositiveScore: number;
@@ -86,6 +84,41 @@ export interface UseGetUserReviewsResult {
     error: string | null;
     isSuccess: boolean;
     refetch: () => void;
+}
+
+export interface ReviewSubmissionRequest {
+    storeId: string;
+    userId: string;
+    isPositive: boolean;
+    score: number;
+    foodReviews: string[];
+    storeReviews: string[];
+    imageUrls: string[];
+}
+
+export interface ReviewSubmissionResponse {
+    id: string;
+    store: string;
+    user: string;
+    isPositive: boolean;
+    score: number;
+    foodReviews: string[];
+    storeReviews: string[];
+    imageUrls: string[];
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ReviewSubmissionError {
+    message: string;
+}
+
+// 리뷰 페이지 간 데이터 전달을 위한 타입
+export interface ReviewLocationState {
+    storeId?: string;
+    storeName?: string;
+    isPositive?: boolean;
+    score?: number;
 }
 
 

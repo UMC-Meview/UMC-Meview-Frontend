@@ -83,7 +83,15 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
     };
 
     const handleNext = () => {
-        navigate("/review/detail");
+        // 만족 리뷰 데이터와 함께 다음 페이지로 이동
+        navigate("/review/detail", {
+            state: {
+                storeId: "temp-store-id", // 실제로는 QR 코드나 URL에서 가져올 예정
+                storeName: "모토이시", // 실제로는 API에서 가져올 예정
+                isPositive: true,
+                score: Math.max(1, Math.min(10, clickCount)), // 클릭 횟수를 점수로 변환 (1~10)
+            }
+        });
     };
 
     return (
