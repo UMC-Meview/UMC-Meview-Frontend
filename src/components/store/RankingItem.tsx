@@ -85,7 +85,7 @@ const RankingItem: React.FC<RankingItemProps> = ({
                 {/* 첫 번째 줄: 가게명, 카테고리, 점수 */}
                 <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center min-w-0 flex-1 mr-2">
-                        <span className="font-semibold text-gray-900 text-base whitespace-nowrap">
+                        <span className="font-semibold text-gray-900 text-base whitespace-nowrap truncate">
                             {storeName}
                         </span>
                         <span className="text-sm text-gray-500 px-2 py-1 whitespace-nowrap">

@@ -48,9 +48,8 @@ const RankingPage = () => {
                             storeName={store.name}
                             category={store.category}
                             score={Math.round(
-                                ((store.averagePositiveScore || 0) -
-                                    (store.averageNegativeScore || 0)) /
-                                    (store.reviewCount || 1)
+                                (store.averagePositiveScore || 0) -
+                                    (store.averageNegativeScore || 0)
                             )}
                             bonusAmount={store.averagePositiveScore || 0}
                             reviewCount={store.reviewCount || 0}
