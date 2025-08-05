@@ -37,7 +37,7 @@ const ProfileDropdownMenu: React.FC<ProfileDropdownMenuProps> = ({
             {isOpen && (
                 <>
                     <div className="fixed inset-0 z-40" onClick={onClose} />
-                    <div className="fixed top-[100px] right-4 bg-white rounded-lg shadow-lg border border-gray-200 py-0.5 z-[60] min-w-[100px]">
+                    <div className="absolute top-12 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-0.5 z-[60] min-w-[100px]">
                         <button
                             onClick={onEditProfile}
                             className={`${buttonBaseClass} hover:bg-gray-50`}
