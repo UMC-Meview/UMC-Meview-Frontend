@@ -114,7 +114,7 @@ const protectedRoutes: RouteObject[] = [
                 element: <ProfilePage />,
             },
             {
-                path: "store/:storeId",
+                path: "stores/:storeId",
                 element: <StoreDetailPage />,
             },
         ],
