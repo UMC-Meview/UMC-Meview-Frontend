@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import QrScanner from "qr-scanner";
 import Button from "../../components/common/Button/Button";
 
 interface QRScanPageProps {}
@@ -7,83 +8,212 @@ interface QRScanPageProps {}
 const QRScanPage: React.FC<QRScanPageProps> = () => {
     const navigate = useNavigate();
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [stream, setStream] = useState<MediaStream | null>(null);
+    const qrScannerRef = useRef<QrScanner | null>(null);
+    const isMountedRef = useRef(true);
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
     const [isScanning, setIsScanning] = useState(false);
     const [scanFailed, setScanFailed] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
-    // 카메라 초기화
-    const initializeCamera = async () => {
-        try {
-            setIsLoading(true);
-            setHasError(false);
-            setScanFailed(false);
+    // 안전한 상태 업데이트 함수
+    const safeSetState = useCallback((updater: () => void) => {
+        if (isMountedRef.current) {
+            updater();
+        }
+    }, []);
 
-            const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: "environment", // 후면 카메라 사용
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                },
+    // QR 스캐너 정리 함수
+    const cleanupScanner = useCallback(() => {
+        if (qrScannerRef.current) {
+            try {
+                qrScannerRef.current.stop();
+                qrScannerRef.current.destroy();
+            } catch (error) {
+                console.warn("Scanner cleanup error:", error);
+            } finally {
+                qrScannerRef.current = null;
+            }
+        }
+    }, []);
+
+    // QR 코드 스캔 결과 처리
+    const handleScanResult = useCallback(
+        (data: string) => {
+            safeSetState(() => {
+                setIsScanning(false);
             });
 
-            if (videoRef.current) {
-                videoRef.current.srcObject = mediaStream;
-                setStream(mediaStream);
-                setIsLoading(false);
-                setIsScanning(true);
+            cleanupScanner();
+
+            try {
+                const url = new URL(data);
+
+                if (url.pathname.includes("/store/")) {
+                    const storeId = url.pathname.split("/store/")[1];
+                    navigate(`/store/${storeId}`);
+                } else {
+                    window.open(data, "_blank");
+                    navigate(-1);
+                }
+            } catch {
+                alert(`QR 코드 내용: ${data}`);
+                navigate(-1);
+            }
+        },
+        [navigate, cleanupScanner, safeSetState]
+    );
+
+    // QR 스캐너 초기화
+    const initializeQRScanner = useCallback(async () => {
+        try {
+            cleanupScanner();
+
+            safeSetState(() => {
+                setIsLoading(true);
+                setHasError(false);
+                setScanFailed(false);
+                setErrorMessage("");
+            });
+
+            // 카메라 지원 여부 확인
+            const hasCamera = await QrScanner.hasCamera();
+            if (!hasCamera) {
+                throw new Error("카메라를 찾을 수 없습니다.");
+            }
+
+            if (!videoRef.current || !isMountedRef.current) {
+                throw new Error("Video 요소가 준비되지 않았습니다.");
+            }
+
+            // QR 스캐너 생성 (간소화)
+            qrScannerRef.current = new QrScanner(
+                videoRef.current,
+                (result) => {
+                    if (isMountedRef.current) {
+                        handleScanResult(result.data);
+                    }
+                },
+                {
+                    onDecodeError: () => {
+                        // QR 코드가 감지되지 않을 때는 무시
+                    },
+                    highlightScanRegion: false,
+                    highlightCodeOutline: false,
+                    preferredCamera: "environment",
+                    maxScansPerSecond: 3,
+                    calculateScanRegion: (video) => {
+                        // 스캔 영역을 중앙으로 제한
+                        const smallerDimension = Math.min(
+                            video.videoWidth,
+                            video.videoHeight
+                        );
+                        const scanSize = Math.floor(smallerDimension * 0.6);
+                        return {
+                            x: Math.floor((video.videoWidth - scanSize) / 2),
+                            y: Math.floor((video.videoHeight - scanSize) / 2),
+                            width: scanSize,
+                            height: scanSize,
+                        };
+                    },
+                }
+            );
+
+            // 스캐너 시작 - qr-scanner가 자체적으로 video 스트림 관리
+            await qrScannerRef.current.start();
+
+            if (isMountedRef.current) {
+                safeSetState(() => {
+                    setIsLoading(false);
+                    setIsScanning(true);
+                });
             }
         } catch (error) {
-            console.error("카메라 접근 에러:", error);
-            setHasError(true);
-            setIsLoading(false);
-        }
-    };
+            console.error("QR 스캐너 초기화 에러:", error);
 
-    // 컴포넌트 마운트 시 카메라 초기화
-    useEffect(() => {
-        initializeCamera();
+            if (isMountedRef.current) {
+                const errorMsg =
+                    error instanceof Error
+                        ? error.message
+                        : "알 수 없는 오류가 발생했습니다.";
 
-        // 컴포넌트 언마운트 시 카메라 스트림 정리
-        return () => {
-            if (stream) {
-                stream.getTracks().forEach((track) => track.stop());
+                safeSetState(() => {
+                    setErrorMessage(errorMsg);
+                    setHasError(true);
+                    setIsLoading(false);
+                });
             }
+        }
+    }, [cleanupScanner, handleScanResult, safeSetState]);
+
+    // 스캔 재시도
+    const handleRetry = useCallback(() => {
+        if (!isMountedRef.current) return;
+
+        cleanupScanner();
+
+        // 잠시 대기 후 재시도
+        setTimeout(() => {
+            if (isMountedRef.current) {
+                initializeQRScanner();
+            }
+        }, 500);
+    }, [cleanupScanner, initializeQRScanner]);
+
+    // 뒤로 가기
+    const handleBack = useCallback(() => {
+        isMountedRef.current = false;
+        cleanupScanner();
+        navigate(-1);
+    }, [cleanupScanner, navigate]);
+
+    // 컴포넌트 마운트 시 초기화
+    useEffect(() => {
+        isMountedRef.current = true;
+
+        // DOM이 완전히 준비된 후 초기화
+        const timer = setTimeout(() => {
+            if (isMountedRef.current) {
+                initializeQRScanner();
+            }
+        }, 300);
+
+        return () => {
+            clearTimeout(timer);
+            isMountedRef.current = false;
+            cleanupScanner();
         };
     }, []);
 
-    // QR 코드 스캔 시뮬레이션 (실제로는 QR 스캔 라이브러리 사용)
+    // 페이지 가시성 변경 시 처리
     useEffect(() => {
-        if (isScanning && !hasError) {
-            // 5초 후 스캔 실패 시뮬레이션
-            const failTimer = setTimeout(() => {
-                setIsScanning(false);
-                setScanFailed(true);
-            }, 5000);
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                // 페이지가 숨겨질 때 스캐너 정지
+                if (qrScannerRef.current) {
+                    qrScannerRef.current.stop();
+                }
+            } else {
+                // 페이지가 다시 보일 때 스캐너 재시작
+                if (qrScannerRef.current && !isLoading && !hasError) {
+                    qrScannerRef.current.start().catch(() => {
+                        // 재시작 실패 시 전체 재초기화
+                        handleRetry();
+                    });
+                }
+            }
+        };
 
-            return () => clearTimeout(failTimer);
-        }
-    }, [isScanning, hasError]);
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => {
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange
+            );
+        };
+    }, [isLoading, hasError, handleRetry]);
 
-    const handleRetry = () => {
-        setIsScanning(true);
-        setScanFailed(false);
-
-        // 새로운 스캔 시도
-        setTimeout(() => {
-            setIsScanning(false);
-            setScanFailed(true);
-        }, 3000);
-    };
-
-    const handleBack = () => {
-        if (stream) {
-            stream.getTracks().forEach((track) => track.stop());
-        }
-        navigate(-1);
-    };
-
+    // 에러 상태 렌더링
     if (hasError) {
         return (
             <div className="min-h-screen bg-black relative">
@@ -92,17 +222,25 @@ const QRScanPage: React.FC<QRScanPageProps> = () => {
                         카메라에 접근할 수 없습니다
                     </h2>
                     <p className="text-sm text-gray-300 mb-8 text-center">
-                        카메라 권한을 허용하거나
-                        <br />
-                        다른 앱에서 카메라를 사용 중인지 확인해주세요
+                        {errorMessage ||
+                            "카메라 권한을 허용하거나 다른 앱에서 카메라를 사용 중인지 확인해주세요"}
                     </p>
-                    <Button
-                        variant="primary"
-                        onClick={() => navigate("/")}
-                        className="max-w-xs"
-                    >
-                        홈으로 돌아가기
-                    </Button>
+                    <div className="space-y-3">
+                        <Button
+                            variant="primary"
+                            onClick={handleRetry}
+                            className="w-full max-w-xs"
+                        >
+                            재인식하기
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={handleBack}
+                            className="w-full max-w-xs text-black"
+                        >
+                            뒤로 가기
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
@@ -120,7 +258,7 @@ const QRScanPage: React.FC<QRScanPageProps> = () => {
                     className="w-full h-full object-cover scale-x-[-1]"
                 />
 
-                {/* 오버레이 마스크 - 중앙 정사각형을 제외한 부분만 어둡게 */}
+                {/* 오버레이 마스크 */}
                 <div className="absolute inset-0">
                     {/* 상단 텍스트 영역 */}
                     <div className="absolute top-0 left-0 right-0 text-center pt-12 pb-8 z-20 bg-gradient-to-b from-black/70 to-transparent">
@@ -134,7 +272,7 @@ const QRScanPage: React.FC<QRScanPageProps> = () => {
                         </p>
                     </div>
 
-                    {/* 마스크 오버레이 - 중앙 정사각형 영역만 투명하게 */}
+                    {/* 마스크 오버레이 */}
                     <div className="absolute inset-0 z-10 flex items-center justify-center">
                         <div
                             className="w-64 h-64"
@@ -186,6 +324,9 @@ const QRScanPage: React.FC<QRScanPageProps> = () => {
 
                             {scanFailed && (
                                 <div className="px-6">
+                                    <p className="text-white mb-4">
+                                        QR 인식을 실패했어요.
+                                    </p>
                                     <Button
                                         variant="primary"
                                         onClick={handleRetry}
