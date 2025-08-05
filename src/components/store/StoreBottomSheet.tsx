@@ -3,12 +3,20 @@ import BottomSheet, { BottomSheetContext } from "../common/BottomSheet";
 import StoreList from "./StoreList";
 import StoreDetailCard from "./StoreDetailCard";
 import BottomSheetHeader from "../common/BottomSheetHeader";
+import { StoreDetail } from "../../types/store";
+import { ServerSortType } from "../../hooks/queries/useGetStoreList";
 
 interface StoreBottomSheetProps {
     onFullScreenChange: (isFullScreen: boolean) => void;
     selectedStoreId?: string;
     shouldExpand?: boolean;
     onExpandedChange?: (isExpanded: boolean) => void;
+    stores?: StoreDetail[];
+    currentLocation?: { lat: number; lng: number };
+    currentSortBy?: ServerSortType;
+    onSortChange?: (sortBy: ServerSortType) => void;
+    loading?: boolean; // 추가
+    error?: string | null; // 추가
 }
 
 const StoreDetailContainer: React.FC<{
@@ -32,6 +40,12 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     selectedStoreId,
     shouldExpand = false,
     onExpandedChange,
+    stores = [],
+    currentLocation,
+    currentSortBy = "positiveScore",
+    onSortChange,
+    loading = false,
+    error = null,
 }) => {
     const [mode, setMode] = useState<"list" | "detail">("list");
     const [internalSelectedStoreId, setInternalSelectedStoreId] =
@@ -71,7 +85,15 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
             forceExpanded={shouldExpand}
         >
             {mode === "list" ? (
-                <StoreList onStoreSelect={handleStoreSelect} />
+                <StoreList
+                    onStoreSelect={handleStoreSelect}
+                    stores={stores}
+                    currentLocation={currentLocation}
+                    currentSortBy={currentSortBy}
+                    onSortChange={onSortChange}
+                    loading={loading}
+                    error={error}
+                />
             ) : (
                 <StoreDetailContainer
                     storeId={internalSelectedStoreId}

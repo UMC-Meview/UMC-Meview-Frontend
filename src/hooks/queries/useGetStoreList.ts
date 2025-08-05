@@ -7,8 +7,7 @@ export type ServerSortType =
     | "reviews"
     | "favorites"
     | "distance"
-    | "positiveScore"
-    | "ranking";
+    | "positiveScore";
 
 // 검색/목록 조회 파라미터 인터페이스
 export interface StoresParams {
@@ -188,7 +187,7 @@ export const useStores = (
 
 // 각 페이지별 편의 함수들
 export const useRankingStores = (enabled: boolean = true) => {
-    return useStores({ sortBy: "ranking" }, enabled);
+    return useStores({ sortBy: "positiveScore" }, enabled);
 };
 
 export const useHomeStores = (

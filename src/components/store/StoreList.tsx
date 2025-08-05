@@ -1,42 +1,54 @@
-import React, { useState } from "react";
-import {
-    mapClientSortToServer,
-    useHomeStores,
-} from "../../hooks/queries/useGetStoreList";
+import React from "react";
 import { SortType, StoreDetail } from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { Clock, MapPin } from "lucide-react";
 import SafeImage from "../common/SafeImage";
+import {
+    ServerSortType,
+    mapClientSortToServer,
+} from "../../hooks/queries/useGetStoreList";
 import StoreListSkeleton from "./StoreListSkeleton";
 
 interface StoreListProps {
     bottomSheetContext?: BottomSheetContext;
     onStoreSelect?: (storeId: string) => void;
+    stores?: StoreDetail[];
+    currentLocation?: { lat: number; lng: number };
+    currentSortBy?: ServerSortType;
+    onSortChange?: (sortBy: ServerSortType) => void;
+    loading?: boolean;
+    error?: string | null;
 }
 
 const StoreList: React.FC<StoreListProps> = ({
     bottomSheetContext,
     onStoreSelect,
+    stores = [],
+    currentLocation,
+    currentSortBy = "positiveScore",
+    onSortChange,
+    loading = false,
+    error = null,
 }) => {
-    const [selectedSort, setSelectedSort] =
-        useState<SortType>("보너스금액 많은 순");
-
-    // BottomSheet가 확장된 상태일 때만 API 호출
-    const isExpanded = bottomSheetContext?.isExpanded || false;
-    const isFullScreen = bottomSheetContext?.isFullScreen || false;
-
-    const { stores, loading, error } = useHomeStores(
-        mapClientSortToServer(selectedSort),
-        { latitude: 37.5665, longitude: 126.978 },
-        isExpanded || isFullScreen // 확장되거나 풀스크린일 때만 API 호출
-    );
-
     const sortOptions: SortType[] = [
         "보너스금액 많은 순",
         "리뷰 많은 순",
         "가까운 순",
         "찜 많은 순",
     ];
+
+    // 현재 선택된 정렬을 클라이언트 형태로 변환
+    const getCurrentSortType = (): SortType => {
+        const mapping: Record<ServerSortType, SortType> = {
+            positiveScore: "보너스금액 많은 순",
+            reviews: "리뷰 많은 순",
+            distance: "가까운 순",
+            favorites: "찜 많은 순",
+        };
+        return mapping[currentSortBy] || "보너스금액 많은 순";
+    };
+
+    const selectedSort = getCurrentSortType();
 
     // 정렬 타입에 따른 정보 렌더링 함수
     const renderSortInfo = (store: StoreDetail) => {
@@ -48,18 +60,18 @@ const StoreList: React.FC<StoreListProps> = ({
                 return `리뷰 ${reviewCount.toLocaleString()}개`;
             }
             case "가까운 순": {
-                console.log(store.distance);
                 return `현재 위치에서 ${store.distance?.toFixed(0)}km`;
             }
             case "찜 많은 순":
                 return `찜 ${store.favoriteCount || 0}개`;
             default:
-                return store.averagePositiveScore || 0;
+                return `보너스 평균 ${store.averagePositiveScore || 0}점`;
         }
     };
 
     const handleSortChange = (sortType: SortType) => {
-        setSelectedSort(sortType);
+        const serverSortType = mapClientSortToServer(sortType);
+        onSortChange?.(serverSortType);
 
         if (
             bottomSheetContext &&
@@ -73,6 +85,10 @@ const StoreList: React.FC<StoreListProps> = ({
     const handleStoreClick = (storeId: string) => {
         onStoreSelect?.(storeId);
     };
+
+    // BottomSheet가 확장된 상태인지 확인
+    const isExpanded = bottomSheetContext?.isExpanded || false;
+    const isFullScreen = bottomSheetContext?.isFullScreen || false;
 
     return (
         <div className="flex flex-col h-full max-w-[390px] mx-auto">
@@ -104,21 +120,34 @@ const StoreList: React.FC<StoreListProps> = ({
             {/* 가게 리스트 */}
             {(isExpanded || isFullScreen) && (
                 <div className="flex-1 overflow-y-auto min-h-0">
+                    {/* 로딩 중일 때 Skeleton UI 표시 */}
                     {loading && <StoreListSkeleton count={5} />}
 
-                    {error && (
-                        <div className="flex justify-center items-center py-4">
-                            <div className="text-red-500 text-sm">
-                                {error}
-                                <br />
-                                <span className="text-gray-500 text-xs">
+                    {/* 에러 발생 시 에러 메시지 표시 */}
+                    {error && !loading && (
+                        <div className="flex justify-center items-center py-8">
+                            <div className="text-center">
+                                <div className="text-red-500 text-sm mb-2">
+                                    {error}
+                                </div>
+                                <div className="text-gray-500 text-xs">
                                     더미 데이터를 표시합니다.
-                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 데이터 로딩 완료 후 가게 목록 표시 */}
+                    {!loading && !error && stores.length === 0 && (
+                        <div className="flex justify-center items-center py-8">
+                            <div className="text-gray-500 text-sm">
+                                이 지역에 가게가 없습니다.
                             </div>
                         </div>
                     )}
 
                     {!loading &&
+                        stores.length > 0 &&
                         stores.map((store: StoreDetail) => (
                             <div
                                 key={store._id}
