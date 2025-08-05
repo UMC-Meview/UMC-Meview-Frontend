@@ -11,7 +11,7 @@ import FavoritePage from "./pages/Store/FavoritePage";
 import RankingPage from "./pages/Store/RankingPage";
 import ProfilePage from "./pages/Auth/ProfilePage";
 import StoreDetailPage from "./pages/Store/StoreDetailPage";
-// import QRCodePage from "./pages/QR/QRCodePage";
+import QRCodePage from "./pages/QR/QRCodePage";
 import QRScanPage from "./pages/QR/QRScanPage";
 import AuthMainPage from "./pages/Auth/AuthMainPage";
 import SignupPage from "./pages/Auth/SignupPage";
@@ -40,7 +40,8 @@ const publicRoutes: RouteObject[] = [
             { path: "search", element: <SearchPage /> },
             { path: "login", element: <AuthMainPage /> },
             { path: "signup", element: <SignupPage /> },
-            { path: "qrcode", element: <QRScanPage /> },
+            { path: "qrscan", element: <QRScanPage /> },
+            { path: "qrcode", element: <QRCodePage /> },
             {
                 path: "ranking",
                 element: <RankingPage />,

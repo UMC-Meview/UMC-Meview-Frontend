@@ -27,9 +27,10 @@ const Button: React.FC<ButtonProps> = ({
         compact: "w-full h-12 text-lg font-bold rounded-full transition-colors bg-[#FF774C] px-15 py-0",
     };
 
-    const hasCustomTextColor = /text-black|!text-black|text-white/.test(
-        className
-    );
+    const hasCustomTextColor =
+        /text-\[#[0-9A-Fa-f]{6}\]|text-black|!text-black|text-white/.test(
+            className
+        );
     const buttonStyles = disabled
         ? `${baseStyles} ${variantStyles["gray"]} ${
               isLoginButton && !hasCustomTextColor
