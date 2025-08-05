@@ -2,7 +2,7 @@ import { CircleUserRound, Heart, MapIcon, Scan, Trophy } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { isLoggedIn } from "../../utils/auth";
 
-type TabType = "" | "favorite" | "qrcode" | "ranking" | "profile";
+type TabType = "" | "favorite" | "qrscan" | "ranking" | "profile";
 
 const Footer = () => {
     const navigate = useNavigate();
@@ -11,7 +11,7 @@ const Footer = () => {
     const tabs = [
         { id: "" as TabType, icon: MapIcon, label: "지도" },
         { id: "favorite" as TabType, icon: Heart, label: "찜" },
-        { id: "qrcode" as TabType, icon: Scan, label: "QR" },
+        { id: "qrscan" as TabType, icon: Scan, label: "QR" },
         { id: "ranking" as TabType, icon: Trophy, label: "랭킹" },
         { id: "profile" as TabType, icon: CircleUserRound, label: "프로필" },
     ];
@@ -21,7 +21,7 @@ const Footer = () => {
         const pathname = location.pathname;
         if (pathname === "/") return "";
         if (pathname.startsWith("/favorite")) return "favorite";
-        if (pathname.startsWith("/qrcode")) return "qrcode";
+        if (pathname.startsWith("/qrscan")) return "qrscan";
         if (pathname.startsWith("/ranking")) return "ranking";
         if (pathname.startsWith("/profile")) return "profile";
         return ""; // 기본값은 지도
@@ -37,9 +37,9 @@ const Footer = () => {
             } else {
                 navigate("/login");
             }
-        } else if (tabId === "qrcode") {
-            // QR 버튼 클릭 시 리뷰 작성 페이지로 이동
-            navigate("/qrcode");
+        } else if (tabId === "qrscan") {
+            // QR 버튼 클릭 시 QR 스캔 페이지로 이동
+            navigate("/qrscan");
         } else {
             navigate(tabId === "" ? "/" : `/${tabId}`);
         }
