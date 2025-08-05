@@ -64,7 +64,8 @@ const Header: React.FC<HeaderProps> = ({
 
     return (
         <div className="sticky top-0 bg-white z-10">
-            <div className="flex items-center justify-between px-4 py-4 bg-white">
+            {/* <div className="h-[64px]"></div> */}
+            <div className="flex items-center justify-between px-4 py-3 bg-white">
                 <div className="flex-1 flex justify-start min-w-0">
                     {onBack && <BackButton onClick={onBack} />}
                 </div>
