@@ -24,7 +24,6 @@ const StoreList: React.FC<StoreListProps> = ({
     bottomSheetContext,
     onStoreSelect,
     stores = [],
-    currentLocation,
     currentSortBy = "positiveScore",
     onSortChange,
     loading = false,
