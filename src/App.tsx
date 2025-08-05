@@ -11,7 +11,8 @@ import FavoritePage from "./pages/Store/FavoritePage";
 import RankingPage from "./pages/Store/RankingPage";
 import ProfilePage from "./pages/Auth/ProfilePage";
 import StoreDetailPage from "./pages/Store/StoreDetailPage";
-import QRCodePage from "./pages/QR/QRCodePage";
+// import QRCodePage from "./pages/QR/QRCodePage";
+import QRScanPage from "./pages/QR/QRScanPage";
 import AuthMainPage from "./pages/Auth/AuthMainPage";
 import SignupPage from "./pages/Auth/SignupPage";
 import HomeLayout from "./layouts/HomeLayout";
@@ -28,7 +29,6 @@ import ReviewDissatisfactionRatingPage from "./pages/Review/ReviewDissatisfactio
 import ReviewCompletePage from "./pages/Review/ReviewCompletePage";
 import ReviewLoginPage from "./pages/Review/ReviewLoginPage";
 
-
 // public Routes: 인증 없이 접근 가능
 const publicRoutes: RouteObject[] = [
     {
@@ -40,7 +40,7 @@ const publicRoutes: RouteObject[] = [
             { path: "search", element: <SearchPage /> },
             { path: "login", element: <AuthMainPage /> },
             { path: "signup", element: <SignupPage /> },
-            { path: "qrcode", element: <QRCodePage /> },
+            { path: "qrcode", element: <QRScanPage /> },
             {
                 path: "ranking",
                 element: <RankingPage />,
@@ -93,8 +93,6 @@ const publicRoutes: RouteObject[] = [
                 path: "review/complete",
                 element: <ReviewCompletePage />,
             },
-
-
         ],
     },
 ];
