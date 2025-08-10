@@ -8,7 +8,7 @@ import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import ProfileDropdownMenu from "../../components/common/Button/ProfileDropdownMenu";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import { useGetUserReviews } from "../../hooks/queries/useGetUserReviews";
-import ReviewWithStoreName from "../../components/store/ReviewWithStoreName";
+import UserReviewInfo from "../../components/store/UserReviewInfo";
 import OrangePencilIcon from "../../assets/Orangepencil.svg";
 import { getUserInfo } from "../../utils/auth";
 
@@ -185,9 +185,10 @@ const ProfilePage: React.FC = () => {
                         ) : reviewsSuccess && transformedReviews.length > 0 ? (
                             <div className="space-y-3">
                                 {transformedReviews.map((review) => (
-                                    <ReviewWithStoreName 
+                                    <UserReviewInfo 
                                         key={review._id} 
                                         review={review}
+                                        storeName="가게명" // 실제 가게명이 있다면 여기에 전달
                                     />
                                 ))}
                             </div>
