@@ -8,7 +8,7 @@ interface UserReviewInfoProps {
 }
 
 const UserReviewInfo = ({ review, storeName = "모토이시" }: UserReviewInfoProps) => {
-    const { isPositive, score, storeReviews, foodReviews, imageUrl } = review;
+    const { isPositive, score, storeReviews, foodReviews, imageUrl, content } = review;
     
     const scoreText = isPositive ? `내가 준 보너스 ${score}만원` : `내가 할퀸 수 ${score}번`;
 
@@ -21,7 +21,7 @@ const UserReviewInfo = ({ review, storeName = "모토이시" }: UserReviewInfoPr
                     <img src={GrayCheckIcon} alt="체크 아이콘" className="w-5 h-5" />
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                    <p className="text-[14px] text-gray-500">슬럼 전복 양주군 아시면</p>
+                    <p className="text-[14px] text-gray-500">{content}</p>
                     <span className="text-[13px] font-medium text-[#FF774C]">{scoreText}</span>
                 </div>
             </div>
@@ -41,16 +41,19 @@ const UserReviewInfo = ({ review, storeName = "모토이시" }: UserReviewInfoPr
                 <div className="flex-1">
                     {/* 리뷰 태그들 */}
                     <div className="flex flex-wrap gap-x-3 gap-y-1.5 mb-3 min-h-[40px]">
-                        {storeReviews.map((review, index) => (
+                        {storeReviews && storeReviews.length > 0 && storeReviews.map((review, index) => (
                             <ReviewTag key={`store-${index}`} text={review} />
                         ))}
-                        {foodReviews.map((review, index) => (
+                        {foodReviews && foodReviews.length > 0 && foodReviews.map((review, index) => (
                             <ReviewTag key={`food-${index}`} text={review} />
                         ))}
+                        {(!storeReviews || storeReviews.length === 0) && (!foodReviews || foodReviews.length === 0) && (
+                            <div className="text-gray-400 text-sm">리뷰 태그가 없습니다.</div>
+                        )}
                     </div>
                     
                     {/* 리뷰 이미지 */}
-                    {imageUrl && (
+                    {imageUrl && imageUrl.trim() !== "" && (
                         <img 
                             src={imageUrl} 
                             alt="리뷰 이미지" 

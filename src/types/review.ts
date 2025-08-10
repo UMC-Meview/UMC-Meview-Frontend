@@ -15,6 +15,7 @@ export interface ReviewResponseDto {
     _id: string;
     store: string;
     user: User;
+    content: string; // 리뷰 텍스트 내용
     isPositive: boolean;
     score: number;
     foodReviews: string[];

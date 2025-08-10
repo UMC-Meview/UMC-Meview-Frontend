@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "../../components/common/Header";
+import BackButton from "../../components/common/Button/BackButton";
 import alertErrorIcon from "../../assets/alert-error.svg";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
 import Button from "../../components/common/Button/Button";
@@ -33,11 +34,20 @@ const QRCodePage: React.FC = () => {
         }
     };
 
+    const handleForward = () => {
+        navigate("/");
+    };
+
     return (
         <div className="min-h-screen bg-white">
             <Header
                 onBack={() => navigate(-1)}
                 center="가게 이름"
+                right={
+                    <div className="transform scale-x-[-1]">
+                        <BackButton onClick={handleForward} />
+                    </div>
+                }
             />
             <div className="flex-1 flex flex-col justify-start px-6" style={{ marginTop: "56px" }}>
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mt-8">

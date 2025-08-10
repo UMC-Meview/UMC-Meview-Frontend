@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/common/Header";
 import ProgressBar from "../../components/Review/ProgressBar";
 import ReviewContentLayout from "../../components/Review/ReviewContentLayout";
@@ -10,9 +10,19 @@ import BuildingMotion from "../../components/Review/effects/BuildingMotion";
 import { FloatingCoinsEffect, MoneyInteraction } from "../../components/Review/effects/SatisfactionEffects";
 import coinImage from "../../assets/money/coin.svg";
 import { FloatingItem } from "../../types/review";
+import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
 
 const ReviewSatisfactionRatingPage: React.FC = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    
+    // URL에서 storeId 파라미터 추출
+    const storeId = searchParams.get("storeId");
+    
+    // 가게 정보 가져오기
+    const { store } = useGetStoreDetail(storeId || "");
+    const storeName = store?.name || "가게";
+    
     const [clickCount, setClickCount] = useState(0);
 
     const maxClicks = 10;
@@ -86,8 +96,8 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
         // 만족 리뷰 데이터와 함께 다음 페이지로 이동
         navigate("/review/detail", {
             state: {
-                storeId: "temp-store-id", // 실제로는 QR 코드나 URL에서 가져올 예정
-                storeName: "모토이시", // 실제로는 API에서 가져올 예정
+                storeId: storeId || "temp-store-id",
+                storeName: storeName,
                 isPositive: true,
                 score: Math.max(1, Math.min(10, clickCount)), // 클릭 횟수를 점수로 변환 (1~10)
             }

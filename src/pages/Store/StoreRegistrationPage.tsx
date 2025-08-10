@@ -24,6 +24,7 @@ const StoreRegistrationPage: React.FC = () => {
     const {
         formData,
         handleInputChange,
+        updateCoordinates,
         handleMainImageSelect,
         handleReplaceMainImage,
         handleMenuChange,
@@ -144,9 +145,14 @@ const StoreRegistrationPage: React.FC = () => {
                     detailAddress={formData.detailAddress}
                     postalCode={formData.postalCode}
                     onInputChange={handleInputChange}
-                    onAddressSelect={(address, postcode) => {
+                    onAddressSelect={(address: string, postcode: string, latitude?: number, longitude?: number) => {
                         handleInputChange("address", address);
                         handleInputChange("postalCode", postcode);
+                        // 위도/경도가 있으면 업데이트
+                        if (latitude !== undefined && longitude !== undefined) {
+                            updateCoordinates(latitude, longitude);
+                            console.log(`좌표 업데이트됨 - 위도: ${latitude}, 경도: ${longitude}`);
+                        }
                     }}
                 />
                 {/* 영업시간 섹션 */}

@@ -7,7 +7,7 @@ interface StoreAddressSectionProps {
     detailAddress: string;
     postalCode: string;
     onInputChange: (field: string, value: string) => void;
-    onAddressSelect: (address: string, postcode: string) => void;
+    onAddressSelect: (address: string, postcode: string, latitude?: number, longitude?: number) => void;
 }
 
 const StoreAddressSection: React.FC<StoreAddressSectionProps> = ({

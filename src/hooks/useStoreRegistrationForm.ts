@@ -24,6 +24,11 @@ export const useStoreRegistrationForm = () => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
+    // 위도/경도 업데이트
+    const updateCoordinates = (latitude: number, longitude: number) => {
+        setFormData(prev => ({ ...prev, latitude, longitude }));
+    };
+
     // 메인 이미지 추가
     const handleMainImageSelect = (file: File) => {
         if (formData.mainImages.length >= 3) {
@@ -101,6 +106,7 @@ export const useStoreRegistrationForm = () => {
     return {
         formData,
         handleInputChange,
+        updateCoordinates,
         handleMainImageSelect,
         handleReplaceMainImage,
         handleMenuChange,

@@ -8,7 +8,7 @@ import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import ProfileDropdownMenu from "../../components/common/Button/ProfileDropdownMenu";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import { useGetUserReviews } from "../../hooks/queries/useGetUserReviews";
-import UserReviewInfo from "../../components/store/UserReviewInfo";
+import ReviewWithStoreName from "../../components/store/ReviewWithStoreName";
 import OrangePencilIcon from "../../assets/Orangepencil.svg";
 import { getUserInfo } from "../../utils/auth";
 
@@ -32,18 +32,41 @@ const ProfilePage: React.FC = () => {
         refetch: refetchReviews,
     } = useGetUserReviews(userId || "");
     
+    // 디버깅용: 실제 API 응답 데이터 확인
+    React.useEffect(() => {
+        if (reviewsSuccess && reviews.length > 0) {
+            console.log("실제 리뷰 데이터:", reviews);
+            console.log("첫 번째 리뷰의 store ID:", reviews[0]?.store);
+            console.log("첫 번째 리뷰의 store ID 타입:", typeof reviews[0]?.store);
+            console.log("첫 번째 리뷰의 store ID 길이:", reviews[0]?.store?.length);
+        }
+    }, [reviewsSuccess, reviews]);
+    
     // 페이지 진입 시 최신 데이터 가져오기
     React.useEffect(() => {
         refetch();
         refetchReviews();
+        
         const handleVisibilityChange = () => {
             if (!document.hidden) {
                 refetch();
                 refetchReviews();
             }
         };
+        
+        const handleFocus = () => {
+            // 페이지가 포커스를 받을 때도 데이터 새로고침 (리뷰 작성 후 돌아왔을 때)
+            refetch();
+            refetchReviews();
+        };
+        
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+        window.addEventListener('focus', handleFocus);
+        
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            window.removeEventListener('focus', handleFocus);
+        };
     }, [refetch, refetchReviews]);
 
     const handleLogout = () => {
@@ -61,11 +84,12 @@ const ProfilePage: React.FC = () => {
         _id: review._id,
         store: review.store,
         user: { _id: userId || "", nickname: userProfile?.nickname || "", tastePreferences: [], birthYear: "", gender: "" },
+        content: review.content, // 실제 리뷰 텍스트 내용
         isPositive: review.isPositive,
         score: review.score,
-        storeReviews: review.isPositive ? ["분위기가 좋아요", "친절해요"] : ["양이 많아요", "친절해요"],
-        foodReviews: review.isPositive ? ["차향지", "적당히 매워요"] : ["직항지"],
-        imageUrl: "https://via.placeholder.com/400x200", // 실제 이미지 URL이 있다면 사용
+        storeReviews: [], // 백엔드에서 제공하지 않음 - 빈 배열로 설정
+        foodReviews: [], // 백엔드에서 제공하지 않음 - 빈 배열로 설정
+        imageUrl: "", // 백엔드에서 제공하지 않음 - 빈 문자열로 설정
         createdAt: review.createdAt,
         updatedAt: review.createdAt
     }));
@@ -161,7 +185,10 @@ const ProfilePage: React.FC = () => {
                         ) : reviewsSuccess && transformedReviews.length > 0 ? (
                             <div className="space-y-3">
                                 {transformedReviews.map((review) => (
-                                    <UserReviewInfo key={review._id} review={review} storeName="모토이시" />
+                                    <ReviewWithStoreName 
+                                        key={review._id} 
+                                        review={review}
+                                    />
                                 ))}
                             </div>
                         ) : (

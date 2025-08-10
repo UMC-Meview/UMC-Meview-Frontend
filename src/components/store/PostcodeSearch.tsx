@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import DaumPostcode from "react-daum-postcode";
 import StoreFormInput from "./StoreFormInput";
+import { KakaoGeocoderResult } from "../../types/kakao";
 
 interface PostcodeSearchProps {
-  onAddressSelect: (address: string, postcode: string) => void;
+  onAddressSelect: (address: string, postcode: string, latitude?: number, longitude?: number) => void;
   className?: string;
 }
 
@@ -17,7 +18,28 @@ const PostcodeSearch: React.FC<PostcodeSearchProps> = ({
     const fullAddress = data.address;
     const postcode = data.zonecode;
     
-    onAddressSelect(fullAddress, postcode);
+    // Kakao Maps Geocoder를 사용하여 주소를 좌표로 변환
+    if (window.kakao && window.kakao.maps) {
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      
+      geocoder.addressSearch(fullAddress, (result: KakaoGeocoderResult[], status: string) => {
+        if (status === window.kakao.maps.services.Status.OK && result.length > 0) {
+          const coords = result[0];
+          const latitude = parseFloat(coords.y);
+          const longitude = parseFloat(coords.x);
+          
+          console.log(`주소: ${fullAddress}, 위도: ${latitude}, 경도: ${longitude}`);
+          onAddressSelect(fullAddress, postcode, latitude, longitude);
+        } else {
+          console.warn('좌표 변환 실패, 기본 좌표 사용');
+          onAddressSelect(fullAddress, postcode);
+        }
+      });
+    } else {
+      console.warn('Kakao Maps API가 로드되지 않음, 기본 좌표 사용');
+      onAddressSelect(fullAddress, postcode);
+    }
+    
     setIsOpen(false);
   };
 

@@ -1,18 +1,31 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/common/Header";
 import Button from "../../components/common/Button/Button";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
+import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
 
 const ReviewFeedbackPage: React.FC = () => {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    
+    // URL에서 storeId 파라미터 추출
+    const storeId = searchParams.get("storeId");
+    
+    // 가게 정보 가져오기
+    const { store, loading } = useGetStoreDetail(storeId || "");
+    const storeName = store?.name || "가게";
 
     const handleSatisfaction = () => {
-        navigate("/review/satisfaction-rating");
+        if (storeId) {
+            navigate(`/review/satisfaction-rating?storeId=${storeId}`);
+        }
     };
 
     const handleDissatisfaction = () => {
-        navigate("/review/dissatisfaction-rating");
+        if (storeId) {
+            navigate(`/review/dissatisfaction-rating?storeId=${storeId}`);
+        }
     };
 
     return (
@@ -25,7 +38,7 @@ const ReviewFeedbackPage: React.FC = () => {
             <div className="px-6 sm:px-8 md:px-10 lg:px-12 pb-32">
                 <div className="flex flex-col justify-center min-h-[60vh]">
                     <h1 className="text-xl font-bold text-black mb-2 text-center">
-                        '모토이시'는 만족스러우셨나요?
+                        {loading ? "로딩 중..." : `'${storeName}'는 만족스러우셨나요?`}
                     </h1>
                     <p className="text-sm text-black text-center">
                         만족스러웠다면 만족합니다 버튼을,<br />

@@ -56,6 +56,14 @@ export const useGetStoreDetail = (storeId: string): UseStoreDetailResult => {
     const userInfo = getUserInfo();
     const userId = userInfo?.id;
 
+    // 디버깅용: storeId와 userId 확인
+    console.log("useGetStoreDetail - storeId:", storeId);
+    console.log("useGetStoreDetail - userId:", userId);
+    console.log("useGetStoreDetail - enabled:", !!storeId);
+
+    // storeId 유효성 검사 추가
+    const isValidStoreId = storeId && typeof storeId === 'string' && storeId.trim() !== '' && storeId.length >= 10;
+
     const {
         data: rawStore,
         isLoading: loading,
@@ -64,7 +72,7 @@ export const useGetStoreDetail = (storeId: string): UseStoreDetailResult => {
     } = useQuery({
         queryKey: ["store", storeId, userId], // userId도 쿼리 키에 포함
         queryFn: () => fetchStoreDetail(storeId, userId),
-        enabled: !!storeId, // storeId가 있을 때만 쿼리 실행
+        enabled: isValidStoreId, // 유효한 storeId일 때만 쿼리 실행
         staleTime: 5 * 60 * 1000, // 5분
         retry: 1,
     });

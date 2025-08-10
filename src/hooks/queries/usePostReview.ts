@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
 import {
     ReviewSubmissionRequest,
@@ -50,11 +50,34 @@ export interface UseReviewSubmissionResult {
 
 // 리뷰 등록 훅
 export const useReviewSubmission = (): UseReviewSubmissionResult => {
+    const queryClient = useQueryClient();
+    
     const mutation = useMutation<ReviewSubmissionResponse, Error, ReviewSubmissionRequest>({
         mutationFn: submitReview,
-        onSuccess: (data) => {
+        onSuccess: (data, variables) => {
             console.log("리뷰 등록 성공:", data);
-            alert("리뷰 작성 완료!");
+            
+            // 사용자 리뷰 목록 캐시 무효화 (ProfilePage 갱신용)
+            queryClient.invalidateQueries({ 
+                queryKey: ["userReviews", variables.userId] 
+            });
+            
+            // 사용자 프로필 캐시 무효화 (리뷰 카운트 업데이트용)
+            queryClient.invalidateQueries({ 
+                queryKey: ["userProfile", variables.userId] 
+            });
+            
+            // 가게 상세 정보 캐시 무효화 (새 리뷰가 추가된 가게)
+            queryClient.invalidateQueries({ 
+                queryKey: ["store", variables.storeId] 
+            });
+            
+            // 가게 목록 캐시 무효화 (리뷰 점수가 변경될 수 있음)
+            queryClient.invalidateQueries({ 
+                queryKey: ["stores"] 
+            });
+            
+            console.log("캐시 무효화 완료 - ProfilePage에서 새 리뷰가 표시됩니다.");
         },
         onError: (error) => {
             console.error("리뷰 등록 에러:", error.message);
