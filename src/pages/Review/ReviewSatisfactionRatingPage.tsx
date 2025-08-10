@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/common/Header";
@@ -27,55 +27,38 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
 
     const maxClicks = 10;
 
-    const [floatingItems, setFloatingItems] = useState<Array<FloatingItem>>([]);
-    const [itemId, setItemId] = useState(0);
+    const [floatingItems] = useState<Array<FloatingItem>>([]);
     const [isMoneyAbsorbing, setIsMoneyAbsorbing] = useState(false);
     const [showMoney, setShowMoney] = useState(true);
     
     const buildingRef = useRef<HTMLDivElement>(null);
-    const moneyRef = useRef<HTMLDivElement>(null);
+    const moneyRef = useRef<HTMLImageElement>(null);
 
-    // 건물 레벨: 클릭 횟수에 따라 0~4단계로 증가 (성장하는 효과)
-    const currentStep = Math.min(Math.max(0, Math.floor((clickCount - 1) / 2)), 3);
-    const finalStep = clickCount >= 9 ? 4 : currentStep;
+    // 건물 레벨: 클릭 횟수에 따라 0~4단계로 증가
+    const finalStep = useMemo(() => {
+        const currentStep = Math.min(Math.max(0, Math.floor((clickCount - 1) / 2)), 3);
+        return clickCount >= 9 ? 4 : currentStep;
+    }, [clickCount]);
+
+    // 지폐 흡수 모션 공통 함수
+    const beginAbsorb = useCallback(() => {
+        if (isMoneyAbsorbing) return; 
+        setIsMoneyAbsorbing(true);
+        setTimeout(() => {
+            setShowMoney(false);
+            setTimeout(() => {
+                setShowMoney(true); 
+                setIsMoneyAbsorbing(false);
+            }, 200);
+        }, 800);
+    }, [isMoneyAbsorbing]);
 
     const handleClick = useCallback((type: 'store' | 'money') => {
-        if (clickCount >= maxClicks) return;
-        if (type === 'money' && isMoneyAbsorbing) return;
-
-        if (type === 'store') {
-            // 건물 클릭시 코인 생성
-            const newCoin: FloatingItem = {
-                id: itemId,
-                x: Math.random() * 200 - 100,
-                y: Math.random() * 60 + 50,
-                type: 'coin'
-            };
-            
-            setFloatingItems(prev => [...prev, newCoin]);
-            setItemId(prev => prev + 1);
-
-            // 3초 후 코인 제거
-            setTimeout(() => {
-                setFloatingItems(prev => prev.filter(item => item.id !== newCoin.id));
-            }, 3000);
-        } else {
-            // 지폐 흡수 애니메이션 시작
-            setIsMoneyAbsorbing(true);
-
-            setTimeout(() => {
-                setShowMoney(false);
-                
-                // 새로운 지폐 생성
-                setTimeout(() => {
-                    setShowMoney(true);
-                    setIsMoneyAbsorbing(false);
-                }, 200);
-            }, 800);
-        }
-
-        setClickCount(clickCount + 1);
-    }, [clickCount, maxClicks, isMoneyAbsorbing, itemId]);
+        void type; 
+        if (isMoneyAbsorbing || clickCount >= maxClicks) return; // 조기 return
+        beginAbsorb();
+        setClickCount((c) => Math.min(c + 1, maxClicks));
+    }, [beginAbsorb, isMoneyAbsorbing, clickCount, maxClicks]);
 
     // 건물과 지폐의 상대적 위치 계산 (흡수 애니메이션용)
     const getRelativePosition = () => {
@@ -93,13 +76,12 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
     };
 
     const handleNext = () => {
-        // 만족 리뷰 데이터와 함께 다음 페이지로 이동
         navigate("/review/detail", {
             state: {
                 storeId: storeId || "temp-store-id",
                 storeName: storeName,
                 isPositive: true,
-                score: Math.max(1, Math.min(10, clickCount)), // 클릭 횟수를 점수로 변환 (1~10)
+                score: Math.max(1, Math.min(10, clickCount)), 
             }
         });
     };
@@ -121,7 +103,7 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
                             onClick={() => handleClick('store')}
                             scale={clickCount > 0 ? 1.1 : 1}
                         >
-                            {/* 건물 위의 부유하는 코인 */}
+                            {/* 건물 위 부유하는 코인 */}
                             <motion.div 
                                 className="absolute -top-6 left-1/2 transform -translate-x-1/2"
                                 animate={{ y: [0, -12, 0] }}
@@ -138,6 +120,7 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
                         isMoneyAbsorbing={isMoneyAbsorbing}
                         onMoneyClick={() => handleClick('money')}
                         getRelativePosition={getRelativePosition}
+                        imgRef={moneyRef}
                     />
                 )}
             />

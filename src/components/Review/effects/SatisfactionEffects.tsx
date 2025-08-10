@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FloatingItem } from "../../../types/review";
 import coinImage from "../../../assets/money/coin.svg";
@@ -57,30 +57,31 @@ const FloatingCoinsEffect: React.FC<FloatingCoinsEffectProps> = ({ floatingItems
     );
 };
 
-// 지폐 상호작용 컴포넌트
 interface MoneyInteractionProps {
     showMoney: boolean;
     isMoneyAbsorbing: boolean;
     onMoneyClick: () => void;
     getRelativePosition: () => { x: number; y: number };
+    imgRef?: React.Ref<HTMLImageElement>;
 }
 
 const MoneyInteraction: React.FC<MoneyInteractionProps> = ({
     showMoney,
     isMoneyAbsorbing,
     onMoneyClick,
-    getRelativePosition
+    getRelativePosition,
+    imgRef
 }) => {
-    const moneyRef = useRef<HTMLDivElement>(null);
-
+    const d = isMoneyAbsorbing ? getRelativePosition() : { x: 0, y: 0 };
     return (
-        <motion.div ref={moneyRef} className="relative mt-8">
+        <motion.div className="relative mt-8">
             <AnimatePresence mode="wait">
                 {showMoney && (
                         <motion.img
                             src={moneyImage}
                             alt="돈"
                         className="w-25 h-25 cursor-pointer"
+                        ref={imgRef}
                         initial={{ 
                             scale: 0.5, 
                             opacity: 0, 
@@ -89,8 +90,8 @@ const MoneyInteraction: React.FC<MoneyInteractionProps> = ({
                         }}
                         animate={isMoneyAbsorbing ? {
                             // 지폐가 건물로 흡수되는 포물선 애니메이션
-                            x: [0, getRelativePosition().x * 0.3, getRelativePosition().x * 0.7, getRelativePosition().x],
-                            y: [0, getRelativePosition().y * 0.2 - 50, getRelativePosition().y * 0.6 - 20, getRelativePosition().y],
+                            x: [0, d.x * 0.3, d.x * 0.7, d.x],
+                            y: [0, d.y * 0.2 - 50, d.y * 0.6 - 20, d.y],
                             scale: [1, 0.8, 0.4, 0],
                             opacity: [1, 0.9, 0.5, 0],
                         } : {
