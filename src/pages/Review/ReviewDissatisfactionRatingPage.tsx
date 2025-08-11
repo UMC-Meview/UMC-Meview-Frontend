@@ -9,20 +9,15 @@ import BuildingMotion from "../../components/Review/effects/BuildingMotion";
 import { DustEffect, CatPawInteraction, ScratchEffect } from "../../components/Review/effects/DissatisfactionEffects";
 import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
 
-
 const ReviewDissatisfactionRatingPage: React.FC = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     
     // URL에서 storeId 파라미터 추출
-    const storeId = searchParams.get("storeId");
-    
-    // 가게 정보 가져오기
-    const { store } = useGetStoreDetail(storeId || "");
+    const storeId = searchParams.get("storeId") || "temp-store-id";
+    const { store } = useGetStoreDetail(storeId);
     const storeName = store?.name || "가게";
-    
     const [clickCount, setClickCount] = useState(0);
-
     const maxClicks = 10;
 
     const [isShaking, setIsShaking] = useState(false);
@@ -74,13 +69,12 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
     }, [clickCount, maxClicks]);
 
     const handleNext = () => {
-        // 불만족 리뷰 데이터와 함께 다음 페이지로 이동
         navigate("/review/detail", {
             state: {
                 storeId: storeId || "temp-store-id",
                 storeName: storeName,
                 isPositive: false,
-                score: Math.max(1, Math.min(10, 11 - clickCount)), // 클릭 횟수가 많을수록 낮은 점수 (1~10)
+                score: clickCount,
             }
         });
     };

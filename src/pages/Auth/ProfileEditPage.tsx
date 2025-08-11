@@ -13,40 +13,40 @@ import checkIcon from "../../assets/Check.svg";
 import { useMultiSelect } from "../../hooks/useMultiSelect";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import { usePatchUserProfileEdit } from "../../hooks/queries/usePatchUserProfileEdit";
+import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
 import { PatchProfileRequest } from "../../types/auth";
 import { useNavigate } from "react-router-dom";
 import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
+import { getUserInfo } from "../../utils/auth";
 
 const ProfileEditPage: React.FC = () => {
     const navigate = useNavigate();
-    const { data: userProfile } = useGetUserProfile();
+    const userId = getUserInfo()?.id || "";
+    const { data: userProfile } = useGetUserProfile(userId);
+    const { patchProfile, isLoading: isUpdating, isSuccess } = usePatchUserProfileEdit();
     const {
-        patchProfile,
-        isLoading: isUpdating,
-        isSuccess,
-    } = usePatchUserProfileEdit();
+        uploadImageAsync,
+        isLoading: isUploading,
+    } = usePostImageUpload();
     const isKeyboardVisible = useKeyboardDetection();
 
-    // 멀티 선택 훅 초기화
     const tasteSelector = useMultiSelect({ maxSelections: 3 });
     const foodTypeSelector = useMultiSelect({ maxSelections: 3 });
 
-    // 로컬 상태 관리
     const [userName, setUserName] = useState("");
     const [userDescription, setUserDescription] = useState("");
     const [profileImageUrl, setProfileImageUrl] = useState<string>("");
+    const [localPreview, setLocalPreview] = useState<string | null>(null);
 
-    // 선택된 항목 총 개수 계산
     const totalSelections = tasteSelector.selectedItems.length + foodTypeSelector.selectedItems.length;
 
     // 사용자 프로필 데이터로 초기값 설정
     useEffect(() => {
         if (userProfile) {
-            setUserName(userProfile.nickname || "");
+            setUserName((userProfile.nickname || "").slice(0, 8));
             setUserDescription(userProfile.introduction || "");
             setProfileImageUrl(userProfile.profileImageUrl || "");
 
-            // 기존 선택된 취향 설정
             const existingPreferences = userProfile.tastePreferences || [];
             existingPreferences.forEach((preference) => {
                 if (
@@ -67,31 +67,28 @@ const ProfileEditPage: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userProfile]);
 
-    // 수정 완료 후 프로필 페이지로 이동
     useEffect(() => {
         if (isSuccess) {
             setTimeout(() => navigate("/profile", { replace: true }), 300);
         }
     }, [isSuccess, navigate]);
 
-    // 취향 선택 토글 핸들러
     const handleTasteToggle = (taste: string) => {
         if (totalSelections < 3 || tasteSelector.selectedItems.includes(taste)) {
             tasteSelector.toggleItem(taste);
         }
     };
 
-    // 음식 종류 선택 토글 핸들러
     const handleFoodTypeToggle = (foodType: string) => {
         if (totalSelections < 3 || foodTypeSelector.selectedItems.includes(foodType)) {
             foodTypeSelector.toggleItem(foodType);
         }
     };
 
-    // 프로필 수정 완료 핸들러
     const handleEditComplete = () => {
         // 유효성 검사
         if (totalSelections < 3 || !userName.trim()) return;
+        if (!userProfile?.id) return;
 
         const updateData: PatchProfileRequest = {
             nickname: userName.trim(),
@@ -100,15 +97,21 @@ const ProfileEditPage: React.FC = () => {
             profileImageUrl: profileImageUrl,
         };
 
-        patchProfile(updateData);
+        patchProfile(userProfile.id, updateData);
     };
 
-    // 이미지 선택 핸들러
-    const handleImageSelect = (file: File) => {
-        setProfileImageUrl(URL.createObjectURL(file));
+    const handleImageSelect = async (file: File) => {
+        const previewUrl = URL.createObjectURL(file);
+        setLocalPreview(previewUrl);
+        try {
+            const { url } = await uploadImageAsync(file);
+            setProfileImageUrl(url);
+        } finally {
+            URL.revokeObjectURL(previewUrl);
+            setLocalPreview(null);
+        }
     };
 
-    // 섹션 제목 컴포넌트
     const SectionTitle = ({ title }: { title: string }) => (
         <div className="flex items-baseline space-x-2 ml-4">
             <h2 className="text-[16px] font-semibold text-gray-800">{title}</h2>
@@ -118,17 +121,14 @@ const ProfileEditPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-white flex flex-col">
-            {/* 헤더 */}
             <Header
                 onBack={() => window.history.back()}
                 center="프로필 수정"
             />
 
-            {/* 스크롤 가능한 메인 컨텐츠 영역 */}
             <div className="flex-1 overflow-y-auto pb-20">
-                {/* 프로필 정보 섹션 */}
                 <ProfileInfoSection
-                    imageUrl={profileImageUrl}
+                    imageUrl={localPreview || profileImageUrl}
                     nickname={userName}
                     introduction={userDescription}
                     isEditable={true}
@@ -140,7 +140,6 @@ const ProfileEditPage: React.FC = () => {
                 <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-6 space-y-5">
                     <ThinDivider />
 
-                    {/* 입맛 선택 섹션 */}
                     <div className="space-y-4">
                         <SectionTitle title="입 맛 선택" />
                         <SelectionGrid
@@ -158,7 +157,6 @@ const ProfileEditPage: React.FC = () => {
 
                     <ThinDivider />
 
-                    {/* 음식종류 선택 섹션 */}
                     <div className="space-y-4">
                         <SectionTitle title="선호하는 음식종류 선택" />
                         <SelectionGrid
@@ -177,14 +175,13 @@ const ProfileEditPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* 하단 완료 버튼 */}
             {!isKeyboardVisible && (
                 <BottomFixedButton
                     onClick={handleEditComplete}
-                    variant={totalSelections >= 3 && !isUpdating ? "primary" : "gray"}
-                    disabled={isUpdating || totalSelections < 3}
+                    variant={totalSelections >= 3 && !isUpdating && !isUploading ? "primary" : "gray"}
+                    disabled={isUpdating || isUploading || totalSelections < 3}
                 >
-                    {isUpdating ? "수정 중..." : "수정완료"}
+                    {isUploading ? "이미지 업로드 중..." : isUpdating ? "수정 중..." : "수정완료"}
                 </BottomFixedButton>
             )}
         </div>

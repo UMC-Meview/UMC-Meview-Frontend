@@ -8,6 +8,7 @@ import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
 import Button from "../../components/common/Button/Button";
 import BuildingMotion from "../../components/Review/effects/BuildingMotion";
 import { FloatingCoinsEffect, MoneyInteraction } from "../../components/Review/effects/SatisfactionEffects";
+import type { MoneyInteractionHandle } from "../../components/Review/effects/SatisfactionEffects";
 import coinImage from "../../assets/money/coin.svg";
 import { FloatingItem } from "../../types/review";
 import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
@@ -17,22 +18,25 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
     const [searchParams] = useSearchParams();
     
     // URL에서 storeId 파라미터 추출
-    const storeId = searchParams.get("storeId");
+    const storeId = searchParams.get("storeId") || "temp-store-id";
     
     // 가게 정보 가져오기
-    const { store } = useGetStoreDetail(storeId || "");
+    const { store } = useGetStoreDetail(storeId);
     const storeName = store?.name || "가게";
     
     const [clickCount, setClickCount] = useState(0);
 
     const maxClicks = 10;
 
-    const [floatingItems] = useState<Array<FloatingItem>>([]);
-    const [isMoneyAbsorbing, setIsMoneyAbsorbing] = useState(false);
-    const [showMoney, setShowMoney] = useState(true);
+    const floatingItems = useMemo<Array<FloatingItem>>(() => [
+        { id: 1, x: -60, y: 0, type: 'money' },
+        { id: 2, x: 0, y: -10, type: 'money' },
+        { id: 3, x: 60, y: 5, type: 'money' },
+    ], []);
     
     const buildingRef = useRef<HTMLDivElement>(null);
     const moneyRef = useRef<HTMLImageElement>(null);
+    const moneyInteractionRef = useRef<MoneyInteractionHandle>(null);
 
     // 건물 레벨: 클릭 횟수에 따라 0~4단계로 증가
     const finalStep = useMemo(() => {
@@ -40,25 +44,13 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
         return clickCount >= 9 ? 4 : currentStep;
     }, [clickCount]);
 
-    // 지폐 흡수 모션 공통 함수
-    const beginAbsorb = useCallback(() => {
-        if (isMoneyAbsorbing) return; 
-        setIsMoneyAbsorbing(true);
-        setTimeout(() => {
-            setShowMoney(false);
-            setTimeout(() => {
-                setShowMoney(true); 
-                setIsMoneyAbsorbing(false);
-            }, 200);
-        }, 800);
-    }, [isMoneyAbsorbing]);
-
     const handleClick = useCallback((type: 'store' | 'money') => {
-        void type; 
-        if (isMoneyAbsorbing || clickCount >= maxClicks) return; // 조기 return
-        beginAbsorb();
+        void type;
+        if (clickCount >= maxClicks) return;
+        // 10단계(최대)에 도달하기 전까지만 흡수 애니메이션 실행
+        moneyInteractionRef.current?.spawnAbsorb();
         setClickCount((c) => Math.min(c + 1, maxClicks));
-    }, [beginAbsorb, isMoneyAbsorbing, clickCount, maxClicks]);
+    }, [clickCount, maxClicks]);
 
     // 건물과 지폐의 상대적 위치 계산 (흡수 애니메이션용)
     const getRelativePosition = () => {
@@ -94,14 +86,14 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
             />
             
             <ReviewContentLayout
-                topEffect={<FloatingCoinsEffect floatingItems={floatingItems} />}
+                topEffect={<FloatingCoinsEffect floatingItems={floatingItems} maxCount={6} />}
                 buildingImage={(
                     <div ref={buildingRef}>
                         <BuildingMotion
                             src={new URL(`../../assets/buildings/building-level-${finalStep + 1}.svg`, import.meta.url).href}
                             alt={`건물 레벨 ${finalStep + 1}`}
                             onClick={() => handleClick('store')}
-                            scale={clickCount > 0 ? 1.1 : 1}
+                            pulseTrigger={clickCount}
                         >
                             {/* 건물 위 부유하는 코인 */}
                             <motion.div 
@@ -116,9 +108,12 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
                 )}
                 bottomImage={(
                     <MoneyInteraction
-                        showMoney={showMoney}
-                        isMoneyAbsorbing={isMoneyAbsorbing}
-                        onMoneyClick={() => handleClick('money')}
+                        ref={moneyInteractionRef}
+                        onBaseIconClick={() => {
+                            // 이미 10단계면 흡수시키지 않음 (클릭카운트 증가도 방지)
+                            if (clickCount >= maxClicks) return;
+                            handleClick('money');
+                        }}
                         getRelativePosition={getRelativePosition}
                         imgRef={moneyRef}
                     />

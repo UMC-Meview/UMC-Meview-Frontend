@@ -1,12 +1,12 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import { motion, useAnimationControls } from "framer-motion";
 
 interface BuildingMotionProps {
     src: string;
     alt: string;
     onClick: () => void;
     isShaking?: boolean;
-    scale?: number;
+    pulseTrigger?: number; 
     children?: React.ReactNode;
 }
 
@@ -15,15 +15,23 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
     alt,
     onClick,
     isShaking = false,
-    scale = 1,
+    pulseTrigger,
     children
 }) => {
+    const controls = useAnimationControls();
+
+    useEffect(() => {
+        if (pulseTrigger !== undefined) {
+            void controls.start({ scale: [1, 1.1, 1] }, { duration: 0.3 });
+        }
+    }, [pulseTrigger, controls]);
+
     return (
         <motion.div
             className="relative cursor-pointer"
             onClick={onClick}
             whileTap={{ scale: 0.95 }}
-            animate={{ scale: scale > 1 ? [1, 1.1, 1] : 1 }}
+            animate={controls}
             transition={{ duration: 0.3 }}
         >
             <motion.img

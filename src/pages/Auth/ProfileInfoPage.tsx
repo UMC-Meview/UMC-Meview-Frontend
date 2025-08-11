@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button/Button";
 import Header from "../../components/common/Header.tsx";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
@@ -9,6 +9,7 @@ import { usePostSignup } from "../../hooks/queries/usePostSignup";
 import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 
 const ProfileInfoPage: React.FC = () => {
+    const location = useLocation();
     const signupData = getTempSignupData();
     const { signup, isLoading, error, isSuccess } = usePostSignup();
     const [birthYear, setBirthYear] = useState<string>(signupData.birthYear || "");
@@ -38,6 +39,7 @@ const ProfileInfoPage: React.FC = () => {
             
             signup({
                 ...signupData,
+                nickname: (location.state as { nickname?: string })?.nickname || signupData.nickname,
                 birthYear,
                 gender: englishGender,
             });

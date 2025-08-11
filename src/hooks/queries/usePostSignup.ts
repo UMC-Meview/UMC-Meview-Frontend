@@ -5,28 +5,22 @@ import { AxiosError } from "axios";
 import { setUserInfo } from "../../utils/auth";
 import { UserInfo } from "../../types/auth";
 
-// 회원가입 API 요청
+// 회원가입 요청
 const signupUser = async (signupData: SignupRequest): Promise<SignupResponse> => {
   try {
     const response = await axiosClient.post("/users/signup", signupData);
     return response.data;
   } catch (error: unknown) {
-    console.error("회원가입 API 호출 실패:", error);
-    
     if (error instanceof AxiosError && error.response) {
       const status = error.response.status;
       const errorData = error.response.data;
-      
-      console.error(`API 에러 - Status: ${status}`, errorData);
-      
-      // 409 Conflict: 중복된 닉네임
+
+      // 409: 닉네임 중복
       if (status === 409) {
         throw new Error("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해주세요.");
       }
-      
       throw new Error(errorData?.message || `회원가입 실패 (${status})`);
     }
-    
     throw new Error("네트워크 에러가 발생했습니다. 다시 시도해주세요.");
   }
 };
@@ -41,28 +35,39 @@ export interface UsePostSignupResult {
 
 export const usePostSignup = (): UsePostSignupResult => {
   const mutation = useMutation<SignupResponse, Error, SignupRequest>({
-    mutationFn: signupUser,
-    onSuccess: (data) => {
-      console.log("회원가입 성공, 사용자 정보 저장");
-      
-      if (!data) {
-        console.error("회원가입 응답 데이터가 없습니다");
-        return;
-      }
-      
-      // 사용자 정보 저장
-      const userInfo: UserInfo = {
-        id: data._id,
-        nickname: data.nickname,
-        tastePreferences: data.tastePreferences,
-        birthYear: data.birthYear,
-        gender: data.gender,
-      };
-      setUserInfo(userInfo);
+      mutationFn: signupUser,
+      onSuccess: async (data, variables) => {
+        if (data && data.user) {
+          const userInfo: UserInfo = {
+            id: data.user._id,
+            nickname: data.user.nickname,
+            tastePreferences: data.user.tastePreferences,
+            birthYear: data.user.birthYear,
+            gender: data.user.gender,
+          };
+          setUserInfo(userInfo);
+          return;
+        }
+
+        // 서버가 user를 안 주면 로그인으로 보완
+        try {
+          const loginRes = await axiosClient.post("/users/login", { nickname: variables.nickname });
+          const loginData = loginRes.data as SignupResponse;
+          if (loginData?.user) {
+            const userInfo: UserInfo = {
+              id: loginData.user._id,
+              nickname: loginData.user.nickname,
+              tastePreferences: loginData.user.tastePreferences,
+              birthYear: loginData.user.birthYear,
+              gender: loginData.user.gender,
+            };
+            setUserInfo(userInfo);
+          }
+        } catch {
+          // 무시: 사용자가 재시도 가능
+        }
     },
-    onError: (error) => {
-      console.error("회원가입 에러:", error);
-    },
+    onError: () => {},
   });
 
   return {

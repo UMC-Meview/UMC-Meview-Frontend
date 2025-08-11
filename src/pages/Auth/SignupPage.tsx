@@ -16,21 +16,20 @@ const SignupPage: React.FC = () => {
     const isKeyboardVisible = useKeyboardDetection();
     const navigate = useNavigate();
 
-    const isValidNickname = nickname.length >= 2 && nickname.length <= 12;
+    const isValidNickname = nickname.length >= 2 && nickname.length <= 8;
 
-    // 컴포넌트 마운트 시 닉네임 초기화 (빈값으로 시작)
+    // 마운트 시 닉네임 초기화
     useEffect(() => {
         setNickname("");
     }, []);
 
-    // 로그인 결과에 따른 페이지 이동
     useEffect(() => {
         if (isNewUser) {
-            navigate("/taste-preference");
+            navigate("/taste-preference", { state: { nickname } });
         } else if (isSuccess && data?.user) {
-            navigate("/profile");
+            navigate("/");
         }
-    }, [isSuccess, data, isNewUser, navigate]);
+    }, [isSuccess, data, isNewUser, navigate, nickname]);
 
     const handleNext = () => {
         if (isValidNickname) {
@@ -45,7 +44,6 @@ const SignupPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            {/* 헤더 */}
             <Header 
                 onBack={handleBack} 
                 showLogo={true} 
@@ -70,7 +68,7 @@ const SignupPage: React.FC = () => {
                                 onChange={(e) => setNickname(e.target.value)}
                                 placeholder="미냥"
                                 className="flex-1 px-0 py-1 text-xl font-medium bg-transparent border-0 outline-none transition-colors placeholder:text-xl placeholder:font-medium"
-                                maxLength={12}
+                                maxLength={8}
                                 disabled={isLoading}
                             />
                             <img
@@ -80,16 +78,14 @@ const SignupPage: React.FC = () => {
                             />
                         </div>
                         <p className={`text-base mt-2 w-full ${isValidNickname ? "text-[#FF774C]" : "text-gray-500"}`}>
-                            2자 이상 12자 이하로 입력해주세요.
+                            2자 이상 8자 이하로 입력해주세요.
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* 에러 메시지 */}
             {error && <ErrorMessage message={error.message} />}
 
-            {/* 하단 버튼 */}
             {!isKeyboardVisible && (
                 <BottomFixedWrapper>
                     <Button

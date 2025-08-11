@@ -55,7 +55,7 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
                                         inputClassName="text-[21px] font-semibold text-gray-800"
                                         showEditIcon={true}
                                         editMode="nickname"
-                                        maxLength={10}
+                                        maxLength={8}
                                     />
                                 </div>
                             ) : (

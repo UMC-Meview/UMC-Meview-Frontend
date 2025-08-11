@@ -10,10 +10,10 @@ const ReviewFeedbackPage: React.FC = () => {
     const [searchParams] = useSearchParams();
     
     // URL에서 storeId 파라미터 추출
-    const storeId = searchParams.get("storeId");
+    const storeId = searchParams.get("storeId") || "temp-store-id";
     
     // 가게 정보 가져오기
-    const { store, loading } = useGetStoreDetail(storeId || "");
+    const { store, loading } = useGetStoreDetail(storeId);
     const storeName = store?.name || "가게";
 
     const handleSatisfaction = () => {

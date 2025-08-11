@@ -7,6 +7,7 @@ interface ImageUploadProps {
     variant?: "profile" | "default";
     children?: React.ReactNode;
     noBorder?: boolean;
+    disablePreview?: boolean;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -16,17 +17,16 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     variant = "default",
     children,
     noBorder = false,
+    disablePreview = false,
 }) => {
     const [preview, setPreview] = React.useState<string | null>(null);
 
-    // 메모리 누수 방지
     React.useEffect(() => {
         return () => {
             if (preview) URL.revokeObjectURL(preview);
         };
     }, [preview]);
 
-    // children이 변경되면 내장 미리보기 초기화
     React.useEffect(() => {
         if (!children && preview) {
             URL.revokeObjectURL(preview);
@@ -38,8 +38,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // children이 없을 때만 내장 미리보기 사용
-        if (!children) {
+        // disablePreview가 true이거나 children이 있을 때는 내장 미리보기 사용하지 않음
+        if (!disablePreview && !children) {
             if (preview) URL.revokeObjectURL(preview);
             setPreview(URL.createObjectURL(file));
         }
@@ -47,7 +47,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onImageSelect?.(file);
     };
 
-    // 스타일 결정
     const isProfile = variant === "profile";
     const isSmall = size === "small";
     
@@ -62,24 +61,38 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
             <label className="cursor-pointer w-full flex flex-col items-center">
                 <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
                 
-                {/* 업로드 영역 */}
+                {/* 업로드 */}
                 <div className={`relative ${containerClass} flex items-center justify-center transition-colors`}
                      style={{ aspectRatio: "1/1", width: "100%", height: "100%" }}>
                     
-                    {/* 미리보기 이미지 (children 없을 때만) */}
-                    {preview && !children && (
-                        <img src={preview} alt="미리보기"
-                             className={`absolute inset-0 w-full h-full object-cover ${isProfile ? "rounded-2xl" : "rounded-xl"}`}
-                             style={{ zIndex: 2 }} />
+                    {/* 미리보기 */}
+                    {preview && !disablePreview && !children && (
+                        <img
+                            src={preview}
+                            alt="미리보기"
+                            className={`absolute inset-0 w-full h-full object-cover ${isProfile ? "rounded-2xl" : "rounded-xl"}`}
+                            style={{ zIndex: 2 }}
+                        />
                     )}
-                    
-                    {/* 커스텀 콘텐츠 또는 플러스 아이콘 */}
-                    {children || (
-                        <svg width={iconSize} height={iconSize}
-                             viewBox="0 0 24 24" fill="none"
-                             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                            <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="3"
-                                  strokeLinecap="round" strokeLinejoin="round" />
+
+                    {children}
+
+                    {/* 플러스 아이콘*/}
+                    {!preview && !children && (
+                        <svg
+                            width={iconSize}
+                            height={iconSize}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                        >
+                            <path
+                                d="M12 5V19M5 12H19"
+                                stroke="white"
+                                strokeWidth="3"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
                         </svg>
                     )}
                 </div>

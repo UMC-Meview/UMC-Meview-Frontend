@@ -17,7 +17,9 @@ export const removeUserInfo = (): void => {
 
 // 로그인 상태 확인 (사용자 정보 기반)
 export const isLoggedIn = (): boolean => {
-  return getUserInfo() !== null;
+  const info = getUserInfo();
+  // ID가 유효할 때만 로그인 상태로 인정
+  return !!(info && typeof info.id === "string" && info.id.trim().length > 0);
 };
 
 // 로그아웃 (모든 인증 데이터 삭제)
@@ -26,9 +28,8 @@ export const logout = (): void => {
   clearTempSignupData();
 };
 
-// 회원가입 임시 데이터 관리
+// 회원가입 임시 데이터 관리 (요청 스펙과 동일한 구조)
 const initialSignupData: SignupData = {
-  _id: "",
   nickname: "",
   tastePreferences: [],
   birthYear: "",

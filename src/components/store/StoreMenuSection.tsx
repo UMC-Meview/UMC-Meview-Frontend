@@ -2,6 +2,7 @@ import React from "react";
 import ImageUpload from "../common/ImageUpload";
 import StoreFormInput from "./StoreFormInput";
 import AddItemButton from "../common/Button/AddItemButton";
+import { useFilePreview } from "../../hooks/useFilePreview";
 
 export interface MenuItem {
   image: File | null;
@@ -14,7 +15,21 @@ interface StoreMenuSectionProps {
   menus: MenuItem[];
   onMenuChange: (menus: MenuItem[]) => void;
   onAddMenu: () => void;
+  getImageUrl?: (file: File) => string;
+  revokeImage?: (url: string) => void;
 }
+
+const PreviewImageMenu: React.FC<{ file: File | null }> = React.memo(({ file }) => {
+  const src = useFilePreview(file);
+  if (!src) return null;
+  return (
+    <img
+      src={src}
+      alt="메뉴사진"
+      className="w-full h-full object-cover rounded-lg"
+    />
+  );
+});
 
 const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange, onAddMenu }) => {
   const handleMenuImageSelect = (idx: number, file: File) => {
@@ -29,7 +44,7 @@ const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange
     onMenuChange(newMenus);
   };
 
-  // 메뉴가 없으면 기본 메뉴 하나 추가
+  // 메뉴 없으면 기본 항목 하나 표시
   const displayMenus = menus.length === 0 ? [{ image: null, name: "", price: "", detail: "" }] : menus;
 
   return (
@@ -45,17 +60,7 @@ const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange
                   size="small"
                   className="w-[75px] h-[75px]"
                   noBorder={true}
-                  children={menu.image ? (
-                    <img
-                      src={URL.createObjectURL(menu.image)}
-                      alt="메뉴사진"
-                      className="w-full h-full object-cover rounded-lg"
-                      onLoad={(e) => {
-                        // 이미지 로드 완료 후 Object URL 즉시 해제 (메모리 최적화)
-                        URL.revokeObjectURL(e.currentTarget.src);
-                      }}
-                    />
-                  ) : undefined}
+                  children={menu.image ? <PreviewImageMenu file={menu.image} /> : undefined}
                 />
               </div>
               <div className="flex-1 flex flex-col gap-2 justify-center">
@@ -83,7 +88,6 @@ const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange
           </div>
         ))}
       </div  >
-      {/* 메뉴 추가하기 버튼 */}
       <AddItemButton onClick={onAddMenu} variant="full">
         메뉴 추가하기 +
       </AddItemButton>

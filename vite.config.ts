@@ -8,7 +8,8 @@ export default defineConfig({
     server: {
         proxy: {
             "/api": {
-                target: "https://miview-api.vercel.app",
+                // 실제 운영 백엔드: https://miview.p-e.kr (Swagger 기준)
+                target: "https://miview.p-e.kr",
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ""),
             },

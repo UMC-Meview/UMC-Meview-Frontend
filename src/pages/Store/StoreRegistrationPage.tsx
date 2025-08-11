@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
@@ -10,6 +10,7 @@ import StoreOperatingHoursSection from "../../components/store/StoreOperatingHou
 import StoreImageSection from "../../components/store/StoreImageSection";
 import { useStoreRegistration } from "../../hooks/queries/usePostStoreRegistration";
 import { usePostMenuRegistration } from "../../hooks/queries/usePostMenuRegistration";
+import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
 import { useStoreRegistrationForm } from "../../hooks/useStoreRegistrationForm";
 import { StoreRegistrationRequest } from "../../types/store";
 import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
@@ -18,9 +19,11 @@ const StoreRegistrationPage: React.FC = () => {
     const navigate = useNavigate();
     const { mutate, isLoading, isSuccess, data, error } = useStoreRegistration();
     const { registerMenuAsync } = usePostMenuRegistration();
+    const { uploadImageAsync, isLoading: isImageUploading } = usePostImageUpload();
     const isKeyboardVisible = useKeyboardDetection();
+    // 메뉴 이미지 업로드 프라미스 캐시
+    const menuImageUploadCacheRef = useRef<Map<File, Promise<string | undefined>>>(new Map());
 
-    // 폼 상태 관리 훅 사용
     const {
         formData,
         handleInputChange,
@@ -31,13 +34,10 @@ const StoreRegistrationPage: React.FC = () => {
         handleAddMenu,
         handleOpeningHourChange,
         handleAddOpeningHour,
-        getImageUrl,
-        revokeImage,
-        convertToBase64,
         isFormValid,
     } = useStoreRegistrationForm();
 
-    // 폼 제출
+    // 제출
     const handleSubmit = async () => {
         if (isFormValid()) {
             try {
@@ -57,15 +57,33 @@ const StoreRegistrationPage: React.FC = () => {
                     qrPrefix: "https://miview.com/stores/",
                 };
 
-                // 이미지가 있는 경우에만 mainImage 필드 추가
+                // 메뉴 이미지 선행 업로드(병렬)
+                menuImageUploadCacheRef.current = new Map();
+                formData.menuList.forEach((menu) => {
+                    if (menu.image && !menuImageUploadCacheRef.current.has(menu.image)) {
+                        const promise = uploadImageAsync(menu.image)
+                            .then((res) => res.url)
+                            .catch((e) => {
+                                console.error("메뉴 이미지 선행 업로드 실패:", e);
+                                return undefined;
+                            });
+                        menuImageUploadCacheRef.current.set(menu.image, promise);
+                    }
+                });
+
                 if (formData.mainImages.length > 0) {
-                    const mainImageUrls = await Promise.all(formData.mainImages.map(convertToBase64));
-                    requestData.mainImage = mainImageUrls;
+                    const uploadedMainImageUrls = await Promise.all(
+                        formData.mainImages.map(async (file) => {
+                            const result = await uploadImageAsync(file);
+                            return result.url;
+                        })
+                    );
+                    requestData.mainImage = uploadedMainImageUrls;
                 }
                 
                 mutate(requestData);
             } catch (error) {
-                console.error("이미지 변환 실패:", error);
+                console.error("이미지 처리 중 오류:", error);
                 alert("이미지 처리 중 오류가 발생했습니다.");
             }
         } else {
@@ -73,43 +91,63 @@ const StoreRegistrationPage: React.FC = () => {
         }
     };
 
-        // API 성공 시 메뉴 등록 후 QR 코드 페이지로 이동
+        // 등록 성공 시 메뉴 등록 → QR 페이지
     useEffect(() => {
         if (isSuccess && data) {
-            // 가게 등록 성공 후 메뉴들 등록
+            // 유효 메뉴만 등록
             const validMenus = formData.menuList.filter(menu => 
                 menu.name.trim() !== "" && menu.price.trim() !== ""
             );
             
             if (validMenus.length > 0) {
-                // 모든 메뉴 등록을 Promise.all로 병렬 처리
-                const menuPromises = validMenus.map(menu => {
+                // 메뉴 등록 병렬 처리
+                const menuPromises = validMenus.map(async (menu) => {
+                    // 선행 업로드 결과 재사용
+                    let uploadedMenuImageUrl: string | undefined = undefined;
+                    if (menu.image) {
+                        const cached = menuImageUploadCacheRef.current.get(menu.image);
+                        if (cached) {
+                            try {
+                                uploadedMenuImageUrl = await cached;
+                            } catch (e) {
+                                console.error("메뉴 이미지 캐시 업로드 결과 대기 중 오류:", e);
+                            }
+                        } else {
+                            try {
+                                const res = await uploadImageAsync(menu.image);
+                                uploadedMenuImageUrl = res.url;
+                            } catch (e) {
+                                console.error("메뉴 이미지 업로드 실패, 이미지 없이 메뉴 등록 진행:", e);
+                            }
+                        }
+                    }
+
                     const menuData = {
                         name: menu.name,
                         description: menu.detail || "상세 설명 없음",
                         price: parseInt(menu.price) || 0,
                         storeId: data._id,
-                        image: menu.image ? `https://example.com/menu-${menu.name}.jpg` : undefined,
+                        image: uploadedMenuImageUrl,
                     };
                     return registerMenuAsync(menuData);
                 });
                 
-                // 모든 메뉴 등록 완료 후 QR 페이지로 이동
+                // 모두 완료 후 이동
                 Promise.all(menuPromises)
                     .then(() => {
                         navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
                     })
                     .catch((error) => {
                         console.error("메뉴 등록 중 오류:", error);
-                        // 메뉴 등록 실패해도 QR 페이지로 이동 (가게는 등록됨)
+                        // 실패해도 이동(가게는 등록됨)
                         navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
                     });
             } else {
-                // 메뉴가 없으면 바로 QR 페이지로 이동
+                // 메뉴 없으면 바로 이동
                 navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
             }
         }
-    }, [isSuccess, data, navigate, formData.menuList, registerMenuAsync]);
+    }, [isSuccess, data, navigate, formData.menuList, registerMenuAsync, uploadImageAsync]);
 
     const handleBack = () => navigate('/login');
 
@@ -129,8 +167,7 @@ const StoreRegistrationPage: React.FC = () => {
                     mainImages={formData.mainImages}
                     onImageSelect={handleMainImageSelect}
                     onReplaceImage={handleReplaceMainImage}
-                    getImageUrl={getImageUrl}
-                    revokeImage={revokeImage}
+                    maxImages={3}
                 />
                 {/* 기본 정보 섹션 */}
                 <StoreBasicInfoSection
@@ -175,10 +212,10 @@ const StoreRegistrationPage: React.FC = () => {
             {!isKeyboardVisible && (
                 <BottomFixedButton
                     onClick={handleSubmit}
-                    disabled={!isFormValid() || isLoading}
-                    variant={isFormValid() && !isLoading ? "primary" : "disabled"}
+                    disabled={!isFormValid() || isLoading || isImageUploading}
+                    variant={isFormValid() && !isLoading && !isImageUploading ? "primary" : "disabled"}
                 >
-                    {isLoading ? "등록 중..." : "가게 등록 완료"}
+                    {isImageUploading ? "이미지 업로드 중..." : isLoading ? "등록 중..." : "가게 등록 완료"}
                 </BottomFixedButton>
             )}
         </div>

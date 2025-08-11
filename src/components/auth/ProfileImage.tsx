@@ -15,15 +15,14 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
     onImageSelect,
     className = ""
 }) => {
-    const imageElement = (
-        <img
-            src={imageUrl || logoIcon}
-            alt="프로필 이미지"
-            className="w-[70px] h-[70px]"
-        />
-    );
-
     if (isEditable) {
+        const imageElement = (
+            <img
+                src={imageUrl || logoIcon}
+                alt="프로필 이미지"
+                className={imageUrl ? "w-full h-full object-cover rounded-2xl" : "w-[70px] h-[70px]"}
+            />
+        );
         return (
             <div className={`relative ${className}`}>
                 <ImageUpload
@@ -42,8 +41,12 @@ const ProfileImage: React.FC<ProfileImageProps> = ({
 
     return (
         <div className={`${className}`}>
-            <div className="w-[110px] h-[110px] bg-white border-2 border-gray-200 rounded-2xl flex items-center justify-center">
-                {imageElement}
+            <div className="w-[110px] h-[110px] bg-white border-2 border-gray-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                <img
+                    src={imageUrl || logoIcon}
+                    alt="프로필 이미지"
+                    className={imageUrl ? "w-full h-full object-cover rounded-2xl" : "w-[70px] h-[70px]"}
+                />
             </div>
         </div>
     );

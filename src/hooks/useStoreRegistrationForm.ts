@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StoreFormData } from "../types/store";
 
 export const useStoreRegistrationForm = () => {
+    const blobUrlsRef = useRef<string[]>([]);
     const [formData, setFormData] = useState<StoreFormData>({
         storeName: "",
         category: "한식",
@@ -88,20 +89,28 @@ export const useStoreRegistrationForm = () => {
         return formData.storeName.trim() !== "" && formData.address.trim() !== "";
     };
 
-    // 이미지를 base64로 변환
-    const convertToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.readAsDataURL(file);
-        });
+    // 이미지 URL 생성 및 추적
+    const getImageUrl = (file: File) => {
+        const url = URL.createObjectURL(file);
+        if (!blobUrlsRef.current.includes(url)) {
+            blobUrlsRef.current.push(url);
+        }
+        return url;
     };
 
-    // 이미지 URL 생성
-    const getImageUrl = (file: File) => URL.createObjectURL(file);
+    // 이미지 URL 해제 및 추적 제거
+    const revokeImage = (url: string) => {
+        URL.revokeObjectURL(url);
+        blobUrlsRef.current = blobUrlsRef.current.filter((u) => u !== url);
+    };
 
-    // 이미지 URL 해제
-    const revokeImage = (url: string) => URL.revokeObjectURL(url);
+    // 언마운트 시 남은 blob URL 정리
+    useEffect(() => {
+        return () => {
+            blobUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+            blobUrlsRef.current = [];
+        };
+    }, []);
 
     return {
         formData,
@@ -115,7 +124,6 @@ export const useStoreRegistrationForm = () => {
         handleAddOpeningHour,
         getImageUrl,
         revokeImage,
-        convertToBase64,
         isFormValid,
     };
 }; 

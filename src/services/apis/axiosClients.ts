@@ -6,7 +6,7 @@ export const axiosClient = axios.create({
     baseURL:
         import.meta.env.MODE === "development"
             ? "/api"
-            : "https://miview-api.vercel.app",
+            : "https://miview.p-e.kr",
     timeout: 10000,
 });
 

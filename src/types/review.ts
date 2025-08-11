@@ -8,7 +8,7 @@ export interface CreateReviewDto {
     score: number;
     foodReviews: string[];
     storeReviews: string[];
-    imageUrl: string;
+    imageUrls: string[]; 
 }
 
 export interface ReviewResponseDto {
@@ -20,7 +20,7 @@ export interface ReviewResponseDto {
     score: number;
     foodReviews: string[];
     storeReviews: string[];
-    imageUrl: string;
+    imageUrls: string[]; 
     createdAt: string;
     updatedAt: string;
 }
@@ -62,25 +62,39 @@ export interface DustParticle {
     index: number;
 }
 
-export interface UserReview {
+// 사용자 리뷰 조회 API 스펙에 맞춘 타입 정의
+export type Review = {
     _id: string;
     store: string;
     content: string;
     score: number;
     isPositive: boolean;
     createdAt: string;
-}
+};
 
-export interface UserReviewsResponse {
-    reviews: UserReview[];
+export type UserReviewsResponse = {
+    reviews: Review[];
     averagePositiveScore: number;
     averageNegativeScore: number;
-}
+};
+
+// UI 표시용 리뷰 타입: 스토어명과 썸네일 등 표시 전용 필드 포함
+export type DisplayReview = Review & {
+    storeId: string;
+    storeName: string;
+    storeAddress: string;
+    storeAddressShort: string;
+    storeCategory?: string;
+    storeLevel?: number;
+    storeIconPath?: string;
+    imageUrl?: string;
+    storeReviews?: string[];
+    foodReviews?: string[];
+};
 
 export interface UseGetUserReviewsResult {
-    reviews: UserReview[];
-    averagePositiveScore: number;
-    averageNegativeScore: number;
+    userReviews: UserReviewsResponse | null;
+    displayReviews: DisplayReview[];
     isLoading: boolean;
     error: string | null;
     isSuccess: boolean;
@@ -98,7 +112,7 @@ export interface ReviewSubmissionRequest {
 }
 
 export interface ReviewSubmissionResponse {
-    id: string;
+    _id: string;
     store: string;
     user: string;
     isPositive: boolean;
@@ -121,5 +135,3 @@ export interface ReviewLocationState {
     isPositive?: boolean;
     score?: number;
 }
-
-

@@ -143,6 +143,10 @@ export const useAddFavorite = (): UseAddFavoriteResult => {
             queryClient.invalidateQueries({
                 queryKey: ["store", storeId],
             });
+            // 프로필(리뷰/찜 수) 최신화
+            queryClient.invalidateQueries({
+                queryKey: ["userProfile", userId],
+            });
         },
     });
 
@@ -237,6 +241,10 @@ export const useRemoveFavorite = (): UseRemoveFavoriteResult => {
             });
             queryClient.invalidateQueries({
                 queryKey: ["store", storeId],
+            });
+            // 프로필(리뷰/찜 수) 최신화
+            queryClient.invalidateQueries({
+                queryKey: ["userProfile", userId],
             });
         },
     });

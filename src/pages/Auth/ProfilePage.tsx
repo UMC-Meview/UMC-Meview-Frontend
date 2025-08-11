@@ -8,6 +8,7 @@ import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import ProfileDropdownMenu from "../../components/common/Button/ProfileDropdownMenu";
 import { useGetUserProfile } from "../../hooks/queries/useGetUserProfile";
 import { useGetUserReviews } from "../../hooks/queries/useGetUserReviews";
+import { useGetFavoriteStores } from "../../hooks/queries/useGetFavoriteStores";
 import UserReviewInfo from "../../components/store/UserReviewInfo";
 import OrangePencilIcon from "../../assets/Orangepencil.svg";
 import { getUserInfo } from "../../utils/auth";
@@ -15,34 +16,30 @@ import { getUserInfo } from "../../utils/auth";
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-    const { data: userProfile, isLoading, error, refetch } = useGetUserProfile();
-    
-    // 사용자 ID 가져오기
     const userInfo = getUserInfo();
     const userId = userInfo?.id;
+    const { data: userProfile, isLoading, error, refetch } = useGetUserProfile(userId || "");
     
-    // 사용자 리뷰 목록 조회
     const {
-        reviews,
-        averagePositiveScore,
-        averageNegativeScore,
+        userReviews,
+        displayReviews,
         isLoading: reviewsLoading,
         error: reviewsError,
         isSuccess: reviewsSuccess,
         refetch: refetchReviews,
     } = useGetUserReviews(userId || "");
+
+    // 찜 목록은 항상 불러와 개수 산출(로그인 상태일 때)
+    const { favoriteStores: favoriteStoresForFallback } = useGetFavoriteStores(!!userId);
+
+    // 표시용 카운트: 목록 길이를 우선 사용, 없으면 프로필 응답 사용
+    const reviewCountDisplay = userReviews?.reviews
+        ? userReviews.reviews.length
+        : (userProfile?.reviewCount ?? 0);
+    const favoriteCountDisplay = favoriteStoresForFallback
+        ? favoriteStoresForFallback.length
+        : (userProfile?.favoriteCount ?? 0);
     
-    // 디버깅용: 실제 API 응답 데이터 확인
-    React.useEffect(() => {
-        if (reviewsSuccess && reviews.length > 0) {
-            console.log("실제 리뷰 데이터:", reviews);
-            console.log("첫 번째 리뷰의 store ID:", reviews[0]?.store);
-            console.log("첫 번째 리뷰의 store ID 타입:", typeof reviews[0]?.store);
-            console.log("첫 번째 리뷰의 store ID 길이:", reviews[0]?.store?.length);
-        }
-    }, [reviewsSuccess, reviews]);
-    
-    // 페이지 진입 시 최신 데이터 가져오기
     React.useEffect(() => {
         refetch();
         refetchReviews();
@@ -55,7 +52,6 @@ const ProfilePage: React.FC = () => {
         };
         
         const handleFocus = () => {
-            // 페이지가 포커스를 받을 때도 데이터 새로고침 (리뷰 작성 후 돌아왔을 때)
             refetch();
             refetchReviews();
         };
@@ -78,21 +74,6 @@ const ProfilePage: React.FC = () => {
         setIsMenuOpen(false);
         navigate("/profile/edit");
     };
-
-    // API 응답 데이터를 UserReviewInfo 컴포넌트에 맞는 형태로 변환
-    const transformedReviews = reviews.map((review) => ({
-        _id: review._id,
-        store: review.store,
-        user: { _id: userId || "", nickname: userProfile?.nickname || "", tastePreferences: [], birthYear: "", gender: "" },
-        content: review.content, // 실제 리뷰 텍스트 내용
-        isPositive: review.isPositive,
-        score: review.score,
-        storeReviews: [], // 백엔드에서 제공하지 않음 - 빈 배열로 설정
-        foodReviews: [], // 백엔드에서 제공하지 않음 - 빈 배열로 설정
-        imageUrl: "", // 백엔드에서 제공하지 않음 - 빈 문자열로 설정
-        createdAt: review.createdAt,
-        updatedAt: review.createdAt
-    }));
 
     if (isLoading) {
         return (
@@ -138,8 +119,8 @@ const ProfilePage: React.FC = () => {
                 nickname={userProfile?.nickname || "홍길동"}
                 introduction={userProfile?.introduction || ""}
                 tastePreferences={userProfile?.tastePreferences}
-                reviewCount={userProfile?.reviewCount}
-                favoriteCount={userProfile?.favoriteCount}
+                reviewCount={reviewCountDisplay}
+                favoriteCount={favoriteCountDisplay}
                 isEditable={false}
                 className="-ml-2"
             />
@@ -160,10 +141,10 @@ const ProfilePage: React.FC = () => {
                                 <h3 className="text-base font-semibold text-gray-900">내가 작성한 리뷰</h3>
                                 <div className="flex gap-1 ml-2">
                                     <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium border border-orange-400 text-orange-400">
-                                        보너스 평균 {averagePositiveScore.toFixed(0)}만원
+                                        보너스 평균 {(userReviews?.averagePositiveScore ?? 0).toFixed(0)}만원
                                     </span>
                                     <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium border border-orange-400 text-orange-400">
-                                        할퀸 수 평균 {averageNegativeScore.toFixed(0)}회
+                                        할퀸 수 평균 {(userReviews?.averageNegativeScore ?? 0).toFixed(0)}회
                                     </span>
                                 </div>
                             </div>
@@ -182,13 +163,15 @@ const ProfilePage: React.FC = () => {
                                     다시 시도
                                 </Button>
                             </div>
-                        ) : reviewsSuccess && transformedReviews.length > 0 ? (
+                        ) : reviewsSuccess && displayReviews.length > 0 ? (
                             <div className="space-y-3">
-                                {transformedReviews.map((review) => (
+                                {displayReviews.map((review) => (
                                     <UserReviewInfo 
-                                        key={review._id} 
+                                        key={review._id}
                                         review={review}
-                                        storeName="가게명" // 실제 가게명이 있다면 여기에 전달
+                                        storeName={review.storeName}
+                                        storeAddressShort={review.storeAddressShort}
+                                        storeCategory={review.storeCategory}
                                     />
                                 ))}
                             </div>

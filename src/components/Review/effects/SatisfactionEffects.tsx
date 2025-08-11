@@ -1,132 +1,130 @@
-import React from "react";
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FloatingItem } from "../../../types/review";
-import coinImage from "../../../assets/money/coin.svg";
 import moneyImage from "../../../assets/money/money.svg";
 
 // 부유하는 코인/지폐 효과 컴포넌트
 interface FloatingCoinsEffectProps {
     floatingItems: FloatingItem[];
+    maxCount?: number;
 }
 
-const FloatingCoinsEffect: React.FC<FloatingCoinsEffectProps> = ({ floatingItems }) => {
+const FloatingCoinsEffect: React.FC<FloatingCoinsEffectProps> = ({ floatingItems, maxCount = 6 }) => {
+    const limitedItems = useMemo(() => floatingItems.slice(0, maxCount), [floatingItems, maxCount]);
+
     return (
-        <AnimatePresence>
-            {floatingItems.map((item) => (
-                <motion.div
-                    key={item.id}
-                    className="absolute z-20"
-                    initial={{ 
-                        x: item.x, 
-                        y: item.y, 
-                        opacity: 1, 
-                        scale: item.type === 'money' ? 1 : 0,
-                        rotate: 0
-                    }}
-                    animate={item.type === 'coin' ? {
-                        // 코인: 건물로 흡수되는 애니메이션
-                        x: [item.x, item.x * 0.5, item.x * 0.2, 0],
-                        y: [item.y, item.y - 100, item.y - 200, -150],
-                        opacity: [1, 1, 1, 0],
-                        scale: [0, 1, 1.2, 0.8]
-                    } : {
-                        // 지폐: 부유하는 애니메이션
-                        y: [item.y - 10, item.y + 10, item.y - 10],
-                        rotate: [0, 10, -10, 0]
-                    }}
-                    exit={{ opacity: 0, scale: 0 }}
-                    transition={item.type === 'coin' ? {
-                        duration: 2.5,
-                        ease: [0.25, 0.46, 0.45, 0.94],
-                        times: [0, 0.3, 0.7, 1]
-                    } : {
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                    style={{ zIndex: 10 }}
-                >
-                    <img 
-                        src={item.type === 'money' ? moneyImage : coinImage} 
-                        alt={item.type === 'money' ? "지폐" : "코인"} 
-                        className="w-27 h-27" 
-                    />
-                </motion.div>
-            ))}
-        </AnimatePresence>
+        <div className="pointer-events-none" style={{ willChange: "transform" }}>
+            <AnimatePresence>
+                {limitedItems.map((item) => (
+                    <motion.div
+                        key={item.id}
+                        className="absolute z-20"
+                        initial={{
+                            x: item.x,
+                            y: item.y,
+                            opacity: 1,
+                            scale: 1,
+                            rotate: 0,
+                        }}
+                        animate={{
+                            y: [item.y - 12, item.y + 12, item.y - 12],
+                            rotate: [0, 10, -10, 0],
+                        }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                        style={{ zIndex: 10, willChange: "transform" }}
+                    >
+                        <img src={moneyImage} alt="지폐" className="w-27 h-27" />
+                    </motion.div>
+                ))}
+            </AnimatePresence>
+        </div>
     );
 };
 
+export interface MoneyInteractionHandle {
+    spawnAbsorb: () => void;
+}
+
 interface MoneyInteractionProps {
-    showMoney: boolean;
-    isMoneyAbsorbing: boolean;
-    onMoneyClick: () => void;
+    onBaseIconClick?: () => void;
     getRelativePosition: () => { x: number; y: number };
     imgRef?: React.Ref<HTMLImageElement>;
 }
 
-const MoneyInteraction: React.FC<MoneyInteractionProps> = ({
-    showMoney,
-    isMoneyAbsorbing,
-    onMoneyClick,
-    getRelativePosition,
-    imgRef
-}) => {
-    const d = isMoneyAbsorbing ? getRelativePosition() : { x: 0, y: 0 };
-    return (
-        <motion.div className="relative mt-8">
-            <AnimatePresence mode="wait">
-                {showMoney && (
-                        <motion.img
-                            src={moneyImage}
-                            alt="돈"
+// 기본 아이콘은 고정 렌더, 흡수 애니메이션은 인스턴스 배열로 동시 실행
+const MoneyInteraction = forwardRef<MoneyInteractionHandle, MoneyInteractionProps>(
+    ({ onBaseIconClick, getRelativePosition, imgRef }, ref) => {
+        type Instance = { id: number; dx: number; dy: number; sx: number; sy: number };
+        const [instances, setInstances] = useState<Instance[]>([]);
+        const idRef = useRef(0);
+        const containerRef = useRef<HTMLDivElement>(null);
+
+        const spawnAbsorb = useCallback(() => {
+            // 클릭 시 1회만 레이아웃 계산 
+            const { x, y } = getRelativePosition();
+            let sx = 0;
+            let sy = 0;
+            const moneyEl = (imgRef as React.RefObject<HTMLImageElement> | undefined)?.current ?? null;
+            const containerEl = containerRef.current;
+            if (moneyEl && containerEl) {
+                const moneyRect = moneyEl.getBoundingClientRect();
+                const containerRect = containerEl.getBoundingClientRect();
+                sx = moneyRect.left - containerRect.left;
+                sy = moneyRect.top - containerRect.top;
+            }
+            const newInstance: Instance = { id: ++idRef.current, dx: x, dy: y, sx, sy };
+            setInstances((prev) => [...prev, newInstance]);
+        }, [getRelativePosition, imgRef]);
+
+        useImperativeHandle(ref, () => ({ spawnAbsorb }), [spawnAbsorb]);
+
+        const handleBaseClick = () => {
+            // 베이스 아이콘 클릭 시 흡수 여부는 부모가 결정하여 필요 시 ref.spawnAbsorb() 호출
+            onBaseIconClick?.();
+        };
+
+        const handleComplete = (id: number) => {
+            setInstances((prev) => prev.filter((inst) => inst.id !== id));
+        };
+
+        return (
+            <div className="relative mt-8" ref={containerRef}>
+                    {/* 고정 아이콘 */}
+                    <motion.img
+                        src={moneyImage}
+                        alt="돈"
                         className="w-25 h-25 cursor-pointer"
                         ref={imgRef}
-                        initial={{ 
-                            scale: 0.5, 
-                            opacity: 0, 
-                            x: 0, 
-                            y: 0
-                        }}
-                        animate={isMoneyAbsorbing ? {
-                            // 지폐가 건물로 흡수되는 포물선 애니메이션
-                            x: [0, d.x * 0.3, d.x * 0.7, d.x],
-                            y: [0, d.y * 0.2 - 50, d.y * 0.6 - 20, d.y],
-                            scale: [1, 0.8, 0.4, 0],
-                            opacity: [1, 0.9, 0.5, 0],
-                        } : {
-                            // 새로운 지폐가 아래에서 올라오는 애니메이션
-                            x: [0, 0],
-                            y: [80, 0],
-                            scale: [0.5, 1.1, 1],
-                            opacity: [0, 1, 1]
-                        }}
-                        exit={{ 
-                            scale: 0, 
-                            opacity: 0, 
-                            y: -20
-                        }}
-                        transition={isMoneyAbsorbing ? {
-                            duration: 0.8,
-                            ease: [0.25, 0.46, 0.45, 0.94],
-                            times: [0, 0.3, 0.7, 1],
-                        } : {
-                            duration: 0.6,
-                            ease: [0.34, 1.56, 0.64, 1],
-                            times: [0, 0.7, 1]
-                        }}
-                        style={{ 
-                            filter: "drop-shadow(0 0 16px rgba(255, 215, 0, 0.8))",
-                            zIndex: isMoneyAbsorbing ? 30 : 'auto'
-                        }}
-                        onClick={onMoneyClick}
-                        whileTap={!isMoneyAbsorbing ? { scale: 0.9 } : {}}
-                        whileHover={!isMoneyAbsorbing ? { scale: 1.1 } : {}}
+                        initial={{ opacity: 1, scale: 1 }}
+                        whileTap={{ scale: 0.95 }}
+                        whileHover={{ scale: 1.05 }}
+                        onClick={handleBaseClick}
+                        style={{ filter: "drop-shadow(0 0 16px rgba(255, 215, 0, 0.8))", zIndex: 10 }}
                     />
-                )}
-            </AnimatePresence>
-        </motion.div>
-    );
-};
 
-export { FloatingCoinsEffect, MoneyInteraction }; 
+                    {/* 흡수 애니메이션 인스턴스 (히트 테스트 방지) */}
+                    {instances.map((inst) => (
+                        <motion.img
+                            key={inst.id}
+                            src={moneyImage}
+                            alt="흡수 지폐"
+                            className="absolute top-0 left-0 pointer-events-none"
+                            initial={{ x: inst.sx, y: inst.sy, opacity: 1, scale: 1 }}
+                            animate={{
+                                x: [inst.sx, inst.sx + inst.dx * 0.3, inst.sx + inst.dx * 0.7, inst.sx + inst.dx],
+                                y: [inst.sy, inst.sy + inst.dy * 0.2 - 50, inst.sy + inst.dy * 0.6 - 20, inst.sy + inst.dy],
+                                scale: [1, 0.8, 0.4, 0],
+                                opacity: [1, 0.9, 0.5, 0],
+                            }}
+                            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], times: [0, 0.3, 0.7, 1] }}
+                            onAnimationComplete={() => handleComplete(inst.id)}
+                            style={{ willChange: "transform", zIndex: 30 }}
+                        />
+                    ))}
+                </div>
+        );
+    }
+);
+
+export { FloatingCoinsEffect, MoneyInteraction };

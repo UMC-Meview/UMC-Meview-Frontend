@@ -8,10 +8,6 @@ const ReviewCompletePage: React.FC = () => {
     const handleGoHome = () => {
         navigate("/");
     };
-    
-    const handleGoProfile = () => {
-        navigate("/profile");
-    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -31,16 +27,6 @@ const ReviewCompletePage: React.FC = () => {
                 buttonText="미뷰 홈화면으로 이동하기"
                 onButtonClick={handleGoHome}
             />
-            
-            {/* 추가 버튼 - 내 리뷰 보기 */}
-            <div className="fixed bottom-24 left-0 right-0 px-6">
-                <button
-                    onClick={handleGoProfile}
-                    className="w-full py-4 px-6 rounded-full border-2 border-orange-500 bg-white text-orange-500 font-medium text-base transition-colors duration-200 hover:bg-orange-50"
-                >
-                    내 리뷰 보러가기
-                </button>
-            </div>
         </div>
     );
 };

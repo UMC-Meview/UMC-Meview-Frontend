@@ -67,34 +67,11 @@ export interface StoreRegistrationResponse {
     distance: number;
 }
 
-export type StoreResponseDto = StoreDetail[];
-
 export type SortType =
     | "보너스금액 많은 순"
     | "리뷰 많은 순"
     | "가까운 순"
     | "찜 많은 순";
-
-// 메뉴 등록 요청 타입
-export interface MenuRegistrationRequest {
-  name: string;
-  image?: string;
-  description: string;
-  price: number;
-  storeId: string;
-}
-
-// 메뉴 등록 응답 타입
-export interface MenuRegistrationResponse {
-  _id: string;
-  name: string;
-  image?: string;
-  description: string;
-  price: number;
-  storeId: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 // 가게 등록 페이지 폼 데이터 타입
 export interface StoreFormData {

@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/common/Header";
 import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
 import SelectionGrid from "../../components/common/SelectionGrid";
-import ImageUpload from "../../components/common/ImageUpload";
 import ThinDivider from "../../components/common/ThinDivider";
+import StoreImageSection from "../../components/store/StoreImageSection";
 import { STORE_REVIEW_TAGS, FOOD_REVIEW_TAGS, LAYOUT_CONFIGS } from "../../constants/options";
 import { usePostReview } from "../../hooks/queries/usePostReview";
+import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
 import { getUserInfo } from "../../utils/auth";
 import { ReviewLocationState } from "../../types/review";
 
@@ -14,6 +15,7 @@ const ReviewDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { submitReview, isLoading, error, isSuccess } = usePostReview();
+    const { uploadImageAsync, isLoading: isImageUploading } = usePostImageUpload();
     
     // 이전 페이지에서 전달받은 데이터
     const locationState = location.state as ReviewLocationState;
@@ -24,9 +26,7 @@ const ReviewDetailPage: React.FC = () => {
     
     const [selectedStoreTags, setSelectedStoreTags] = useState<string[]>([]);
     const [selectedFoodTags, setSelectedFoodTags] = useState<string[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_selectedImages, setSelectedImages] = useState<File[]>([]);
-    const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
 
     // 리뷰 등록 성공 시 완료 페이지로 이동
     useEffect(() => {
@@ -34,6 +34,8 @@ const ReviewDetailPage: React.FC = () => {
             navigate("/review/complete");
         }
     }, [isSuccess, navigate]);
+
+    // no-op
 
     const handleTagClick = (tag: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
         setter(prev => 
@@ -44,20 +46,26 @@ const ReviewDetailPage: React.FC = () => {
     };
 
     const handleImageSelect = (file: File) => {
+        // 서버에서 이미지 업로드를 처리하도록 파일만 보관
         setSelectedImages(prev => [...prev, file]);
-        
-        // 실제 프로젝트에서는 이미지를 서버에 업로드하고 URL을 받아야 함
-        // 현재는 임시로 파일명을 URL로 사용
-        const tempImageUrl = `https://example.com/images/${file.name}`;
-        setImageUrls(prev => [...prev, tempImageUrl]);
     };
 
-    const handleSubmit = () => {
+    const handleReplaceImage = (idx: number, file: File) => {
+        setSelectedImages(prev => {
+            const newImages = [...prev];
+            newImages[idx] = file;
+            return newImages;
+        });
+    };
+
+    // Data URL 프리뷰 사용 (별도 처리 불필요)
+
+    const handleSubmit = async () => {
         // 사용자 정보 확인
         const userInfo = getUserInfo();
+        
         if (!userInfo) {
-            alert("로그인이 필요합니다.");
-            navigate("/auth");
+            navigate("/review/login", { replace: true });
             return;
         }
 
@@ -67,25 +75,36 @@ const ReviewDetailPage: React.FC = () => {
             return;
         }
 
-        // 리뷰 데이터 구성
-        const reviewData = {
-            storeId: storeId,
-            userId: userInfo.id,
-            isPositive: isPositive,
-            score: score,
-            foodReviews: selectedFoodTags,
-            storeReviews: selectedStoreTags,
-            imageUrls: imageUrls,
-        };
+        try {
+            // 선택된 이미지들을 업로드
+            const imageUrls: string[] = [];
+            if (selectedImages.length > 0) {
+                for (const file of selectedImages) {
+                    const result = await uploadImageAsync(file);
+                    imageUrls.push(result.url);
+                }
+            }
 
-        console.log("Submitting review data:", reviewData);
-        
-        // 리뷰 등록 API 호출
-        submitReview(reviewData);
-        // 성공/실패는 useEffect와 usePostReview 훅에서 자동 처리됨
+            // 리뷰 데이터 구성
+            const reviewData = {
+                storeId: storeId,
+                userId: userInfo.id,
+                isPositive: isPositive,
+                score: score,
+                foodReviews: selectedFoodTags,
+                storeReviews: selectedStoreTags,
+                imageUrls: imageUrls, // 업로드된 이미지 URL들
+            };
+            
+            // 리뷰 등록 API 호출
+            submitReview(reviewData);
+        } catch (error) {
+            console.error("이미지 업로드 실패:", error);
+            alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+        }
     };
 
-    const isSubmitDisabled = (selectedStoreTags.length === 0 && selectedFoodTags.length === 0) || isLoading;
+    const isSubmitDisabled = (selectedStoreTags.length === 0 && selectedFoodTags.length === 0) || isLoading || isImageUploading;
 
     return (
         <div className="min-h-screen bg-white">
@@ -151,10 +170,12 @@ const ReviewDetailPage: React.FC = () => {
                     <h3 className="text-[18px] font-bold text-black mb-4">
                         사진 첨부하기 <span className="text-sm font-normal text-gray-500">(선택사항)</span>
                     </h3>
-                    <ImageUpload
+                    
+                    <StoreImageSection
+                        mainImages={selectedImages}
                         onImageSelect={handleImageSelect}
-                        size="small"
-                        className="w-[100px] h-[100px]"
+                        onReplaceImage={handleReplaceImage}
+                        variant="review"
                     />
                 </div>
             </div>
@@ -164,7 +185,7 @@ const ReviewDetailPage: React.FC = () => {
                 variant={isSubmitDisabled ? "disabled" : "primary"}
                 disabled={isSubmitDisabled}
             >
-                {isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
+                {isImageUploading ? "이미지 업로드 중..." : isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
             </BottomFixedButton>
         </div>
     );
