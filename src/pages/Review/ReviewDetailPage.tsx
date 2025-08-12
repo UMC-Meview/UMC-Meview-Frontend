@@ -5,6 +5,7 @@ import BottomFixedButton from "../../components/common/Button/BottomFixedButton"
 import SelectionGrid from "../../components/common/SelectionGrid";
 import ThinDivider from "../../components/common/ThinDivider";
 import StoreImageSection from "../../components/store/StoreImageSection";
+import ErrorMessage from "../../components/common/ErrorMessage";
 import { STORE_REVIEW_TAGS, FOOD_REVIEW_TAGS, LAYOUT_CONFIGS } from "../../constants/options";
 import { usePostReview } from "../../hooks/queries/usePostReview";
 import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
@@ -123,9 +124,7 @@ const ReviewDetailPage: React.FC = () => {
                         솔직한 리뷰를 남겨주세요!
                     </p>
                     {error && (
-                        <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-sm text-center">
-                            {error.message}
-                        </div>
+                        <ErrorMessage message={error.message} className="mt-2" variant="compact" />
                     )}
                 </div>
 
