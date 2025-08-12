@@ -32,6 +32,8 @@ const ProfileEditPage: React.FC = () => {
 
     const tasteSelector = useMultiSelect({ maxSelections: 3 });
     const foodTypeSelector = useMultiSelect({ maxSelections: 3 });
+    const { clear: clearTasteSelections } = tasteSelector;
+    const { clear: clearFoodTypeSelections } = foodTypeSelector;
 
     const [userName, setUserName] = useState("");
     const [userDescription, setUserDescription] = useState("");
@@ -46,26 +48,14 @@ const ProfileEditPage: React.FC = () => {
             setUserName((userProfile.nickname || "").slice(0, 8));
             setUserDescription(userProfile.introduction || "");
             setProfileImageUrl(userProfile.profileImageUrl || "");
-
-            const existingPreferences = userProfile.tastePreferences || [];
-            existingPreferences.forEach((preference) => {
-                if (
-                    PROFILE_TASTE_OPTIONS.some(
-                        (option) => option === preference
-                    )
-                ) {
-                    tasteSelector.toggleItem(preference);
-                } else if (
-                    FOOD_TYPE_OPTIONS.some(
-                        (option) => option.name === preference
-                    )
-                ) {
-                    foodTypeSelector.toggleItem(preference);
-                }
-            });
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userProfile]);
+
+    // 페이지 마운트 시 선택 상태 초기화 (클린 스타트)
+    useEffect(() => {
+        clearTasteSelections();
+        clearFoodTypeSelections();
+    }, [clearTasteSelections, clearFoodTypeSelections]);
 
     useEffect(() => {
         if (isSuccess) {
@@ -86,8 +76,8 @@ const ProfileEditPage: React.FC = () => {
     };
 
     const handleEditComplete = () => {
-        // 유효성 검사
-        if (totalSelections < 3 || !userName.trim()) return;
+        // 유효성 검사: 정확히 3개 선택
+        if (totalSelections !== 3 || !userName.trim()) return;
         if (!userProfile?.id) return;
 
         const updateData: PatchProfileRequest = {
@@ -178,8 +168,8 @@ const ProfileEditPage: React.FC = () => {
             {!isKeyboardVisible && (
                 <BottomFixedButton
                     onClick={handleEditComplete}
-                    variant={totalSelections >= 3 && !isUpdating && !isUploading ? "primary" : "gray"}
-                    disabled={isUpdating || isUploading || totalSelections < 3}
+                    variant={totalSelections === 3 && !isUpdating && !isUploading ? "primary" : "gray"}
+                    disabled={isUpdating || isUploading || totalSelections !== 3 || !userName.trim()}
                 >
                     {isUploading ? "이미지 업로드 중..." : isUpdating ? "수정 중..." : "수정완료"}
                 </BottomFixedButton>
