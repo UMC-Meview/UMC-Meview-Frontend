@@ -70,9 +70,8 @@ const ReviewDetailPage: React.FC = () => {
             return;
         }
 
-        // 필수 선택 확인
-        if (selectedStoreTags.length === 0 && selectedFoodTags.length === 0) {
-            alert("최소 하나의 평가를 선택해주세요.");
+        // 필수 선택 확인 (매장 1개 + 음식 1개)
+        if (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) {
             return;
         }
 
@@ -105,7 +104,7 @@ const ReviewDetailPage: React.FC = () => {
         }
     };
 
-    const isSubmitDisabled = (selectedStoreTags.length === 0 && selectedFoodTags.length === 0) || isLoading || isImageUploading;
+    const isSubmitDisabled = (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) || isLoading || isImageUploading;
 
     return (
         <div className="min-h-screen bg-white">
@@ -122,6 +121,9 @@ const ReviewDetailPage: React.FC = () => {
                     </h2>
                     <p className="text-sm text-black text-center">
                         솔직한 리뷰를 남겨주세요!
+                    </p>
+                    <p className="mt-2 text-center text-sm text-gray-500">
+                        매장과 음식 평가를 각각 최소 1개 이상 선택해주세요.
                     </p>
                     {error && (
                         <ErrorMessage message={error.message} className="mt-2" variant="compact" />
