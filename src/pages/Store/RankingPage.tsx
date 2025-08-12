@@ -9,7 +9,7 @@ const RankingPage = () => {
     const { stores, loading, error } = useRankingStores();
 
     const handleStoreClick = (storeId: string) => {
-        navigate(`/store/${storeId}`);
+        navigate(`/stores/${storeId}`);
     };
 
     return (
