@@ -61,19 +61,22 @@ export const useGetStoreDetail = (storeId: string): UseStoreDetailResult => {
     console.log("useGetStoreDetail - userId:", userId);
     console.log("useGetStoreDetail - enabled:", !!storeId);
 
-    // storeId 유효성 검사 추가
-    const isValidStoreId = storeId && typeof storeId === 'string' && storeId.trim() !== '' && storeId.length >= 10;
+    // storeId 유효성 검사 
+    const isValidStoreId: boolean =
+        typeof storeId === 'string' &&
+        storeId.trim().length > 0 &&
+        storeId.length >= 10;
 
     const {
         data: rawStore,
         isLoading: loading,
         error: queryError,
         refetch,
-    } = useQuery({
-        queryKey: ["store", storeId, userId], // userId도 쿼리 키에 포함
-        queryFn: () => fetchStoreDetail(storeId, userId),
-        enabled: isValidStoreId, // 유효한 storeId일 때만 쿼리 실행
-        staleTime: 5 * 60 * 1000, // 5분
+        } = useQuery({
+        queryKey: ["store", storeId, userId],
+        queryFn: () => fetchStoreDetail(storeId as string, userId as string), 
+        enabled: isValidStoreId, 
+        staleTime: 5 * 60 * 1000,
         retry: 1,
     });
 

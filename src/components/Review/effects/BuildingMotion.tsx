@@ -8,6 +8,7 @@ interface BuildingMotionProps {
     isShaking?: boolean;
     pulseTrigger?: number; 
     children?: React.ReactNode;
+    scale?: number;
 }
 
 const BuildingMotion: React.FC<BuildingMotionProps> = ({
@@ -16,7 +17,7 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
     onClick,
     isShaking = false,
     pulseTrigger,
-    children
+    children,
 }) => {
     const controls = useAnimationControls();
 
