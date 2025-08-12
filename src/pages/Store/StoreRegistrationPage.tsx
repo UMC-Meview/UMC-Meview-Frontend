@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
 import StoreMenuSection from "../../components/store/StoreMenuSection";
 import ErrorMessage from "../../components/common/ErrorMessage";
@@ -152,16 +153,14 @@ const StoreRegistrationPage: React.FC = () => {
     const handleBack = () => navigate('/login');
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header
-                onBack={handleBack}
-                center="가게 등록하기"
-            />
-            
+        <FixedFrameLayout
+            header={<Header onBack={handleBack} center="가게 등록하기" />}
+            contentClassName="px-6"
+        >
             {/* 에러 메시지 표시 */}
             {error && <ErrorMessage message={error} />}
             
-                            <div className="px-6 sm:px-8 md:px-10 lg:px-12 w-full max-w-screen-sm mx-auto" style={{ marginTop: "15px" }}>
+            <div style={{ marginTop: "15px" }}>
                 {/* 메인 이미지 섹션 */}
                 <StoreImageSection
                     mainImages={formData.mainImages}
@@ -218,7 +217,7 @@ const StoreRegistrationPage: React.FC = () => {
                     {isImageUploading ? "이미지 업로드 중..." : isLoading ? "등록 중..." : "가게 등록 완료"}
                 </BottomFixedButton>
             )}
-        </div>
+        </FixedFrameLayout>
     );
 };
 

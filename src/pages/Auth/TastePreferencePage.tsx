@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button/Button.tsx";
 import Header from "../../components/common/Header.tsx";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 import SelectionGrid from "../../components/common/SelectionGrid";
 import { useMultiSelect } from "../../hooks/useMultiSelect";
@@ -26,14 +27,10 @@ const TastePreferencePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header 
-                onBack={handleBack} 
-                showLogo={true} 
-                page={2} 
-            />
-
-            <div className="flex-1 flex flex-col justify-start px-6 sm:px-8 md:px-10 lg:px-12 mt-14">
+        <FixedFrameLayout
+            header={<Header onBack={handleBack} showLogo={true} page={2} />}
+        >
+            <div className="px-6 mt-14">
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>선호하는 입맛을</div>
@@ -54,7 +51,7 @@ const TastePreferencePage: React.FC = () => {
                             layout={LAYOUT_CONFIGS.SIGNUP_TASTE}
                             className="mb-4 flex-1 flex flex-col justify-center"
                         />
-                    </div>
+            </div>
                 </div>
             </div>
 
@@ -67,7 +64,7 @@ const TastePreferencePage: React.FC = () => {
                     다음 ({selectedTastes.length}/3)
                 </Button>
             </BottomFixedWrapper>
-        </div>
+        </FixedFrameLayout>
     );
 };
 

@@ -80,12 +80,14 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white px-0">
-            <Header 
-                onBack={() => navigate(-1)}
-                center="평가하기"
-            />
-            
+        <div className="bg-white mx-auto max-w-[390px]">
+            <div className="sticky top-0 z-30 bg-white">
+                <Header 
+                    onBack={() => navigate(-1)}
+                    center="평가하기"
+                />
+            </div>
+            <div className="overflow-y-auto" style={{ height: "calc(100dvh - 180px)", maxHeight: "calc(100dvh - 180px)" }}>
             <ReviewContentLayout
                 topEffect={<div className="h-0" />}
                 buildingImage={(
@@ -122,6 +124,7 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
                 showBonus={false}
                 showProgress={true}
             />
+            </div>
             
             <BottomFixedWrapper>
                 <Button

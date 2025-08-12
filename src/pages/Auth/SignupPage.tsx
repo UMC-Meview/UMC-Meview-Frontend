@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button/Button.tsx";
 import Header from "../../components/common/Header.tsx";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 import checkRoundFill from "../../assets/Check_round_fill.svg";
 import closeRoundFill from "../../assets/Close_round_fill.svg";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
@@ -43,16 +44,14 @@ const SignupPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header 
-                onBack={handleBack} 
-                showLogo={true} 
-                page={1} 
-            />
-
+        <FixedFrameLayout
+            header={
+                <Header onBack={handleBack} showLogo={true} page={1} />
+            }
+        >
             {/* 메인 콘텐츠 */}
-            <div className="flex-1 flex flex-col justify-start px-6 sm:px-8 md:px-10 lg:px-12 mt-14">
-                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
+            <div className="px-6 mt-14">
+                    <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     {/* 타이틀 */}
                     <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
                         <div>닉네임을</div>
@@ -81,8 +80,8 @@ const SignupPage: React.FC = () => {
                             2자 이상 8자 이하로 입력해주세요.
                         </p>
                     </div>
+                    </div>
                 </div>
-            </div>
 
             {error && <ErrorMessage message={error.message} />}
 
@@ -98,7 +97,7 @@ const SignupPage: React.FC = () => {
                     </Button>
                 </BottomFixedWrapper>
             )}
-        </div>
+        </FixedFrameLayout>
     );
 };
 

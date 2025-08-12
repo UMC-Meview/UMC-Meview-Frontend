@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button/Button";
 import Header from "../../components/common/Header.tsx";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import { getTempSignupData, updateTempProfile } from "../../utils/auth";
@@ -49,20 +50,16 @@ const ProfileInfoPage: React.FC = () => {
     const isFormValid = birthYear.length === 6 && selectedGender;
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header 
-                onBack={() => navigate(-1)} 
-                showLogo={true} 
-                page={3} 
-            />
-
-            <div className="flex-1 flex flex-col justify-start px-6 sm:px-8 md:px-10 lg:px-12">
+        <FixedFrameLayout
+            header={<Header onBack={() => navigate(-1)} showLogo={true} page={3} />}
+        >
+            <div className="px-6">
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mb-8 mt-14">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
-                        <div>출생년도와 성별을</div>
-                        <div>알려주세요</div>
-                    </h2>
-                </div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4 text-left leading-tight w-full">
+                            <div>출생년도와 성별을</div>
+                            <div>알려주세요</div>
+                        </h2>
+                    </div>
 
                 <div className="w-full max-w-[400px] mx-auto flex flex-col items-center">
                     {/* 생년월일 입력 */}
@@ -96,8 +93,8 @@ const ProfileInfoPage: React.FC = () => {
                                 </button>
                             ))}
                         </div>
-                    </div>
                 </div>
+            </div>
             </div>
 
             {error && <ErrorMessage message={error.message} />}
@@ -113,7 +110,7 @@ const ProfileInfoPage: React.FC = () => {
                     </Button>
                 </BottomFixedWrapper>
             )}
-        </div>
+        </FixedFrameLayout>
     );
 };
 

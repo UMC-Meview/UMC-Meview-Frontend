@@ -5,6 +5,7 @@ import alertErrorIcon from "../../assets/alert-error.svg";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
 import Button from "../../components/common/Button/Button";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 
 const QRCodePage: React.FC = () => {
     const navigate = useNavigate();
@@ -39,18 +40,21 @@ const QRCodePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header
-                onBack={() => navigate(-1)}
-                center="가게 이름"
-                right={
-                    <div className="transform scale-x-[-1]">
-                        <BackButton onClick={handleForward} />
-                    </div>
-                }
-            />
-            <div className="flex-1 flex flex-col justify-start px-6" style={{ marginTop: "56px" }}>
-                <div className="w-full max-w-[400px] mx-auto flex flex-col items-center mt-8">
+        <FixedFrameLayout
+            header={
+                <Header
+                    onBack={() => navigate(-1)}
+                    center="가게 이름"
+                    right={
+                        <div className="transform scale-x-[-1]">
+                            <BackButton onClick={handleForward} />
+                        </div>
+                    }
+                />
+            }
+            contentClassName="px-6"
+        >
+            <div className="w-full mx-auto flex flex-col items-center justify-center min-h-[calc(100dvh-180px)] py-6">
                     <div className="text-xl font-bold text-gray-800 text-center leading-snug mb-8">
                         {qrCodeBase64 ? (
                             <>QR을 캡쳐하거나<br />저장해주세요!</>
@@ -81,7 +85,6 @@ const QRCodePage: React.FC = () => {
                         </div>
                     )}
                 </div>
-            </div>
             <BottomFixedWrapper>
                 <Button 
                     variant="primary" 
@@ -91,7 +94,7 @@ const QRCodePage: React.FC = () => {
                     {qrCodeBase64 ? "QR 저장하기" : "홈으로 돌아가기"}
                 </Button>
             </BottomFixedWrapper>
-        </div>
+        </FixedFrameLayout>
     );
 };
 

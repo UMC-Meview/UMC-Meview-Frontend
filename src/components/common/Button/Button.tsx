@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
         secondary: "bg-white border border-gray-300",
         disabled: "bg-gray-300 text-gray-500 cursor-not-allowed",
         gray: "bg-[#D9D9D9]",
-        compact: "w-full h-12 text-lg font-bold rounded-full transition-colors bg-[#FF774C] px-15 py-0",
+        compact: "w-full h-12 text-lg font-bold rounded-full transition-colors bg-[#FF774C] px-15 py-0 whitespace-nowrap",
     };
 
     const hasCustomTextColor =

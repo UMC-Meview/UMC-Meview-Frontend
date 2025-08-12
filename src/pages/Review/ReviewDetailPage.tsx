@@ -107,13 +107,16 @@ const ReviewDetailPage: React.FC = () => {
     const isSubmitDisabled = (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) || isLoading || isImageUploading;
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header 
-                onBack={() => navigate(-1)}
-                center="평가하기"
-            />
+        <div className="bg-white mx-auto max-w-[390px]">
+            <div className="sticky top-0 z-30 bg-white">
+                <Header 
+                    onBack={() => navigate(-1)}
+                    center="평가하기"
+                />
+            </div>
             
-            <div className="px-6 sm:px-8 md:px-10 lg:px-12 pb-32">
+            <div className="overflow-y-auto" style={{ height: "calc(100dvh - 180px)", maxHeight: "calc(100dvh - 180px)" }}>
+                <div className="px-6 pb-32">
                 {/* 메인 질문 */}
                 <div className="mb-8">
                     <h2 className="text-xl font-bold text-black mt-2 mb-1 text-center">
@@ -178,6 +181,7 @@ const ReviewDetailPage: React.FC = () => {
                         onReplaceImage={handleReplaceImage}
                         variant="review"
                     />
+                </div>
                 </div>
             </div>
 

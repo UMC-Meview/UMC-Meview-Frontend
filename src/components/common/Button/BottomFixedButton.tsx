@@ -17,7 +17,7 @@ const BottomFixedButton: React.FC<BottomFixedButtonProps> = ({
     className = ""
 }) => {
     return (
-        <div className={`fixed bottom-0 left-0 right-0 pt-[13px] pb-[20px] px-6 z-10 bg-white border-t border-gray-300 ${className}`}>
+        <div className={`fixed bottom-0 left-1/2 -translate-x-1/2 pt-[13px] pb-[20px] px-6 z-10 bg-white border-t border-gray-300 w-full max-w-[390px] ${className}`}>
             <Button 
                 onClick={onClick} 
                 variant={variant}

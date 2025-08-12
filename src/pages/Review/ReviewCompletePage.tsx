@@ -10,7 +10,8 @@ const ReviewCompletePage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="bg-white mx-auto max-w-[390px]">
+            <div className="overflow-y-auto" style={{ height: "100dvh" }}>
             <ReviewCompleteLayout
                 title={
                     <>
@@ -27,6 +28,7 @@ const ReviewCompletePage: React.FC = () => {
                 buttonText="미뷰 홈화면으로 이동하기"
                 onButtonClick={handleGoHome}
             />
+            </div>
         </div>
     );
 };

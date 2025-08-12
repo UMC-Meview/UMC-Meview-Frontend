@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/common/Header";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
 import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import SelectionGrid from "../../components/common/SelectionGrid";
@@ -110,13 +111,9 @@ const ProfileEditPage: React.FC = () => {
     );
 
     return (
-        <div className="min-h-screen bg-white flex flex-col">
-            <Header
-                onBack={() => window.history.back()}
-                center="프로필 수정"
-            />
-
-            <div className="flex-1 overflow-y-auto pb-20">
+        <FixedFrameLayout
+            header={<Header onBack={() => window.history.back()} center="프로필 수정" />}
+        >
                 <ProfileInfoSection
                     imageUrl={localPreview || profileImageUrl}
                     nickname={userName}
@@ -126,8 +123,7 @@ const ProfileEditPage: React.FC = () => {
                     onNicknameChange={setUserName}
                     onIntroductionChange={setUserDescription}
                 />
-
-                <div className="px-6 sm:px-8 md:px-10 lg:px-12 py-6 space-y-5">
+                <div className="px-6 py-6 space-y-5">
                     <ThinDivider />
 
                     <div className="space-y-4">
@@ -162,7 +158,6 @@ const ProfileEditPage: React.FC = () => {
                             className="w-full mb-4 flex-1 flex flex-col justify-center"
                         />
                     </div>
-                </div>
             </div>
 
             {!isKeyboardVisible && (
@@ -174,7 +169,7 @@ const ProfileEditPage: React.FC = () => {
                     {isUploading ? "이미지 업로드 중..." : isUpdating ? "수정 중..." : "수정완료"}
                 </BottomFixedButton>
             )}
-        </div>
+        </FixedFrameLayout>
     );
 };
 

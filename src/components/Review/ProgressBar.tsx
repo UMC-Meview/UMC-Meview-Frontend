@@ -32,7 +32,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
     }, [clickCount, onBonusUpdate]);
 
     return (
-        <div className="fixed bottom-24 left-0 right-0 px-6 pb-4">
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 px-6 pb-4 w-full max-w-[390px] z-10">
             <div className="text-center">
                 {showBonus && (
                     <motion.div 

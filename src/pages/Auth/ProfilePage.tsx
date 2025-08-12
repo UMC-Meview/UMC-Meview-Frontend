@@ -98,20 +98,22 @@ const ProfilePage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white">
-            <Header
-                onBack={() => navigate(-1)}
-                center="프로필"
-                right={
-                    <ProfileDropdownMenu
-                        isOpen={isMenuOpen}
-                        onToggle={() => setIsMenuOpen(!isMenuOpen)}
-                        onClose={() => setIsMenuOpen(false)}
-                        onEditProfile={handleEditProfile}
-                        onLogout={handleLogout}
-                    />
-                }
-            />
+        <div className="bg-white mx-auto max-w-[390px]">
+            <div className="sticky top-0 z-30 bg-white">
+                <Header
+                    onBack={() => navigate(-1)}
+                    center="프로필"
+                    right={
+                        <ProfileDropdownMenu
+                            isOpen={isMenuOpen}
+                            onToggle={() => setIsMenuOpen(!isMenuOpen)}
+                            onClose={() => setIsMenuOpen(false)}
+                            onEditProfile={handleEditProfile}
+                            onLogout={handleLogout}
+                        />
+                    }
+                />
+            </div>
 
             {/* 프로필 정보 섹션 */}
             <ProfileInfoSection
@@ -131,7 +133,7 @@ const ProfilePage: React.FC = () => {
             </div>
 
             {/* 리뷰 섹션 */}
-            <div className="px-6 sm:px-8 md:px-10 lg:px-12 mb-8">
+            <div className="px-6 mb-8">
                 <div className="flex justify-center">
                     <div className="w-[356px]">
                         {/* 내가 작성한 리뷰 헤더 */}

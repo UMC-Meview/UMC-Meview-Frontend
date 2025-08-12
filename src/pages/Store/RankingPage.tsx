@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
+import FixedFrameLayout from "../../layouts/FixedFrameLayout";
 import RankingItem from "../../components/store/RankingItem";
 import { useRankingStores } from "../../hooks/queries/useGetStoreList";
 import StoreListSkeleton from "../../components/store/StoreListSkeleton";
@@ -13,14 +14,10 @@ const RankingPage = () => {
     };
 
     return (
-        <div className="h-screen bg-white flex flex-col mx-auto max-w-[450px]">
-            {/* 헤더 - 고정 */}
-            <div className="flex-shrink-0">
-                <Header onBack={() => navigate("/")} center={"랭킹"} />
-            </div>
-
-            {/* 랭킹 리스트 */}
-            <div className="flex-1 overflow-y-auto bg-white">
+        <FixedFrameLayout
+            header={<Header onBack={() => navigate("/")} center={"랭킹"} />}
+        >
+            <div className="bg-white">
                 {loading && (
                     <div className="px-4">
                         <StoreListSkeleton />
@@ -57,7 +54,7 @@ const RankingPage = () => {
                         />
                     ))}
             </div>
-        </div>
+        </FixedFrameLayout>
     );
 };
 
