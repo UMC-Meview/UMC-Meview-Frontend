@@ -26,7 +26,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
     // isFullScreen이 되면 가게 디테일 페이지로 navigate
     useEffect(() => {
         if (isFullScreen && store) {
-            navigate(`/store/${storeId}`);
+            navigate(`/stores/${storeId}`);
         }
     }, [isFullScreen, storeId, store, navigate]);
 
