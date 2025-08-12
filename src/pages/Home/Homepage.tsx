@@ -8,6 +8,7 @@ import {
     ServerSortType,
 } from "../../hooks/queries/useGetStoreList";
 import { RotateCwIcon } from "lucide-react";
+import { useCallback } from "react";
 
 // 가게의 averagePositiveScore를 기반으로 레벨 생성 (1-5)
 const getStoreLevel = (averagePositiveScore?: number): number => {
@@ -56,6 +57,13 @@ const Homepage = () => {
         longitude: searchLocation.lng,
     });
 
+    // 가게 클릭 시 지도 이동 함수 추가
+    const moveToStore = useCallback((lat: number, lng: number) => {
+        setMapCenter({ lat: lat - 0.001, lng });
+        setSearchLocation({ lat: lat - 0.001, lng }); // 검색 위치도 업데이트
+        setHasMapMoved(false); // 재검색 버튼 숨김
+    }, []);
+
     const handleBottomSheetFullScreenChange = (isFullScreen: boolean) => {
         setIsBottomSheetFullScreen(isFullScreen);
     };
@@ -84,7 +92,7 @@ const Homepage = () => {
     };
 
     // 지도 중심점 변경 감지
-    const handleMapChanged = (map: any) => {
+    const handleMapChanged = (map: kakao.maps.Map) => {
         const center = map.getCenter();
         const newLat = center.getLat();
         const newLng = center.getLng();
@@ -112,7 +120,7 @@ const Homepage = () => {
         setCurrentSortBy(newSortBy);
     };
 
-    // 카카오맵 로더 사용 (구조분해할당 에러 수정)
+    // 카카오맵 로더 사용
     const [mapLoading, mapError] = useKakaoLoader({
         appkey: import.meta.env.VITE_KAKAO_MAP_API_KEY,
     });
@@ -209,6 +217,7 @@ const Homepage = () => {
                 onSortChange={handleSortChange}
                 loading={loading}
                 error={error}
+                onStoreLocationMove={moveToStore}
             />
             <Footer />
         </div>

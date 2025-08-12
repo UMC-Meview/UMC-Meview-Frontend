@@ -15,8 +15,9 @@ interface StoreBottomSheetProps {
     currentLocation?: { lat: number; lng: number };
     currentSortBy?: ServerSortType;
     onSortChange?: (sortBy: ServerSortType) => void;
-    loading?: boolean; // 추가
-    error?: string | null; // 추가
+    loading?: boolean;
+    error?: string | null;
+    onStoreLocationMove?: (lat: number, lng: number) => void;
 }
 
 const StoreDetailContainer: React.FC<{
@@ -46,6 +47,7 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     onSortChange,
     loading = false,
     error = null,
+    onStoreLocationMove,
 }) => {
     const [mode, setMode] = useState<"list" | "detail">("list");
     const [internalSelectedStoreId, setInternalSelectedStoreId] =
@@ -93,6 +95,7 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
                     onSortChange={onSortChange}
                     loading={loading}
                     error={error}
+                    onStoreLocationMove={onStoreLocationMove}
                 />
             ) : (
                 <StoreDetailContainer

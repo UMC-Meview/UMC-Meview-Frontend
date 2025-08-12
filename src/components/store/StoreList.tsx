@@ -18,6 +18,7 @@ interface StoreListProps {
     onSortChange?: (sortBy: ServerSortType) => void;
     loading?: boolean;
     error?: string | null;
+    onStoreLocationMove?: (lat: number, lng: number) => void;
 }
 
 const StoreList: React.FC<StoreListProps> = ({
@@ -28,6 +29,7 @@ const StoreList: React.FC<StoreListProps> = ({
     onSortChange,
     loading = false,
     error = null,
+    onStoreLocationMove,
 }) => {
     const sortOptions: SortType[] = [
         "보너스금액 많은 순",
@@ -81,8 +83,13 @@ const StoreList: React.FC<StoreListProps> = ({
         }
     };
 
-    const handleStoreClick = (storeId: string) => {
-        onStoreSelect?.(storeId);
+    const handleStoreClick = (store: StoreDetail) => {
+        onStoreSelect?.(store._id);
+
+        if (onStoreLocationMove && store.location?.coordinates) {
+            const [longitude, latitude] = store.location.coordinates;
+            onStoreLocationMove(latitude, longitude);
+        }
     };
 
     // BottomSheet가 확장된 상태인지 확인
@@ -151,7 +158,7 @@ const StoreList: React.FC<StoreListProps> = ({
                             <div
                                 key={store._id}
                                 className="flex items-start space-x-3 py-3 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors"
-                                onClick={() => handleStoreClick(store._id)}
+                                onClick={() => handleStoreClick(store)}
                             >
                                 <SafeImage
                                     src={store.mainImage}
