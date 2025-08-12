@@ -143,7 +143,7 @@ const ReviewDetailPage: React.FC = () => {
                         onToggle={(tag) => handleTagClick(tag, setSelectedStoreTags)}
                         maxSelections={999}
                         layout={LAYOUT_CONFIGS.STORE_REVIEW}
-                        className="[&_button]:text-[16px] [&>div]:justify-between"
+                         className="[&_button]:text-[16px] [&>div]:justify-center"
                     />
                 </div>
 

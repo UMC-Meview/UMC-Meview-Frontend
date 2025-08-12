@@ -93,9 +93,13 @@ const SelectionGrid: React.FC<SelectionGridProps> = ({
     return (
         <div className={`w-full ${className}`}>
             {rows.map((row, index) => (
-                <div 
-                    key={index} 
-                    className={`flex flex-row justify-center gap-3 ${rowGapClasses[rowGap]} w-full`}
+                <div
+                    key={index}
+                    className={`${rowGapClasses[rowGap]} w-full ${
+                        row.length === 2
+                            ? 'grid grid-cols-2 justify-center gap-3 justify-items-start'
+                            : 'flex flex-row justify-center gap-3'
+                    }`}
                 >
                     {row.map((item) => {
                         const itemName = typeof item === 'string' ? item : item.name;
