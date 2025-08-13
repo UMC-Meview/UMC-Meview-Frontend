@@ -1,5 +1,5 @@
 import { Map, MapMarker, useKakaoLoader } from "react-kakao-maps-sdk";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
@@ -9,6 +9,7 @@ import {
 } from "../../hooks/queries/useGetStoreList";
 import { RotateCwIcon } from "lucide-react";
 import { useCallback } from "react";
+import { useLocation } from "react-router-dom";
 
 // 가게의 averagePositiveScore를 기반으로 레벨 생성 (1-5)
 const getStoreLevel = (averagePositiveScore?: number): number => {
@@ -25,6 +26,13 @@ const getStoreLevel = (averagePositiveScore?: number): number => {
 const Homepage = () => {
     const initialLat = 37.5665;
     const initialLng = 126.978;
+
+    // URL 쿼리에서 keyword 읽기 (항상 최상단에서 훅 호출)
+    const location = useLocation();
+    const keywordFromQuery = useMemo(() => {
+        const params = new URLSearchParams(location.search);
+        return params.get("keyword") || "";
+    }, [location.search]);
 
     // 현재 검색 기준 위치 (실제 데이터를 가져오는 기준)
     const [searchLocation, setSearchLocation] = useState({
@@ -51,11 +59,29 @@ const Homepage = () => {
     const [currentSortBy, setCurrentSortBy] =
         useState<ServerSortType>("positiveScore");
 
-    // 가게 목록 가져오기 (검색 기준 위치 + 정렬 기준 사용)
-    const { stores, loading, error } = useHomeStores(currentSortBy, {
-        latitude: searchLocation.lat,
-        longitude: searchLocation.lng,
-    });
+    // 검색 유입 시 BottomSheet 자동 확장 처리 쿼리 파싱
+    const shouldExpandByQuery = useMemo(() => {
+        const params = new URLSearchParams(location.search);
+        return params.get("expand") === "1";
+    }, [location.search]);
+
+    // 쿼리 변화에 따라 확장 플래그 업데이트
+    useEffect(() => {
+        if (shouldExpandBottomSheet !== shouldExpandByQuery) {
+            setShouldExpandBottomSheet(shouldExpandByQuery);
+        }
+    }, [shouldExpandByQuery, shouldExpandBottomSheet]);
+
+    // 가게 목록 가져오기 (검색 기준 위치 + 정렬 기준 + 키워드)
+    const { stores, loading, error } = useHomeStores(
+        currentSortBy,
+        {
+            latitude: searchLocation.lat,
+            longitude: searchLocation.lng,
+        },
+        true,
+        keywordFromQuery
+    );
 
     // 가게 클릭 시 지도 이동 함수 추가
     const moveToStore = useCallback((lat: number, lng: number) => {
@@ -63,6 +89,20 @@ const Homepage = () => {
         setSearchLocation({ lat: lat - 0.001, lng }); // 검색 위치도 업데이트
         setHasMapMoved(false); // 재검색 버튼 숨김
     }, []);
+
+    // 쿼리의 lat/lng가 있으면 홈 진입 시 해당 위치로 지도 이동
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const latParam = params.get("lat");
+        const lngParam = params.get("lng");
+        if (latParam && lngParam) {
+            const lat = parseFloat(latParam);
+            const lng = parseFloat(lngParam);
+            if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                moveToStore(lat, lng);
+            }
+        }
+    }, [location.search, moveToStore]);
 
     const handleBottomSheetFullScreenChange = (isFullScreen: boolean) => {
         setIsBottomSheetFullScreen(isFullScreen);
@@ -147,7 +187,9 @@ const Homepage = () => {
 
     return (
         <div className="relative w-full h-screen">
-            {!isBottomSheetFullScreen && <SearchBar />}
+            {!isBottomSheetFullScreen && (
+                <SearchBar keyword={keywordFromQuery} />
+            )}
 
             {/* 재검색 버튼 */}
             {hasMapMoved && !isBottomSheetFullScreen && (
