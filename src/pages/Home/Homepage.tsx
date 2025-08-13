@@ -40,11 +40,21 @@ const Homepage = () => {
         lng: initialLng,
     });
 
-    // 지도의 현재 중심점 (사용자가 이동시킨 위치)
+    // 지도의 현재 중심점 (사용자가 이동시킨 위치) 및 반경(km)
     const [mapCenter, setMapCenter] = useState({
         lat: initialLat,
         lng: initialLng,
     });
+    const [mapRadiusKm, setMapRadiusKm] = useState<number | undefined>(
+        undefined
+    );
+    const [pendingCenter, setPendingCenter] = useState({
+        lat: initialLat,
+        lng: initialLng,
+    });
+    const [pendingRadiusKm, setPendingRadiusKm] = useState<number | undefined>(
+        undefined
+    );
 
     // 지도가 이동했는지 여부 (재검색 버튼 표시용)
     const [hasMapMoved, setHasMapMoved] = useState(false);
@@ -78,6 +88,7 @@ const Homepage = () => {
         {
             latitude: searchLocation.lat,
             longitude: searchLocation.lng,
+            radius: mapRadiusKm,
         },
         true,
         keywordFromQuery
@@ -132,26 +143,54 @@ const Homepage = () => {
     };
 
     // 지도 중심점 변경 감지
-    const handleMapChanged = (map: kakao.maps.Map) => {
+    const handleBoundsOrDragChanged = (map: kakao.maps.Map) => {
         const center = map.getCenter();
         const newLat = center.getLat();
         const newLng = center.getLng();
-
         setMapCenter({ lat: newLat, lng: newLng });
 
-        // 검색 기준 위치와 현재 지도 중심점이 다르면 재검색 버튼 표시
+        // bounds로 반경 계산은 pending에만 반영 (즉시 재조회 X)
+        const bounds = map.getBounds();
+        if (bounds) {
+            const ne = bounds.getNorthEast();
+            const R = 6371e3;
+            const toRad = (deg: number) => (deg * Math.PI) / 180;
+            const dLat = toRad(ne.getLat() - newLat);
+            const dLng = toRad(ne.getLng() - newLng);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(toRad(newLat)) *
+                    Math.cos(toRad(ne.getLat())) *
+                    Math.sin(dLng / 2) *
+                    Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distanceMeters = R * c;
+            const radiusKm = distanceMeters / 1000;
+            setPendingRadiusKm(radiusKm);
+        }
+        setPendingCenter({ lat: newLat, lng: newLng });
+
         const distance = Math.sqrt(
             Math.pow(newLat - searchLocation.lat, 2) +
                 Math.pow(newLng - searchLocation.lng, 2)
         );
-
         const shouldShow = distance > 0.001;
         setHasMapMoved(shouldShow);
     };
 
+    const handleZoomChanged = (map: kakao.maps.Map) => {
+        // 확대/축소 시에는 즉시 반영하여 재조회
+        handleBoundsOrDragChanged(map);
+        setSearchLocation({ lat: pendingCenter.lat, lng: pendingCenter.lng });
+        setMapRadiusKm(pendingRadiusKm);
+        setHasMapMoved(false);
+    };
+
     // 재검색 버튼 클릭 핸들러
     const handleResearch = () => {
-        setSearchLocation({ lat: mapCenter.lat, lng: mapCenter.lng });
+        // 보류해 둔 중심/반경을 실제 검색 기준으로 확정
+        setSearchLocation({ lat: pendingCenter.lat, lng: pendingCenter.lng });
+        setMapRadiusKm(pendingRadiusKm);
         setHasMapMoved(false);
     };
 
@@ -214,9 +253,9 @@ const Homepage = () => {
             <Map
                 center={{ lat: mapCenter.lat, lng: mapCenter.lng }}
                 style={{ width: "100%", height: "100vh" }}
-                onBoundsChanged={handleMapChanged}
-                onDragEnd={handleMapChanged}
-                onZoomChanged={handleMapChanged}
+                onBoundsChanged={handleBoundsOrDragChanged}
+                onDragEnd={handleBoundsOrDragChanged}
+                onZoomChanged={handleZoomChanged}
             >
                 {/* 가게 마커들 렌더링 - 로딩 중이 아닐 때만 표시 */}
                 {!loading &&
