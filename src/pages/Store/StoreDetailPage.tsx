@@ -20,10 +20,6 @@ const StoreDetailPage: React.FC = () => {
         navigate(-1);
     };
 
-    const handleToggleFavorite = () => {
-        console.log("페이지에서 찜하기 토글 - 추후 구현 예정");
-    };
-
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -118,10 +114,7 @@ const StoreDetailPage: React.FC = () => {
 
             <div className="px-4">
                 {/* 가게 상세 정보 */}
-                <StoreInfo
-                    store={store}
-                    onToggleFavorite={handleToggleFavorite}
-                />
+                <StoreInfo store={store} />
                 <Divider />
 
                 {/* 메뉴 */}

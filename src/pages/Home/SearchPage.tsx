@@ -60,8 +60,10 @@ const SearchPage = () => {
         setRecentSearches(updatedSearches);
         localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
 
-        // 홈으로 이동하며 해당 검색어로 리스트 검색 + BottomSheet 확장
-        navigate(`/?keyword=${encodeURIComponent(keyword.trim())}&expand=1`);
+        // 홈으로 이동하며 해당 검색어로 리스트 검색 + BottomSheet 확장 + 지도 레벨 기본값 설정
+        navigate(
+            `/?keyword=${encodeURIComponent(keyword.trim())}&expand=1&level=5`
+        );
     };
 
     // 엔터키 처리
@@ -74,8 +76,10 @@ const SearchPage = () => {
     // 최근 검색어 클릭 처리
     const handleRecentSearchClick = (keyword: string) => {
         setSearchKeyword(keyword);
-        // 최근 검색어 선택 시 홈으로 이동 + BottomSheet 확장
-        navigate(`/?keyword=${encodeURIComponent(keyword.trim())}&expand=1`);
+        // 최근 검색어 선택 시 홈으로 이동 + BottomSheet 확장 + 지도 레벨 기본값 설정
+        navigate(
+            `/?keyword=${encodeURIComponent(keyword.trim())}&expand=1&level=5`
+        );
     };
 
     return (
@@ -140,7 +144,7 @@ const SearchPage = () => {
                                                         lat
                                                     )}&lng=${encodeURIComponent(
                                                         lng
-                                                    )}`
+                                                    )}&level=5`
                                                 );
                                             }}
                                         >
