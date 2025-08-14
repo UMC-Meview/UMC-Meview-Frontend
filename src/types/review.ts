@@ -63,12 +63,26 @@ export interface DustParticle {
 }
 
 // 사용자 리뷰 조회 API 스펙에 맞춘 타입 정의
+export type PopulatedStoreInReview = {
+    _id: string;
+    name: string;
+    category: string;
+    address: string;
+    averagePositiveScore?: number;
+    averageNegativeScore?: number;
+};
+
 export type Review = {
     _id: string;
-    store: string;
-    content: string;
+    // 백엔드에서 populate된 경우 객체, 과거 호환을 위해 string도 허용
+    store: string | PopulatedStoreInReview;
+    // 과거 일부 화면에서 사용하던 자유 텍스트는 선택값으로 유지
+    content?: string;
     score: number;
     isPositive: boolean;
+    foodReviews?: string[];
+    storeReviews?: string[];
+    imageUrls?: string[];
     createdAt: string;
 };
 

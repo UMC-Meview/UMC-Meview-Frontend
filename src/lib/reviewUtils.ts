@@ -1,8 +1,10 @@
 import type { Review } from "../types/review";
 
-// 리뷰 썸네일 결정: 현재는 플레이스홀더를 위해 undefined 반환
-export const resolveReviewThumbnail = (_review: Review): string | undefined => {
-  void _review;
+// 리뷰 썸네일 결정: 이미지가 있으면 첫 번째를 사용
+export const resolveReviewThumbnail = (review: Review): string | undefined => {
+  if (Array.isArray(review.imageUrls) && review.imageUrls.length > 0) {
+    return review.imageUrls[0];
+  }
   return undefined;
 };
 

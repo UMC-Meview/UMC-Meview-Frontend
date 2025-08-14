@@ -62,3 +62,41 @@ export const updateTempPreferences = (tastePreferences: string[]): void => {
 export const updateTempProfile = (birthYear: string, gender: string): void => {
   setTempSignupData({ birthYear, gender });
 }; 
+
+// 리뷰 임시 저장/복원 유틸
+export interface ReviewDraftData {
+  storeId: string;
+  storeName?: string;
+  isPositive: boolean;
+  score: number;
+  foodReviews: string[];
+  storeReviews: string[];
+  imageDataUrls: string[]; // File 객체를 JSON으로 저장할 수 없으므로 Data URL로 저장
+}
+
+const REVIEW_DRAFT_KEY = "review_draft";
+
+export const saveReviewDraft = (draft: ReviewDraftData): void => {
+  try {
+    localStorage.setItem(REVIEW_DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    // 저장 실패 시 무시 (용량 초과 등)
+  }
+};
+
+export const getReviewDraft = (): ReviewDraftData | null => {
+  try {
+    const raw = localStorage.getItem(REVIEW_DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as ReviewDraftData) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const clearReviewDraft = (): void => {
+  try {
+    localStorage.removeItem(REVIEW_DRAFT_KEY);
+  } catch {
+    // 무시
+  }
+};

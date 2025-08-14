@@ -3,6 +3,7 @@ import { axiosClient } from "../../services/apis/axiosClients";
 import { SignupRequest, SignupResponse, SignupError } from "../../types/auth";
 import { AxiosError } from "axios";
 import { setUserInfo } from "../../utils/auth";
+import { submitDraftReview } from "../../lib/reviewDraft";
 import { UserInfo } from "../../types/auth";
 
 // 회원가입 요청
@@ -36,38 +37,23 @@ export interface UsePostSignupResult {
 export const usePostSignup = (): UsePostSignupResult => {
   const mutation = useMutation<SignupResponse, Error, SignupRequest>({
       mutationFn: signupUser,
-      onSuccess: async (data, variables) => {
-        if (data && data.user) {
-          const userInfo: UserInfo = {
-            id: data.user._id,
-            nickname: data.user.nickname,
-            tastePreferences: data.user.tastePreferences,
-            birthYear: data.user.birthYear,
-            gender: data.user.gender,
-          };
-          setUserInfo(userInfo);
-          return;
-        }
+      onSuccess: async (data) => {
+        if (!data?.user) return;
 
-        // 서버가 user를 안 주면 로그인으로 보완
+        const userInfo: UserInfo = {
+          id: data.user._id,
+          nickname: data.user.nickname,
+          tastePreferences: data.user.tastePreferences,
+          birthYear: data.user.birthYear,
+          gender: data.user.gender,
+        };
+        setUserInfo(userInfo);
         try {
-          const loginRes = await axiosClient.post("/users/login", { nickname: variables.nickname });
-          const loginData = loginRes.data as SignupResponse;
-          if (loginData?.user) {
-            const userInfo: UserInfo = {
-              id: loginData.user._id,
-              nickname: loginData.user.nickname,
-              tastePreferences: loginData.user.tastePreferences,
-              birthYear: loginData.user.birthYear,
-              gender: loginData.user.gender,
-            };
-            setUserInfo(userInfo);
-          }
+          await submitDraftReview(userInfo.id);
         } catch {
-          // 무시: 사용자가 재시도 가능
+          // 무시: 임시 리뷰 전송 실패는 치명적이지 않음
         }
     },
-    onError: () => {},
   });
 
   return {

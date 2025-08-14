@@ -3,6 +3,7 @@ import { axiosClient } from "../../services/apis/axiosClients";
 import { LoginRequest, LoginResponse, LoginError } from "../../types/auth";
 import { AxiosError } from "axios";
 import { setUserInfo } from "../../utils/auth";
+import { submitDraftReview } from "../../lib/reviewDraft";
 import { UserInfo } from "../../types/auth";
 
 // 닉네임 로그인 (신규 회원 분기 포함)
@@ -46,7 +47,7 @@ export interface UsePostLoginResult {
 export const usePostLogin = (): UsePostLoginResult => {
     const mutation = useMutation<LoginResponse, Error, LoginRequest>({
         mutationFn: loginWithNickname,
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
             if (data?.user && !data.isNewUser) {
                 const userInfo: UserInfo = {
                     id: data.user._id,
@@ -56,9 +57,14 @@ export const usePostLogin = (): UsePostLoginResult => {
                     gender: data.user.gender,
                 };
                 setUserInfo(userInfo);
+                // 임시 리뷰가 있다면 전송 시도
+                try {
+                    await submitDraftReview(userInfo.id);
+                } catch {
+                    // 무시: 임시 리뷰 전송 실패는 치명적이지 않음
+                }
             }
         },
-        onError: () => {},
     });
 
     return {

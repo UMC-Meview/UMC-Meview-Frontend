@@ -1,7 +1,7 @@
 import { Review, DisplayReview } from "../../types/review";
 import ReviewTag from "../common/ReviewTag";
 import GrayCheckIcon from "../../assets/grayCheck.svg";
-import SafeImage from "../common/SafeImage";
+import ReviewImageCollage from "../Review/ReviewImageCollage";
 
 interface UserReviewInfoProps {
     review: (Review & {
@@ -16,6 +16,7 @@ interface UserReviewInfoProps {
 
 const UserReviewInfo = ({ review, storeName, storeAddressShort, storeCategory }: UserReviewInfoProps) => {
     const { isPositive, score, storeReviews, foodReviews, imageUrl, content } = review;
+    const imageUrls = (review as DisplayReview & { imageUrls?: string[] }).imageUrls || (imageUrl ? [imageUrl] : []);
     const displayStoreName = storeName && storeName.trim() !== "" ? storeName : "가게명";
     
     const scoreText = isPositive ? `내가 준 보너스 ${score}만원` : `내가 할퀸 수 ${score}번`;
@@ -65,12 +66,7 @@ const UserReviewInfo = ({ review, storeName, storeAddressShort, storeCategory }:
                         )}
                     </div>
                     
-                    {/* 리뷰 이미지 (이미지가 없으면 SafeImage가 플레이스홀더 표시) */}
-                    <SafeImage
-                        src={imageUrl}
-                        alt="리뷰 이미지"
-                        className="w-[90%] h-[187px] object-cover rounded-sm bg-gray-50 border border-gray-200"
-                    />
+                    <ReviewImageCollage imageUrls={imageUrls} className="w-[90%] h-[187px]" />
                 </div>
             </div>
         </div>

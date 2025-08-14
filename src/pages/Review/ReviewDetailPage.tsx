@@ -9,7 +9,7 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 import { STORE_REVIEW_TAGS, FOOD_REVIEW_TAGS, LAYOUT_CONFIGS } from "../../constants/options";
 import { usePostReview } from "../../hooks/queries/usePostReview";
 import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
-import { getUserInfo } from "../../utils/auth";
+import { getUserInfo, saveReviewDraft } from "../../utils/auth";
 import { ReviewLocationState } from "../../types/review";
 
 const ReviewDetailPage: React.FC = () => {
@@ -35,9 +35,7 @@ const ReviewDetailPage: React.FC = () => {
             navigate("/review/complete");
         }
     }, [isSuccess, navigate]);
-
-    // no-op
-
+    
     const handleTagClick = (tag: string, setter: React.Dispatch<React.SetStateAction<string[]>>) => {
         setter(prev => 
             prev.includes(tag) 
@@ -61,29 +59,53 @@ const ReviewDetailPage: React.FC = () => {
 
     // Data URL 프리뷰 사용 (별도 처리 불필요)
 
+    const filesToDataUrls = async (files: File[]): Promise<string[]> => {
+        return Promise.all(
+            files.map(
+                (file) =>
+                    new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result as string);
+                        reader.onerror = () => reject(new Error("이미지 변환 실패"));
+                        reader.readAsDataURL(file);
+                    })
+            )
+        );
+    };
+
     const handleSubmit = async () => {
         // 사용자 정보 확인
         const userInfo = getUserInfo();
         
-        if (!userInfo) {
-            navigate("/review/login", { replace: true });
-            return;
-        }
-
         // 필수 선택 확인 (매장 1개 + 음식 1개)
         if (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) {
             return;
         }
 
-        try {
-            // 선택된 이미지들을 업로드
-            const imageUrls: string[] = [];
-            if (selectedImages.length > 0) {
-                for (const file of selectedImages) {
-                    const result = await uploadImageAsync(file);
-                    imageUrls.push(result.url);
-                }
+        if (!userInfo) {
+            try {
+                const imageDataUrls = selectedImages.length > 0 ? await filesToDataUrls(selectedImages) : [];
+                saveReviewDraft({
+                    storeId,
+                    storeName,
+                    isPositive,
+                    score,
+                    foodReviews: selectedFoodTags,
+                    storeReviews: selectedStoreTags,
+                    imageDataUrls,
+                });
+            } catch (e) {
+                console.error("임시 리뷰 저장 실패", e);
             }
+            navigate("/login", { replace: true });
+            return;
+        }
+
+        try {
+            // 선택된 이미지들을 병렬 업로드
+            const imageUrls: string[] = selectedImages.length
+                ? await Promise.all(selectedImages.map(async (file) => (await uploadImageAsync(file)).url))
+                : [];
 
             // 리뷰 데이터 구성
             const reviewData = {
