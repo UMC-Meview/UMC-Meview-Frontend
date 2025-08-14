@@ -44,7 +44,7 @@ const Gallery: React.FC<GalleryProps> = ({
     if (!items || items.length === 0) {
         return (
             <div className="py-3">
-                <h2 className="text-xl font-bold text-gray-900 mb-3">
+                <h2 className="text-[18px] font-bold text-gray-900 mb-3">
                     {title}
                 </h2>
                 <div className="flex flex-col items-center justify-center py-8">

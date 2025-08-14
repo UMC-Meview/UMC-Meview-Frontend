@@ -18,12 +18,12 @@ const FavoritePage = () => {
                 />
             </div>
 
-            {/* 콘텐츠 영역 - 푸터 높이만큼 확실히 제외 */}
+            {/* 콘텐츠 영역 */}
             <div
                 className="overflow-y-auto"
                 style={{
-                    height: "calc(100vh - 180px)", // 화면 전체 - 헤더 - 푸터
-                    maxHeight: "calc(100vh - 180px)",
+                    height: "calc(100vh - 100px)", // 화면 전체 - 헤더 - 푸터
+                    maxHeight: "calc(100vh - 100px)",
                 }}
             >
                 <>

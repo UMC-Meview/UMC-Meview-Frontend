@@ -1,14 +1,14 @@
 import { ReviewResponseDto } from "../../types/review";
 import ReviewTag from "../common/ReviewTag";
+import ReviewImageFrame from "./ReviewImageFrame";
 
 interface ReviewInfoProps {
     review: ReviewResponseDto;
 }
 
 const ReviewInfo = ({ review }: ReviewInfoProps) => {
-    const { user, isPositive, score, storeReviews, foodReviews } =
+    const { user, isPositive, score, storeReviews, foodReviews, imageUrls } =
         review;
-    console.log(review);
 
     return (
         <div className="flex gap-3 py-4 bg-white rounded-lg">
@@ -47,19 +47,8 @@ const ReviewInfo = ({ review }: ReviewInfoProps) => {
                         <ReviewTag key={`food-${index}`} text={review} />
                     ))}
                 </div>
-                {/*}나중에 백엔드 imageUrl오면 활성화
-                {imageUrl && (
-                    <div className="flex gap-2">
-                        <div className="flex-1">
-                            <SafeImage
-                                src={imageUrl}
-                                alt="리뷰 이미지"
-                                className="w-full h-[187px] object-cover rounded-sm"
-                            />
-                        </div>
-                    </div>
-                )}
-                */} 
+
+                <ReviewImageFrame images={imageUrls} />
             </div>
         </div>
     );
