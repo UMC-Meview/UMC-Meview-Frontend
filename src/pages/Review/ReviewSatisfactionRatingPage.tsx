@@ -86,7 +86,8 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
                     center="평가하기"
                 />
             </div>
-            <div className="overflow-y-auto" style={{ height: "calc(100dvh - 180px)", maxHeight: "calc(100dvh - 180px)" }}>
+            {/* 콘텐츠는 고정 높이 영역 안에서 자동 스케일링되어 스크롤이 필요 없도록 함 */}
+            <div className="overflow-hidden" style={{ height: "calc(100svh - 180px)", maxHeight: "calc(100svh - 180px)" }}>
             <ReviewContentLayout
                 topEffect={<FloatingCoinsEffect floatingItems={floatingItems} maxCount={6} />}
                 buildingImage={(
@@ -136,7 +137,7 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
                     onClick={handleNext}
                     variant="primary"
                     disabled={clickCount === 0}
-                    className="bg-orange-500 hover:bg-orange-600"
+                    className="bg-orange-500"
                 >
                     다음으로
                 </Button>

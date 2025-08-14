@@ -4,12 +4,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper.tsx";
 import FixedFrameLayout from "../../layouts/FixedFrameLayout";
+import Header from "../../components/common/Header.tsx";
 
 const AuthMainPage: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <FixedFrameLayout scrollable={false}>
+        <FixedFrameLayout
+            scrollable={false}
+            header={<Header onBack={() => navigate("/")} />}
+        >
             {/* 중앙: 로고 + 텍스트 */}
             <div className="flex flex-col justify-center items-center px-6 -translate-y-10" style={{ minHeight: "calc(100dvh - 140px)" }}>
                 <Logo />

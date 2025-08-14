@@ -40,12 +40,14 @@ const StoreImageSection: React.FC<StoreImageSectionProps> = ({
         return (
             <div className="mb-8">
                 {/* 이미지 업로드 버튼 */}
-                <ImageUpload
-                    onImageSelect={onImageSelect}
-                    size="small"
-                    className="w-[100px] h-[100px]"
-                    disablePreview={true}
-                />
+                {canAddMore && (
+                    <ImageUpload
+                        onImageSelect={onImageSelect}
+                        size="small"
+                        className="w-[100px] h-[100px]"
+                        disablePreview={true}
+                    />
+                )}
                 
                 {/* 선택된 이미지 미리보기 */}
                 {mainImages.length > 0 && (

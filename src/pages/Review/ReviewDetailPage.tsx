@@ -45,6 +45,10 @@ const ReviewDetailPage: React.FC = () => {
     };
 
     const handleImageSelect = (file: File) => {
+        // 최대 3개까지만 이미지 선택 가능
+        if (selectedImages.length >= 3) {
+            return;
+        }
         // 서버에서 이미지 업로드를 처리하도록 파일만 보관
         setSelectedImages(prev => [...prev, file]);
     };
@@ -97,7 +101,7 @@ const ReviewDetailPage: React.FC = () => {
             } catch (e) {
                 console.error("임시 리뷰 저장 실패", e);
             }
-            navigate("/login", { replace: true });
+            navigate("/review/login", { replace: true });
             return;
         }
 
@@ -168,7 +172,8 @@ const ReviewDetailPage: React.FC = () => {
                         onToggle={(tag) => handleTagClick(tag, setSelectedStoreTags)}
                         maxSelections={999}
                         layout={LAYOUT_CONFIGS.STORE_REVIEW}
-                         className="[&_button]:text-[16px] [&>div]:justify-center"
+                        layoutType="grid"
+                        className="[&_button]:text-[16px] [&>div]:justify-center"
                     />
                 </div>
 
@@ -194,13 +199,14 @@ const ReviewDetailPage: React.FC = () => {
                 {/* 사진 첨부 섹션 */}
                 <div className="mb-8">
                     <h3 className="text-[18px] font-bold text-black mb-4">
-                        사진 첨부하기 <span className="text-sm font-normal text-gray-500">(선택사항)</span>
+                        사진 첨부하기 <span className="text-sm font-normal text-gray-500">(선택사항, 최대 3개)</span>
                     </h3>
                     
                     <StoreImageSection
                         mainImages={selectedImages}
                         onImageSelect={handleImageSelect}
                         onReplaceImage={handleReplaceImage}
+                        maxImages={3}
                         variant="review"
                     />
                 </div>

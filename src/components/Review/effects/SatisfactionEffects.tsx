@@ -100,7 +100,7 @@ const MoneyInteraction = forwardRef<MoneyInteractionHandle, MoneyInteractionProp
                         whileTap={{ scale: 0.95 }}
                         whileHover={{ scale: 1.05 }}
                         onClick={handleBaseClick}
-                        style={{ filter: "drop-shadow(0 0 16px rgba(255, 215, 0, 0.8))", zIndex: 10 }}
+                        style={{ zIndex: 10 }}
                     />
 
                     {/* 흡수 애니메이션 인스턴스 (히트 테스트 방지) */}

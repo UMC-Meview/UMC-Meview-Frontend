@@ -84,7 +84,7 @@ const CatPawInteraction: React.FC<CatPawInteractionProps> = ({
                 }}
                 whileHover={{ scale: 1.3, rotate: 20 }}
                 whileTap={{ scale: 0.8 }}
-                style={{ filter: "drop-shadow(0 0 12px rgba(255, 0, 0, 0.4))" }}
+                style={{ filter: "none" }}
             />
         </motion.div>
     );
@@ -123,7 +123,7 @@ const ScratchEffect: React.FC<ScratchEffectProps> = ({
                         backgroundSize: 'contain',
                         backgroundRepeat: 'no-repeat',
                         backgroundPosition: 'center',
-                        filter: 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.6))'
+                        filter: 'none'
                     }}
                 />
             ))}

@@ -54,7 +54,7 @@ const ReviewFeedbackPage: React.FC = () => {
                     <Button onClick={handleSatisfaction} variant="primary">만족합니다</Button>
                     <button 
                         onClick={handleDissatisfaction} 
-                        className="w-full py-4 px-6 rounded-full border-2 border-[#FF774C] bg-white text-[#FF774C] font-medium text-base transition-colors duration-200 hover:bg-[#FF774C] hover:text-white"
+                        className="w-full py-4 px-6 rounded-full border-2 border-[#FF774C] bg-white text-[#FF774C] font-medium text-base transition-colors duration-200"
                     >
                         불만족합니다
                     </button>

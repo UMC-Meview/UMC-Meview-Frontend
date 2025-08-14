@@ -166,7 +166,7 @@ const ProfileEditPage: React.FC = () => {
                     variant={totalSelections === 3 && !isUpdating && !isUploading ? "primary" : "gray"}
                     disabled={isUpdating || isUploading || totalSelections !== 3 || !userName.trim()}
                 >
-                    {isUploading ? "이미지 업로드 중..." : isUpdating ? "수정 중..." : "수정완료"}
+                    수정완료
                 </BottomFixedButton>
             )}
         </FixedFrameLayout>

@@ -98,7 +98,7 @@ const ProfilePage: React.FC = () => {
     }
 
     return (
-        <div className="bg-white mx-auto max-w-[390px]">
+        <div className="bg-white mx-auto max-w-[390px] min-h-screen pb-24">
             <div className="sticky top-0 z-30 bg-white">
                 <Header
                     onBack={() => navigate(-1)}
@@ -137,15 +137,15 @@ const ProfilePage: React.FC = () => {
                 <div className="flex justify-center">
                     <div className="w-[356px]">
                         {/* 내가 작성한 리뷰 헤더 */}
-                        <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center space-x-2">
+                        <div className="flex items-center mb-8">
+                            <div className="flex items-center space-x-2 whitespace-nowrap w-full">
                                 <img src={OrangePencilIcon} alt="편집" className="w-4 h-4" />
                                 <h3 className="text-base font-semibold text-gray-900">내가 작성한 리뷰</h3>
                                 <div className="flex gap-1 ml-2">
-                                    <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium border border-orange-400 text-orange-400">
+                                    <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium border border-orange-400 text-orange-400 whitespace-nowrap">
                                         보너스 평균 {(userReviews?.averagePositiveScore ?? 0).toFixed(0)}만원
                                     </span>
-                                    <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium border border-orange-400 text-orange-400">
+                                    <span className="px-2 py-0.5 bg-white rounded-full text-xs font-medium border border-orange-400 text-orange-400 whitespace-nowrap">
                                         할퀸 수 평균 {(userReviews?.averageNegativeScore ?? 0).toFixed(0)}회
                                     </span>
                                 </div>

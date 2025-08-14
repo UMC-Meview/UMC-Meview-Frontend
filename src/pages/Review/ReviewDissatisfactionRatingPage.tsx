@@ -131,7 +131,7 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
                     onClick={handleNext}
                     variant="primary"
                     disabled={clickCount === 0}
-                    className="bg-orange-500 hover:bg-orange-600"
+                    className="bg-orange-500"
                 >
                     다음으로
                 </Button>

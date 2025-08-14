@@ -9,6 +9,7 @@ interface BuildingMotionProps {
     pulseTrigger?: number; 
     children?: React.ReactNode;
     scale?: number;
+    onImageLoad?: () => void;
 }
 
 const BuildingMotion: React.FC<BuildingMotionProps> = ({
@@ -18,6 +19,7 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
     isShaking = false,
     pulseTrigger,
     children,
+    onImageLoad,
 }) => {
     const controls = useAnimationControls();
 
@@ -56,6 +58,7 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
                     y: { duration: 0.8, ease: "easeOut" },
                     rotate: { duration: 0.8, ease: "easeOut" }
                 }}
+                onLoad={onImageLoad}
             />
 
             {/* 하단 화이트 그라데이션 오버레이 - 경계선 숨기기 */}

@@ -18,6 +18,7 @@ type SelectionGridProps = {
     rowGap?: 'sm' | 'md';
     className?: string;
     layout?: LayoutConfig; // 레이아웃 설정 객체
+    layoutType?: 'grid' | 'flex'; // 새로운 prop: 레이아웃 타입 지정
 };
 
 const SelectionGrid: React.FC<SelectionGridProps> = ({
@@ -30,7 +31,8 @@ const SelectionGrid: React.FC<SelectionGridProps> = ({
     showEmoji = false,
     rowGap = 'md',
     className = "",
-    layout = { type: 'auto' }
+    layout = { type: 'auto' },
+    layoutType = 'flex' // 기본값은 flex로 설정
 }) => {
     // 텍스트 크기 클래스 매핑
     const textSizeClasses = {
@@ -88,6 +90,24 @@ const SelectionGrid: React.FC<SelectionGridProps> = ({
         return rows;
     };
 
+    // 행별 레이아웃 스타일 결정
+    const getRowLayoutStyle = (rowLength: number) => {
+        if (layoutType === 'grid') {
+            // grid 레이아웃: 2개일 때 grid-cols-2, 4개일 때 grid-cols-4
+            if (rowLength === 2) {
+                return 'grid grid-cols-2 justify-items-start gap-3';
+            } else if (rowLength === 4) {
+                return 'grid grid-cols-4 justify-items-start gap-3';
+            } else {
+                // 3개나 5개 이상일 때는 flex로 처리
+                return 'flex flex-row justify-center gap-3';
+            }
+        } else {
+            // flex 레이아웃 (기본값)
+            return 'flex flex-row justify-center gap-3';
+        }
+    };
+
     const rows = createRows();
 
     return (
@@ -95,11 +115,7 @@ const SelectionGrid: React.FC<SelectionGridProps> = ({
             {rows.map((row, index) => (
                 <div
                     key={index}
-                    className={`${rowGapClasses[rowGap]} w-full ${
-                        row.length === 2
-                            ? 'grid grid-cols-2 justify-center gap-3 justify-items-start'
-                            : 'flex flex-row justify-center gap-3'
-                    }`}
+                    className={`${rowGapClasses[rowGap]} w-full ${getRowLayoutStyle(row.length)}`}
                 >
                     {row.map((item) => {
                         const itemName = typeof item === 'string' ? item : item.name;
