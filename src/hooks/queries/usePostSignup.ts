@@ -37,21 +37,45 @@ export interface UsePostSignupResult {
 export const usePostSignup = (): UsePostSignupResult => {
   const mutation = useMutation<SignupResponse, Error, SignupRequest>({
       mutationFn: signupUser,
-      onSuccess: async (data) => {
-        if (!data?.user) return;
+      onSuccess: async (data, variables) => {
+        if (data?.user) {
+          const userInfo: UserInfo = {
+            id: data.user._id,
+            nickname: data.user.nickname,
+            tastePreferences: data.user.tastePreferences,
+            birthYear: data.user.birthYear,
+            gender: data.user.gender,
+          };
+          setUserInfo(userInfo);
+          try {
+            await submitDraftReview(userInfo.id);
+          } catch {
+            // 무시
+          }
+          return;
+        }
 
-        const userInfo: UserInfo = {
-          id: data.user._id,
-          nickname: data.user.nickname,
-          tastePreferences: data.user.tastePreferences,
-          birthYear: data.user.birthYear,
-          gender: data.user.gender,
-        };
-        setUserInfo(userInfo);
+        // 서버가 user를 반환하지 않는 경우: 닉네임으로 로그인 시도하여 로그인 상태 보장
         try {
-          await submitDraftReview(userInfo.id);
+          const loginRes = await axiosClient.post("/users/login", { nickname: (variables as SignupRequest).nickname });
+          const loginData = loginRes.data as SignupResponse;
+          if (loginData?.user) {
+            const userInfo: UserInfo = {
+              id: loginData.user._id,
+              nickname: loginData.user.nickname,
+              tastePreferences: loginData.user.tastePreferences,
+              birthYear: loginData.user.birthYear,
+              gender: loginData.user.gender,
+            };
+            setUserInfo(userInfo);
+            try {
+              await submitDraftReview(userInfo.id);
+            } catch {
+              // 무시
+            }
+          }
         } catch {
-          // 무시: 임시 리뷰 전송 실패는 치명적이지 않음
+          // 무시
         }
     },
   });
