@@ -40,7 +40,6 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
     }, [showTooltip]);
 
     const handleToggleFavorite = () => {
-        console.log("toggleFavorite");
         toggleFavorite(store._id, store.isFavorited || false);
     };
 
@@ -50,15 +49,6 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
             const scrollWidth = nameRef.current.scrollWidth;
             const clientWidth = nameRef.current.clientWidth;
             const isOverflowing = scrollWidth > clientWidth;
-
-            console.log(
-                "scrollWidth:",
-                scrollWidth,
-                "clientWidth:",
-                clientWidth,
-                "isOverflowing:",
-                isOverflowing
-            ); // 디버깅용
 
             if (isOverflowing) {
                 setShowTooltip(!showTooltip);

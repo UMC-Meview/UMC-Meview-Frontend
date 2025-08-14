@@ -1,7 +1,11 @@
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const SearchBar = () => {
+interface SearchBarProps {
+    keyword?: string;
+}
+
+const SearchBar = ({ keyword }: SearchBarProps) => {
     const navigate = useNavigate();
 
     const handleSearchBarClick = () => {
@@ -15,8 +19,14 @@ const SearchBar = () => {
                 onClick={handleSearchBarClick}
             >
                 <Search color="#FF694F" size={20} className="flex-shrink-0" />
-                <div className="flex-1 ml-3 text-gray-400 min-w-0">
-                    검색어를 입력하세요
+                <div
+                    className={`flex-1 ml-3 min-w-0 ${
+                        keyword ? "text-gray-700" : "text-gray-400"
+                    }`}
+                >
+                    {keyword && keyword.trim().length > 0
+                        ? keyword
+                        : "검색어를 입력하세요"}
                 </div>
             </div>
         </div>

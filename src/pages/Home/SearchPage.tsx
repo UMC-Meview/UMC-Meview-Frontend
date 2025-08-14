@@ -60,8 +60,10 @@ const SearchPage = () => {
         setRecentSearches(updatedSearches);
         localStorage.setItem("recentSearches", JSON.stringify(updatedSearches));
 
-        // 검색 실행
-        setSearchParams({ keyword: keyword.trim() });
+        // 홈으로 이동하며 해당 검색어로 리스트 검색 + BottomSheet 확장 + 지도 레벨 기본값 설정
+        navigate(
+            `/?keyword=${encodeURIComponent(keyword.trim())}&expand=1&level=5`
+        );
     };
 
     // 엔터키 처리
@@ -74,7 +76,10 @@ const SearchPage = () => {
     // 최근 검색어 클릭 처리
     const handleRecentSearchClick = (keyword: string) => {
         setSearchKeyword(keyword);
-        handleIntentionalSearch(keyword);
+        // 최근 검색어 선택 시 홈으로 이동 + BottomSheet 확장 + 지도 레벨 기본값 설정
+        navigate(
+            `/?keyword=${encodeURIComponent(keyword.trim())}&expand=1&level=5`
+        );
     };
 
     return (
@@ -129,9 +134,19 @@ const SearchPage = () => {
                                         <div
                                             key={store._id}
                                             className="bg-white cursor-pointer border-b border-gray-200 hover:bg-gray-50 transition-colors duration-300 p-4"
-                                            onClick={() =>
-                                                navigate(`/store/${store._id}`)
-                                            }
+                                            onClick={() => {
+                                                const [lng, lat] =
+                                                    store.location.coordinates;
+                                                navigate(
+                                                    `/?keyword=${encodeURIComponent(
+                                                        store.name
+                                                    )}&expand=1&lat=${encodeURIComponent(
+                                                        lat
+                                                    )}&lng=${encodeURIComponent(
+                                                        lng
+                                                    )}&level=5`
+                                                );
+                                            }}
                                         >
                                             <div className="flex items-center space-x-3">
                                                 <img

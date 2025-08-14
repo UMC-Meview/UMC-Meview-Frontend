@@ -192,14 +192,17 @@ export const useRankingStores = (enabled: boolean = true) => {
 
 export const useHomeStores = (
     sortBy: ServerSortType,
-    location?: { latitude: number; longitude: number },
-    enabled: boolean = true
+    location?: { latitude: number; longitude: number; radius?: number },
+    enabled: boolean = true,
+    keyword?: string
 ) => {
     return useStores(
         {
             sortBy,
             latitude: location?.latitude,
             longitude: location?.longitude,
+            radius: location?.radius,
+            keyword,
         },
         enabled
     );

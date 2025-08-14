@@ -18,7 +18,7 @@ const fetchStoreDetail = async (
 ): Promise<StoreDetail> => {
     const params = userId ? { userId } : {};
     const response = await axiosClient.get(`/stores/${storeId}`, { params });
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
 };
 
@@ -56,10 +56,10 @@ export const useGetStoreDetail = (storeId: string): UseStoreDetailResult => {
     const userInfo = getUserInfo();
     const userId = userInfo?.id;
 
-    // 디버깅용: storeId와 userId 확인
-    console.log("useGetStoreDetail - storeId:", storeId);
-    console.log("useGetStoreDetail - userId:", userId);
-    console.log("useGetStoreDetail - enabled:", !!storeId);
+    // // 디버깅용: storeId와 userId 확인
+    // console.log("useGetStoreDetail - storeId:", storeId);
+    // console.log("useGetStoreDetail - userId:", userId);
+    // console.log("useGetStoreDetail - enabled:", !!storeId);
 
     // storeId 유효성 검사 
     const isValidStoreId: boolean =
