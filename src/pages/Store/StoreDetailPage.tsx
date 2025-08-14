@@ -131,10 +131,15 @@ const StoreDetailPage: React.FC = () => {
 
                 <Divider />
                 {/* 리뷰 */}
+                <h2 className="text-[18px] font-bold text-gray-900 my-3">
+                    리뷰
+                </h2>
                 <div className="space-y-3">
-                    {store.reviews?.map((review) => (
-                        <ReviewInfo key={review._id} review={review} />
-                    )) || (
+                    {(store.reviews?.length ?? 0) > 0 ? (
+                        store.reviews!.map((review) => (
+                            <ReviewInfo key={review._id} review={review} />
+                        ))
+                    ) : (
                         <div className="text-gray-500 text-center py-4">
                             아직 리뷰가 없습니다.
                         </div>
