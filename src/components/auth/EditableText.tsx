@@ -57,7 +57,7 @@ const EditableText: React.FC<EditableTextProps> = ({
     );
 
     if (isEditing) {
-        const inputWidth = editMode === 'nickname' ? 'w-24' : 'flex-1';
+        const inputWidth = editMode === 'nickname' ? 'w-24' : 'w-[160px]';
         
         return (
             <div className={`flex items-center space-x-2 ${className}`}>
@@ -74,7 +74,7 @@ const EditableText: React.FC<EditableTextProps> = ({
                 <button
                     type="button"
                     onClick={handleSave}
-                    className="text-sm text-[#FF774C] font-medium cursor-pointer"
+                    className="text-sm text-[#FF774C] font-medium cursor-pointer whitespace-nowrap"
                 >
                     저장
                 </button>
