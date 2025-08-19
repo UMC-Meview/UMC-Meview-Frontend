@@ -33,7 +33,7 @@ const createDummyStoreDetail = (storeId: string): StoreDetail => ({
     category: "한식",
     address: "전북특별자치도 전주시 덕진구 백제대로 567",
     operatingHours: "월-토 10:00 ~ 20:00, 일 10:00 ~ 20:00",
-    mainImage: "https://via.placeholder.com/300x200",
+    mainImage: ["https://via.placeholder.com/300x200"],
     images: [
         "https://via.placeholder.com/300x200/FF6B6B",
         "https://via.placeholder.com/300x200/4ECDC4",

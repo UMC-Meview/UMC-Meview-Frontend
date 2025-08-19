@@ -74,8 +74,9 @@ export const DUMMY_STORES: StoreDetail[] = [
         description: "분위기 좋은 일본식 술집입니다.",
         address: "서울시 마포구 홍대길 123",
         operatingHours: "월-금 18:00-02:00, 토-일 17:00-03:00",
-        mainImage:
+        mainImage: [
             "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
+        ],
         images: [
             "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
         ],
@@ -99,8 +100,9 @@ export const DUMMY_STORES: StoreDetail[] = [
         description: "정통 일본식 이자카야입니다.",
         address: "서울시 마포구 홍대길 456",
         operatingHours: "월-일 17:00-02:00",
-        mainImage:
+        mainImage: [
             "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
+        ],
         images: [
             "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
         ],
@@ -124,8 +126,9 @@ export const DUMMY_STORES: StoreDetail[] = [
         description: "조용하고 아늑한 카페입니다.",
         address: "서울시 마포구 홍대길 789",
         operatingHours: "월-일 08:00-22:00",
-        mainImage:
+        mainImage: [
             "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
+        ],
         images: [
             "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80",
         ],

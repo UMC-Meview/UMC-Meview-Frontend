@@ -23,6 +23,17 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
 
     const { isExpanded, isFullScreen } = bottomSheetContext || {};
 
+    // 이미지 배열 통합: mainImage(배열/단일) + images
+    const combinedImages: string[] = [];
+    if (Array.isArray(store?.mainImage)) {
+        combinedImages.push(...(store!.mainImage as string[]));
+    } else if (store?.mainImage) {
+        combinedImages.push(store!.mainImage as string);
+    }
+    if (store?.images && store.images.length > 0) {
+        combinedImages.push(...store.images);
+    }
+
     // isFullScreen이 되면 가게 디테일 페이지로 navigate
     useEffect(() => {
         if (isFullScreen && store) {
@@ -51,14 +62,14 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                     {/* 가게 이미지 */}
                     <div className="flex space-x-2 overflow-x-auto">
                         {/* 대표 이미지*/}
-                        <button
+            <button
                             onClick={() => setActiveImageIndex(0)}
                             className={
                                 "flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] border-gray-200"
                             }
                         >
                             <SafeImage
-                                src={store.mainImage}
+                src={combinedImages[0]}
                                 alt={`${store.name} 대표 이미지`}
                                 className="w-full h-full object-cover"
                             />
@@ -68,9 +79,11 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                         {Array(2)
                             .fill(null)
                             .map((_, index) => {
-                                const imageIndex = index;
+                                const imageIndex = index + 1; // 대표 이후부터
                                 const hasImage =
-                                    store.images && store.images[imageIndex];
+                                    combinedImages &&
+                                    combinedImages.length > imageIndex &&
+                                    combinedImages[imageIndex];
 
                                 return (
                                     <button
@@ -87,13 +100,13 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                                         <SafeImage
                                             src={
                                                 hasImage
-                                                    ? store.images?.[imageIndex]
+                                                    ? combinedImages[imageIndex]
                                                     : undefined
                                             }
                                             alt={
                                                 hasImage
                                                     ? `${store.name} ${
-                                                          index + 1
+                                                          imageIndex
                                                       }번째 이미지`
                                                     : `${store.name} 이미지 없음`
                                             }

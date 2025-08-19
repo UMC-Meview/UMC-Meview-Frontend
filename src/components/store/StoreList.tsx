@@ -161,7 +161,7 @@ const StoreList: React.FC<StoreListProps> = ({
                                 onClick={() => handleStoreClick(store)}
                             >
                                 <SafeImage
-                                    src={store.mainImage}
+                                    src={Array.isArray(store.mainImage) ? store.mainImage[0] : (store.mainImage as string | undefined)}
                                     alt={store.name}
                                     className="w-20 h-20 rounded-lg object-cover"
                                 />

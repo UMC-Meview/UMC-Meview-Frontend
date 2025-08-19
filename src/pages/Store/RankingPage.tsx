@@ -41,7 +41,7 @@ const RankingPage = () => {
                         <RankingItem
                             key={store._id}
                             rank={index + 1}
-                            image={store.mainImage || ""}
+                            image={Array.isArray(store.mainImage) ? store.mainImage[0] : (store.mainImage || "")}
                             storeName={store.name}
                             category={store.category}
                             score={Math.round(

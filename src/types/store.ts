@@ -14,7 +14,7 @@ export interface StoreDetail {
     description: string;
     address: string;
     operatingHours: string;
-    mainImage?: string;
+    mainImage?: string[]; // 대표 이미지들 (배열)
     images?: string[];
     createdAt: string;
     updatedAt: string;
@@ -28,7 +28,6 @@ export interface StoreDetail {
     distance?: number;
 }
 
-// 가게 등록 관련 타입들 (백엔드 API 명세에 맞춤)
 export interface StoreRegistrationRequest {
     location: {
         type: "Point";
@@ -39,9 +38,9 @@ export interface StoreRegistrationRequest {
     description: string;
     address: string;
     operatingHours: string;
-    mainImage?: string[]; // 선택사항 (이미지 업로드 API 완성 후 필수로 변경 예정)
-    images?: string[];  // 선택사항
-    qrPrefix: string; // QR 코드 prefix
+    mainImage?: string[]; 
+    images?: string[];  
+    qrPrefix: string; 
 }
 
 export interface StoreRegistrationResponse {
@@ -73,7 +72,6 @@ export type SortType =
     | "가까운 순"
     | "찜 많은 순";
 
-// 가게 등록 페이지 폼 데이터 타입
 export interface StoreFormData {
   storeName: string;
   category: string;
