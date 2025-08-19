@@ -28,6 +28,10 @@ const ReviewDetailPage: React.FC = () => {
     const [selectedStoreTags, setSelectedStoreTags] = useState<string[]>([]);
     const [selectedFoodTags, setSelectedFoodTags] = useState<string[]>([]);
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    
+    const handleRemoveImage = (idx: number) => {
+        setSelectedImages(prev => prev.filter((_, i) => i !== idx));
+    };
 
     // 리뷰 등록 성공 시 완료 페이지로 이동
     useEffect(() => {
@@ -206,6 +210,7 @@ const ReviewDetailPage: React.FC = () => {
                         mainImages={selectedImages}
                         onImageSelect={handleImageSelect}
                         onReplaceImage={handleReplaceImage}
+                        onRemoveImage={handleRemoveImage}
                         maxImages={3}
                         variant="review"
                     />

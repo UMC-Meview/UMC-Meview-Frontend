@@ -31,6 +31,7 @@ const StoreRegistrationPage: React.FC = () => {
         updateCoordinates,
         handleMainImageSelect,
         handleReplaceMainImage,
+        handleRemoveMainImage,
         handleMenuChange,
         handleAddMenu,
         handleOpeningHourChange,
@@ -166,6 +167,7 @@ const StoreRegistrationPage: React.FC = () => {
                     mainImages={formData.mainImages}
                     onImageSelect={handleMainImageSelect}
                     onReplaceImage={handleReplaceMainImage}
+                    onRemoveImage={handleRemoveMainImage}
                     maxImages={3}
                 />
                 {/* 기본 정보 섹션 */}

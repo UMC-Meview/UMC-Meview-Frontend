@@ -2,6 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { StoreFormData } from "../types/store";
 
 export const useStoreRegistrationForm = () => {
+    // 메인 이미지 삭제
+    const handleRemoveMainImage = (idx: number) => {
+        setFormData(prev => ({
+            ...prev,
+            mainImages: prev.mainImages.filter((_, i) => i !== idx)
+        }));
+    };
     const blobUrlsRef = useRef<string[]>([]);
     const [formData, setFormData] = useState<StoreFormData>({
         storeName: "",
@@ -118,6 +125,7 @@ export const useStoreRegistrationForm = () => {
         updateCoordinates,
         handleMainImageSelect,
         handleReplaceMainImage,
+    handleRemoveMainImage,
         handleMenuChange,
         handleAddMenu,
         handleOpeningHourChange,
