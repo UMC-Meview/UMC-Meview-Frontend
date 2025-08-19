@@ -90,12 +90,12 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
             <ReviewContentLayout
                 topEffect={<FloatingCoinsEffect floatingItems={floatingItems} maxCount={6} />}
                 buildingImage={(
-                    <div ref={buildingRef}>
                         <BuildingMotion
                             src={new URL(`../../assets/buildings/building-level-${finalStep + 1}.svg`, import.meta.url).href}
                             alt={`건물 레벨 ${finalStep + 1}`}
                             onClick={() => handleClick('store')}
                             pulseTrigger={clickCount}
+                            containerRef={buildingRef}
                         >
                             {/* 건물 위 부유하는 코인 */}
                             <motion.div 
@@ -106,7 +106,6 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
                                 <img src={coinImage} alt="코인" className="w-27 h-27 drop-shadow-lg" />
                             </motion.div>
                         </BuildingMotion>
-                    </div>
                 )}
                 bottomImage={(
                     <MoneyInteraction

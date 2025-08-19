@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 
+// 안전하게 React Ref에 값을 설정하는 유틸
+function setRef<T>(ref: React.Ref<T> | undefined, value: T) {
+    if (!ref) return;
+    if (typeof ref === "function") ref(value);
+    else (ref as React.MutableRefObject<T | null>).current = value as unknown as T & (T extends null ? never : unknown);
+}
+
 interface BuildingMotionProps {
     src: string;
     alt: string;
@@ -10,6 +17,7 @@ interface BuildingMotionProps {
     children?: React.ReactNode;
     scale?: number;
     onImageLoad?: () => void;
+    containerRef?: React.Ref<HTMLDivElement | null>;
 }
 
 const BuildingMotion: React.FC<BuildingMotionProps> = ({
@@ -20,6 +28,7 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
     pulseTrigger,
     children,
     onImageLoad,
+    containerRef,
 }) => {
     const controls = useAnimationControls();
 
@@ -36,6 +45,7 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
             whileTap={{ scale: 0.95 }}
             animate={controls}
             transition={{ duration: 0.3 }}
+            ref={(node: HTMLDivElement | null) => setRef<HTMLDivElement | null>(containerRef, node)}
         >
             <motion.img
                 src={src}
