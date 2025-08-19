@@ -21,7 +21,10 @@ const AuthMainPage: React.FC = () => {
                     <h1 className="text-[22px] leading-[32px] font-bold text-black mb-4">
                         진짜가 궁금할 땐, 미뷰
                     </h1>
-                    <p className="text-black text-base mt-2 font-bold">
+                    <p 
+                        className="text-black mt-2 font-bold whitespace-nowrap"
+                        style={{ fontSize: 'clamp(12px, 4vw, 16px)' }}
+                    >
                         지금 가입하고 솔직한 리뷰를 먼저 만나보세요.
                     </p>
                 </div>
