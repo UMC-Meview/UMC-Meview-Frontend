@@ -137,7 +137,7 @@ const ProfileEditPage: React.FC = () => {
                             textSize="lg"
                             rowGap="sm"
                             layout={LAYOUT_CONFIGS.PROFILE_TASTE}
-                            className="w-full mb-4 flex-1 flex flex-col justify-center [&_button]:text-[14px] [&_button]:px-2 [&_button]:py-1"
+                            className="w-full mb-4 flex-1 flex flex-col justify-center [&_button]:text-[16px] [&_button]:px-2 [&_button]:py-1"
                         />
                     </div>
 
@@ -155,7 +155,7 @@ const ProfileEditPage: React.FC = () => {
                             rowGap="sm"
                             layout={LAYOUT_CONFIGS.FOOD_TYPE}
                             showEmoji={true}
-                            className="w-full mb-4 flex-1 flex flex-col justify-center [&_button]:text-[14px] [&_button]:px-2 [&_button]:py-1"
+                            className="w-full mb-4 flex-1 flex flex-col justify-center [&_button]:text-[16px] [&_button]:px-2 [&_button]:py-1"
                         />
                     </div>
             </div>
