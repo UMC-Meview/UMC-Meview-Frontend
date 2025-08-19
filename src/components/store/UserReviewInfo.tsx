@@ -1,7 +1,8 @@
-import { Review, DisplayReview } from "../../types/review";
+import { Review, DisplayReview, PopulatedStoreInReview } from "../../types/review";
 import ReviewTag from "../common/ReviewTag";
 import GrayCheckIcon from "../../assets/grayCheck.svg";
 import ReviewImageCollage from "../Review/ReviewImageCollage";
+import { useNavigate } from "react-router-dom";
 
 interface UserReviewInfoProps {
     review: (Review & {
@@ -15,9 +16,17 @@ interface UserReviewInfoProps {
 }
 
 const UserReviewInfo = ({ review, storeName, storeAddressShort, storeCategory }: UserReviewInfoProps) => {
+    const navigate = useNavigate();
     const { isPositive, score, storeReviews, foodReviews, imageUrl, content } = review;
     const imageUrls = (review as DisplayReview & { imageUrls?: string[] }).imageUrls || (imageUrl ? [imageUrl] : []);
     const displayStoreName = storeName && storeName.trim() !== "" ? storeName : "가게명";
+    const resolvedStoreId = (() => {
+        const asDisplay = review as DisplayReview;
+        if (asDisplay.storeId) return asDisplay.storeId;
+        const asReview = review as Review & { store?: string | PopulatedStoreInReview };
+        if (typeof asReview.store === "string") return asReview.store;
+        return asReview.store?._id;
+    })();
     
     const scoreText = isPositive ? `내가 준 보너스 ${score}만원` : `내가 할퀸 수 ${score}번`;
 
@@ -26,7 +35,16 @@ const UserReviewInfo = ({ review, storeName, storeAddressShort, storeCategory }:
             {/* 가게 정보 헤더 */}
             <div>
                 <div className="flex items-center gap-2">
-                    <h3 className="text-[20px] font-semibold text-gray-900">{displayStoreName}</h3>
+                    <h3
+                        className={`text-[20px] font-semibold ${resolvedStoreId ? "text-gray-900 cursor-pointer hover:underline" : "text-gray-900"}`}
+                        onClick={() => {
+                            if (resolvedStoreId && displayStoreName !== "가게명") {
+                                navigate(`/stores/${resolvedStoreId}`);
+                            }
+                        }}
+                    >
+                        {displayStoreName}
+                    </h3>
                     <img src={GrayCheckIcon} alt="체크 아이콘" className="w-5 h-5" />
                 </div>
                 <div className="mt-1 w-full text-[12px] text-gray-500 flex items-baseline">
