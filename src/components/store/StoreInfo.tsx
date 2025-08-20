@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Clock, Heart, MapPin } from "lucide-react";
 import { StoreDetail } from "../../types/store";
 import {
@@ -12,11 +13,18 @@ interface StoreInfoProps {
     store: StoreDetail;
     onToggleFavorite?: () => void;
     className?: string;
+    isExpanded?: boolean;
+    isFullScreen?: boolean;
 }
 
-const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
+const StoreInfo: React.FC<StoreInfoProps> = ({
+    store,
+    isExpanded,
+    isFullScreen,
+}) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const nameRef = useRef<HTMLHeadingElement>(null);
+    const navigate = useNavigate();
     const { toggleFavorite } = useToggleFavorite();
 
     // 외부 클릭시 tooltip 닫기
@@ -44,7 +52,13 @@ const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
     };
 
     const handleNameClick = () => {
-        // 이름 잘렸는지 확인
+        // isExpanded이고 isFullScreen이 아닐 때 가게 상세 페이지로 이동
+        if (isExpanded && !isFullScreen) {
+            navigate(`/stores/${store._id}`);
+            return;
+        }
+
+        // 이름 잘렸는지 확인하여 툴팁 표시
         if (nameRef.current) {
             const scrollWidth = nameRef.current.scrollWidth;
             const clientWidth = nameRef.current.clientWidth;
