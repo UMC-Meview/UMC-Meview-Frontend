@@ -118,7 +118,11 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                     </div>
 
                     {/* 가게 상세 정보 */}
-                    <StoreInfo store={store} />
+                    <StoreInfo 
+                        store={store} 
+                        isExpanded={isExpanded}
+                        isFullScreen={isFullScreen}
+                    />
                 </div>
             )}
         </div>
