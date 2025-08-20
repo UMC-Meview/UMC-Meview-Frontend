@@ -7,7 +7,6 @@ interface ImageUploadProps {
     variant?: "profile" | "default";
     children?: React.ReactNode;
     noBorder?: boolean;
-    disablePreview?: boolean;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
@@ -17,34 +16,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     variant = "default",
     children,
     noBorder = false,
-    disablePreview = false,
 }) => {
-    const [preview, setPreview] = React.useState<string | null>(null);
+    const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            const picked = event.target.files?.[0];
+            if (!picked) return;
 
-    React.useEffect(() => {
-        return () => {
-            if (preview) URL.revokeObjectURL(preview);
-        };
-    }, [preview]);
-
-    React.useEffect(() => {
-        if (!children && preview) {
-            URL.revokeObjectURL(preview);
-            setPreview(null);
+            onImageSelect?.(picked);
+            event.target.value = "";
+        } catch (outerErr) {
+            console.error("이미지 선택 처리 중 예외", outerErr);
+            event.target.value = "";
         }
-    }, [children, preview]);
-
-    const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
-
-        // disablePreview가 true이거나 children이 있을 때는 내장 미리보기 사용하지 않음
-        if (!disablePreview && !children) {
-            if (preview) URL.revokeObjectURL(preview);
-            setPreview(URL.createObjectURL(file));
-        }
-        
-        onImageSelect?.(file);
     };
 
     const isProfile = variant === "profile";
@@ -59,26 +42,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     return (
         <div className={`flex flex-col items-center ${className}`}>
             <label className="cursor-pointer w-full flex flex-col items-center">
-                <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
+                <input type="file" accept="image/*,.heic,.heif" onChange={handleFileSelect} className="hidden" />
                 
-                {/* 업로드 */}
                 <div className={`relative ${containerClass} flex items-center justify-center transition-colors`}
                      style={{ aspectRatio: "1/1", width: "100%", height: "100%" }}>
                     
-                    {/* 미리보기 */}
-                    {preview && !disablePreview && !children && (
-                        <img
-                            src={preview}
-                            alt="미리보기"
-                            className={`absolute inset-0 w-full h-full object-cover ${isProfile ? "rounded-2xl" : "rounded-xl"}`}
-                            style={{ zIndex: 2 }}
-                        />
-                    )}
-
                     {children}
 
-                    {/* 플러스 아이콘*/}
-                    {!preview && !children && (
+                    {!children && (
                         <svg
                             width={iconSize}
                             height={iconSize}

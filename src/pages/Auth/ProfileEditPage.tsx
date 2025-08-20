@@ -19,6 +19,7 @@ import { PatchProfileRequest } from "../../types/auth";
 import { useNavigate } from "react-router-dom";
 import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 import { getUserInfo } from "../../utils/auth";
+import { processImageForUpload } from "../../utils/imageConversion";
 
 const ProfileEditPage: React.FC = () => {
     const navigate = useNavigate();
@@ -91,15 +92,21 @@ const ProfileEditPage: React.FC = () => {
         patchProfile(userProfile.id, updateData);
     };
 
-    const handleImageSelect = async (file: File) => {
-        const previewUrl = URL.createObjectURL(file);
-        setLocalPreview(previewUrl);
+    const handleImageSelect = async (picked: File) => {
         try {
-            const { url } = await uploadImageAsync(file);
-            setProfileImageUrl(url);
-        } finally {
-            URL.revokeObjectURL(previewUrl);
-            setLocalPreview(null);
+            const file = await processImageForUpload(picked, { sizeThreshold: 1_500_000, maxDimension: 2000, quality: 0.85 });
+            const previewUrl = URL.createObjectURL(file);
+            setLocalPreview(previewUrl);
+            try {
+                const { url } = await uploadImageAsync(file);
+                setProfileImageUrl(url);
+            } finally {
+                URL.revokeObjectURL(previewUrl);
+                setLocalPreview(null);
+            }
+        } catch (e) {
+            console.error("프로필 이미지 처리 실패", e);
+            alert("프로필 이미지 처리에 실패했습니다. 다른 이미지를 선택해주세요.");
         }
     };
 

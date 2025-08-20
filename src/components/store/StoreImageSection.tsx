@@ -22,6 +22,7 @@ interface StoreImageSectionProps {
     title?: string; 
     showCount?: boolean; 
     variant?: "default" | "review"; 
+    previewUrls?: string[]; // 외부에서 제공되는 미리보기 URL들
 }
 
 const StoreImageSection: React.FC<StoreImageSectionProps> = ({
@@ -29,11 +30,11 @@ const StoreImageSection: React.FC<StoreImageSectionProps> = ({
     onImageSelect,
     onReplaceImage,
     onRemoveImage,
-    // Data URL 프리뷰 사용
     maxImages,
     title = "메인 사진 첨부하기",
     showCount = true,
     variant = "default",
+    previewUrls = [],
 }) => {
     const canAddMore = maxImages ? mainImages.length < maxImages : true;
     
@@ -46,7 +47,6 @@ const StoreImageSection: React.FC<StoreImageSectionProps> = ({
                         onImageSelect={onImageSelect}
                         size="small"
                         className="w-[100px] h-[100px]"
-                        disablePreview={true}
                     />
                 )}
                 {/* 선택된 이미지 미리보기 */}
@@ -56,11 +56,19 @@ const StoreImageSection: React.FC<StoreImageSectionProps> = ({
                         <div className="flex flex-wrap gap-2">
                             {mainImages.map((file, index) => (
                                 <div key={index} className="relative w-16 h-16">
-                                    <PreviewImage
-                                        file={file}
-                                        alt={`이미지 ${index + 1}`}
-                                        className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                                    />
+                                    {previewUrls[index] ? (
+                                        <img
+                                            src={previewUrls[index]}
+                                            alt={`이미지 ${index + 1}`}
+                                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                        />
+                                    ) : (
+                                        <PreviewImage
+                                            file={file}
+                                            alt={`이미지 ${index + 1}`}
+                                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                                        />
+                                    )}
                                     {onRemoveImage && (
                                         <button
                                             type="button"

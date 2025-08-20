@@ -37,6 +37,7 @@ const StoreRegistrationPage: React.FC = () => {
         handleOpeningHourChange,
         handleAddOpeningHour,
         isFormValid,
+        getMainImageUrls,
     } = useStoreRegistrationForm();
 
     // 제출
@@ -74,13 +75,11 @@ const StoreRegistrationPage: React.FC = () => {
                 });
 
                 if (formData.mainImages.length > 0) {
-                    const uploadedMainImageUrls = await Promise.all(
-                        formData.mainImages.map(async (file) => {
-                            const result = await uploadImageAsync(file);
-                            return result.url;
-                        })
-                    );
-                    requestData.mainImage = uploadedMainImageUrls;
+                    // 이미 업로드된 메인 이미지 URL 사용
+                    const mainImageUrls = getMainImageUrls();
+                    if (mainImageUrls.length > 0) {
+                        requestData.mainImage = mainImageUrls;
+                    }
                 }
                 
                 mutate(requestData);

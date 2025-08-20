@@ -9,18 +9,18 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 import { STORE_REVIEW_TAGS, FOOD_REVIEW_TAGS, LAYOUT_CONFIGS } from "../../constants/options";
 import { usePostReview } from "../../hooks/queries/usePostReview";
 import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
-import { getUserInfo, saveReviewDraft } from "../../utils/auth";
+import { getUserInfo, saveReviewDraft, getReviewDraft } from "../../utils/auth";
 import { ReviewLocationState } from "../../types/review";
+import { processImageForUpload } from "../../utils/imageConversion";
 
 const ReviewDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { submitReview, isLoading, error, isSuccess } = usePostReview();
-    const { uploadImageAsync, isLoading: isImageUploading } = usePostImageUpload();
+    const { uploadImageAsync } = usePostImageUpload();
     
-    // 이전 페이지에서 전달받은 데이터
     const locationState = location.state as ReviewLocationState;
-    const storeId = locationState?.storeId || "temp-store-id"; // 임시 ID
+    const storeId = locationState?.storeId || "temp-store-id";
     const storeName = locationState?.storeName || "모토이시";
     const isPositive = locationState?.isPositive ?? true;
     const score = locationState?.score || 5;
@@ -28,12 +28,67 @@ const ReviewDetailPage: React.FC = () => {
     const [selectedStoreTags, setSelectedStoreTags] = useState<string[]>([]);
     const [selectedFoodTags, setSelectedFoodTags] = useState<string[]>([]);
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [uploadedImageUrls, setUploadedImageUrls] = useState<Map<File, string>>(new Map());
+    
+    useEffect(() => {
+        const draft = getReviewDraft();
+        if (draft && draft.storeId === storeId) {
+            setSelectedStoreTags(draft.storeReviews || []);
+            setSelectedFoodTags(draft.foodReviews || []);
+            
+            if (draft.imageDataUrls && draft.imageDataUrls.length > 0) {
+                setPreviewUrls(draft.imageDataUrls);
+                
+                const convertDataUrlsToFiles = async () => {
+                    try {
+                        const filePromises = draft.imageDataUrls.map((dataUrl, index) => 
+                            dataUrlToFile(dataUrl, `restored-image-${index}.png`)
+                        );
+                        const files = await Promise.all(filePromises);
+                        setSelectedImages(files);
+                    } catch (error) {
+                        console.error("Failed to convert data URLs to files:", error);
+                    }
+                };
+                
+                convertDataUrlsToFiles();
+            }
+        }
+    }, [storeId]);
     
     const handleRemoveImage = (idx: number) => {
+        const removedFile = selectedImages[idx];
+        
+        if (previewUrls[idx] && previewUrls[idx].startsWith('blob:')) {
+            URL.revokeObjectURL(previewUrls[idx]);
+        }
+        
         setSelectedImages(prev => prev.filter((_, i) => i !== idx));
+        setPreviewUrls(prev => prev.filter((_, i) => i !== idx));
+        
+        setUploadedImageUrls(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(removedFile);
+            return newMap;
+        });
+    };
+    
+    const fileToDataUrl = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+    
+    const dataUrlToFile = async (dataUrl: string, filename: string = 'image.png'): Promise<File> => {
+        const response = await fetch(dataUrl);
+        const blob = await response.blob();
+        return new File([blob], filename, { type: blob.type });
     };
 
-    // 리뷰 등록 성공 시 완료 페이지로 이동
     useEffect(() => {
         if (isSuccess) {
             navigate("/review/complete");
@@ -48,51 +103,86 @@ const ReviewDetailPage: React.FC = () => {
         );
     };
 
-    const handleImageSelect = (file: File) => {
-        // 최대 3개까지만 이미지 선택 가능
+    const processAndAddImage = async (file: File, isReplacement = false, replaceIndex?: number) => {
+        try {
+            const processedFile = await processImageForUpload(file, { 
+                sizeThreshold: 1_500_000, 
+                maxDimension: 2000, 
+                quality: 0.85 
+            });
+            
+            const result = await uploadImageAsync(processedFile);
+            
+            const dataUrl = await fileToDataUrl(processedFile);
+            
+            if (isReplacement && replaceIndex !== undefined) {
+                const oldFile = selectedImages[replaceIndex];
+                setUploadedImageUrls(prev => {
+                    const newMap = new Map(prev);
+                    newMap.delete(oldFile);
+                    newMap.set(processedFile, result.url);
+                    return newMap;
+                });
+                
+                if (previewUrls[replaceIndex] && previewUrls[replaceIndex].startsWith('blob:')) {
+                    URL.revokeObjectURL(previewUrls[replaceIndex]);
+                }
+                
+                setSelectedImages(prev => {
+                    const newImages = [...prev];
+                    newImages[replaceIndex] = processedFile;
+                    return newImages;
+                });
+                
+                setPreviewUrls(prev => {
+                    const newUrls = [...prev];
+                    newUrls[replaceIndex] = dataUrl;
+                    return newUrls;
+                });
+            } else {
+                setSelectedImages(prev => [...prev, processedFile]);
+                setPreviewUrls(prev => [...prev, dataUrl]);
+                setUploadedImageUrls(prev => new Map(prev).set(processedFile, result.url));
+            }
+        } catch (error) {
+            console.error("이미지 처리 실패:", error);
+            alert("이미지 처리에 실패했습니다. 다른 이미지를 선택해주세요.");
+        }
+    };
+
+    const handleImageSelect = async (file: File) => {
         if (selectedImages.length >= 3) {
+            alert("이미지는 최대 3개까지 선택 가능합니다.");
             return;
         }
-        // 서버에서 이미지 업로드를 처리하도록 파일만 보관
-        setSelectedImages(prev => [...prev, file]);
+        
+        await processAndAddImage(file);
     };
 
-    const handleReplaceImage = (idx: number, file: File) => {
-        setSelectedImages(prev => {
-            const newImages = [...prev];
-            newImages[idx] = file;
-            return newImages;
-        });
+    const handleReplaceImage = async (idx: number, file: File) => {
+        await processAndAddImage(file, true, idx);
     };
 
-    // Data URL 프리뷰 사용 (별도 처리 불필요)
-
-    const filesToDataUrls = async (files: File[]): Promise<string[]> => {
-        return Promise.all(
-            files.map(
-                (file) =>
-                    new Promise<string>((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result as string);
-                        reader.onerror = () => reject(new Error("이미지 변환 실패"));
-                        reader.readAsDataURL(file);
-                    })
-            )
-        );
-    };
+    useEffect(() => {
+        return () => {
+            previewUrls.forEach(url => {
+                if (url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, [previewUrls]);
 
     const handleSubmit = async () => {
-        // 사용자 정보 확인
         const userInfo = getUserInfo();
         
-        // 필수 선택 확인 (매장 1개 + 음식 1개)
         if (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) {
             return;
         }
 
         if (!userInfo) {
             try {
-                const imageDataUrls = selectedImages.length > 0 ? await filesToDataUrls(selectedImages) : [];
+                const imageDataUrls = previewUrls.filter(url => url.startsWith('data:'));
                 saveReviewDraft({
                     storeId,
                     storeName,
@@ -110,12 +200,34 @@ const ReviewDetailPage: React.FC = () => {
         }
 
         try {
-            // 선택된 이미지들을 병렬 업로드
-            const imageUrls: string[] = selectedImages.length
-                ? await Promise.all(selectedImages.map(async (file) => (await uploadImageAsync(file)).url))
-                : [];
+            let imageUrls: string[] = [];
+            
+            if (selectedImages.length > 0) {
+                const alreadyUploadedUrls = selectedImages.map(file => uploadedImageUrls.get(file)).filter(Boolean) as string[];
+                
+                if (alreadyUploadedUrls.length === selectedImages.length) {
+                    imageUrls = alreadyUploadedUrls;
+                } else {
+                    const uploadPromises = selectedImages.map(async (file) => {
+                        const existingUrl = uploadedImageUrls.get(file);
+                        if (existingUrl) {
+                            return existingUrl;
+                        }
+                        
+                        try {
+                            const result = await uploadImageAsync(file);
+                            return result.url;
+                        } catch (error) {
+                            console.error("Image upload failed:", error);
+                            return null;
+                        }
+                    });
+                    
+                    const uploadResults = await Promise.all(uploadPromises);
+                    imageUrls = uploadResults.filter(url => url !== null) as string[];
+                }
+            }
 
-            // 리뷰 데이터 구성
             const reviewData = {
                 storeId: storeId,
                 userId: userInfo.id,
@@ -123,18 +235,17 @@ const ReviewDetailPage: React.FC = () => {
                 score: score,
                 foodReviews: selectedFoodTags,
                 storeReviews: selectedStoreTags,
-                imageUrls: imageUrls, // 업로드된 이미지 URL들
+                imageUrls: imageUrls,
             };
             
-            // 리뷰 등록 API 호출
             submitReview(reviewData);
         } catch (error) {
-            console.error("이미지 업로드 실패:", error);
-            alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+            console.error("리뷰 등록 실패:", error);
+            alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
-    const isSubmitDisabled = (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) || isLoading || isImageUploading;
+    const isSubmitDisabled = (selectedStoreTags.length === 0 || selectedFoodTags.length === 0) || isLoading;
 
     return (
         <div className="bg-white mx-auto max-w-[390px]">
@@ -147,7 +258,6 @@ const ReviewDetailPage: React.FC = () => {
             
             <div className="overflow-y-auto" style={{ height: "calc(100dvh - 180px)", maxHeight: "calc(100dvh - 180px)" }}>
                 <div className="px-6 pb-32">
-                {/* 메인 질문 */}
                 <div className="mb-8">
                     <h2 className="text-xl font-bold text-black mt-2 mb-1 text-center">
                         '{storeName}'는 어떠셨나요?
@@ -165,7 +275,6 @@ const ReviewDetailPage: React.FC = () => {
 
                 <ThinDivider width="240px" className="my-8" />
 
-                {/* 매장 평가 섹션 */}
                 <div className="mb-8">
                     <h3 className="text-[18px] font-bold text-black mb-4">
                         매장은 어떠셨나요?
@@ -183,7 +292,6 @@ const ReviewDetailPage: React.FC = () => {
 
                 <ThinDivider className="my-8" />
 
-                {/* 음식 평가 섹션 */}
                 <div className="mb-8">
                     <h3 className="text-[18px] font-bold text-black mb-4">
                         음식은 어떠셨나요?
@@ -200,7 +308,6 @@ const ReviewDetailPage: React.FC = () => {
 
                 <ThinDivider className="my-8" />
 
-                {/* 사진 첨부 섹션 */}
                 <div className="mb-8">
                     <h3 className="text-[18px] font-bold text-black mb-4">
                         사진 첨부하기 <span className="text-sm font-normal text-gray-500">(선택사항, 최대 3개)</span>
@@ -213,6 +320,7 @@ const ReviewDetailPage: React.FC = () => {
                         onRemoveImage={handleRemoveImage}
                         maxImages={3}
                         variant="review"
+                        previewUrls={previewUrls}
                     />
                 </div>
                 </div>
@@ -223,7 +331,7 @@ const ReviewDetailPage: React.FC = () => {
                 variant={isSubmitDisabled ? "disabled" : "primary"}
                 disabled={isSubmitDisabled}
             >
-                {isImageUploading ? "이미지 업로드 중..." : isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
+                {isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
             </BottomFixedButton>
         </div>
     );

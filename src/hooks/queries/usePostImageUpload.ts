@@ -26,8 +26,7 @@ export const usePostImageUpload = (): UseImageUploadResult => {
 
             const response = await axiosClient.post<ImageUploadResponse>(
                 "/upload",
-                formData,
-                { headers: { "Content-Type": "multipart/form-data" } }
+                formData
             );
             return response.data;
         },

@@ -13,16 +13,14 @@ export function useFilePreview(file?: File | null): string | undefined {
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => setSrc(reader.result as string);
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    setSrc(url);
 
     return () => {
-      // 읽기 중 컴포넌트가 언마운트될 경우를 대비해 abort
       try {
-        reader.abort();
+        URL.revokeObjectURL(url);
       } catch {
-        // 이미 완료되었으면 무시
+        // ignore
       }
     };
   }, [file]);

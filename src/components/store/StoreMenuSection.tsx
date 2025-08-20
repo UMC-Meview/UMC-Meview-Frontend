@@ -3,6 +3,8 @@ import ImageUpload from "../common/ImageUpload";
 import StoreFormInput from "./StoreFormInput";
 import AddItemButton from "../common/Button/AddItemButton";
 import { useFilePreview } from "../../hooks/useFilePreview";
+import { processImageForUpload } from "../../utils/imageConversion";
+import { usePostImageUpload } from "../../hooks/queries/usePostImageUpload";
 
 export interface MenuItem {
   image: File | null;
@@ -32,10 +34,23 @@ const PreviewImageMenu: React.FC<{ file: File | null }> = React.memo(({ file }) 
 });
 
 const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange, onAddMenu }) => {
-  const handleMenuImageSelect = (idx: number, file: File) => {
-    const newMenus = [...menus];
-    newMenus[idx] = { ...newMenus[idx], image: file };
-    onMenuChange(newMenus);
+  const { uploadImageAsync } = usePostImageUpload();
+  
+  const handleMenuImageSelect = async (idx: number, picked: File) => {
+    try {
+      const file = await processImageForUpload(picked, { sizeThreshold: 1_500_000, maxDimension: 2000, quality: 0.85 });
+      
+      // API 유효성 검사를 위해 실제 업로드 시도 (URL은 저장하지 않고 검증만)
+      await uploadImageAsync(file);
+      
+      // 업로드 성공 시 메뉴 데이터 업데이트 (파일만 저장, URL은 나중에 등록 시 업로드)
+      const newMenus = [...menus];
+      newMenus[idx] = { ...newMenus[idx], image: file };
+      onMenuChange(newMenus);
+    } catch (e) {
+      console.error("메뉴 이미지 처리 실패", e);
+      alert("이미지 처리에 실패했습니다. 다른 이미지를 선택해주세요.");
+    }
   };
 
   const handleMenuFieldChange = (idx: number, field: 'name' | 'price' | 'detail', value: string) => {

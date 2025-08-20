@@ -1,13 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 import { StoreFormData } from "../types/store";
+import { processImageForUpload } from "../utils/imageConversion";
+import { usePostImageUpload } from "./queries/usePostImageUpload";
 
 export const useStoreRegistrationForm = () => {
+    const { uploadImageAsync } = usePostImageUpload();
+    
+    // 업로드된 이미지 URL 추적
+    const [uploadedImageUrls, setUploadedImageUrls] = useState<Map<File, string>>(new Map());
+    
     // 메인 이미지 삭제
     const handleRemoveMainImage = (idx: number) => {
+        const removedFile = formData.mainImages[idx];
         setFormData(prev => ({
             ...prev,
             mainImages: prev.mainImages.filter((_, i) => i !== idx)
         }));
+        // 업로드된 URL 추적에서도 제거
+        setUploadedImageUrls(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(removedFile);
+            return newMap;
+        });
     };
     const blobUrlsRef = useRef<string[]>([]);
     const [formData, setFormData] = useState<StoreFormData>({
@@ -37,28 +51,65 @@ export const useStoreRegistrationForm = () => {
         setFormData(prev => ({ ...prev, latitude, longitude }));
     };
 
-    // 메인 이미지 추가
-    const handleMainImageSelect = (file: File) => {
+    // 메인 이미지 추가 (프로필 수정과 동일한 방식)
+    const handleMainImageSelect = async (picked: File) => {
         if (formData.mainImages.length >= 3) {
             alert('이미지는 최대 3개까지 업로드 가능합니다.');
             return;
         }
         
-        if (formData.mainImages.some(img => img.name === file.name)) {
+        if (formData.mainImages.some(img => img.name === picked.name)) {
             alert('이미 동일한 이미지가 있습니다.');
             return;
         }
-        
-        setFormData(prev => ({ ...prev, mainImages: [...prev.mainImages, file] }));
+
+        try {
+            const file = await processImageForUpload(picked, { sizeThreshold: 1_500_000, maxDimension: 2000, quality: 0.85 });
+            
+            // API 유효성 검사를 위해 실제 업로드 시도
+            const result = await uploadImageAsync(file);
+            
+            // 업로드 성공 시 formData에 추가하고 URL 추적
+            setFormData(prev => ({ ...prev, mainImages: [...prev.mainImages, file] }));
+            setUploadedImageUrls(prev => new Map(prev).set(file, result.url));
+        } catch (e) {
+            console.error("메인 이미지 처리 실패", e);
+            alert("이미지 처리에 실패했습니다. 다른 이미지를 선택해주세요.");
+        }
     };
 
-    // 메인 이미지 교체
-    const handleReplaceMainImage = (idx: number, file: File) => {
-        setFormData(prev => {
-            const newImages = [...prev.mainImages];
-            newImages[idx] = file;
-            return { ...prev, mainImages: newImages };
-        });
+    // 메인 이미지 교체 (프로필 수정과 동일한 방식)
+    const handleReplaceMainImage = async (idx: number, picked: File) => {
+        try {
+            const file = await processImageForUpload(picked, { sizeThreshold: 1_500_000, maxDimension: 2000, quality: 0.85 });
+            
+            // API 유효성 검사를 위해 실제 업로드 시도
+            const result = await uploadImageAsync(file);
+            
+            // 이전 파일 정보 제거
+            const oldFile = formData.mainImages[idx];
+            setUploadedImageUrls(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(oldFile);
+                newMap.set(file, result.url);
+                return newMap;
+            });
+            
+            // 업로드 성공 시 formData 교체
+            setFormData(prev => {
+                const newImages = [...prev.mainImages];
+                newImages[idx] = file;
+                return { ...prev, mainImages: newImages };
+            });
+        } catch (e) {
+            console.error("메인 이미지 교체 실패", e);
+            alert("이미지 처리에 실패했습니다. 다른 이미지를 선택해주세요.");
+        }
+    };
+
+    // 업로드된 메인 이미지 URL들 반환
+    const getMainImageUrls = () => {
+        return formData.mainImages.map(file => uploadedImageUrls.get(file)).filter(Boolean) as string[];
     };
 
     // 메뉴 변경
@@ -119,13 +170,18 @@ export const useStoreRegistrationForm = () => {
         };
     }, []);
 
+    // 메뉴 이미지 URL 반환
+    const getMenuImageUrl = (file: File | null) => {
+        return file ? uploadedImageUrls.get(file) : undefined;
+    };
+
     return {
         formData,
         handleInputChange,
         updateCoordinates,
         handleMainImageSelect,
         handleReplaceMainImage,
-    handleRemoveMainImage,
+        handleRemoveMainImage,
         handleMenuChange,
         handleAddMenu,
         handleOpeningHourChange,
@@ -133,5 +189,7 @@ export const useStoreRegistrationForm = () => {
         getImageUrl,
         revokeImage,
         isFormValid,
+        getMainImageUrls,
+        getMenuImageUrl,
     };
 }; 

@@ -87,8 +87,40 @@ export const saveReviewDraft = (draft: ReviewDraftData): void => {
 export const getReviewDraft = (): ReviewDraftData | null => {
   try {
     const raw = localStorage.getItem(REVIEW_DRAFT_KEY);
-    return raw ? (JSON.parse(raw) as ReviewDraftData) : null;
+    if (!raw) return null;
+    
+    const draft = JSON.parse(raw) as ReviewDraftData;
+    
+    // 데이터 유효성 검사
+    if (!draft.storeId || !Array.isArray(draft.imageDataUrls)) {
+      console.warn("Invalid review draft data found, clearing...");
+      clearReviewDraft();
+      return null;
+    }
+    
+    // 이미지 데이터 URL 유효성 검사
+    const validImageUrls = draft.imageDataUrls.filter(url => {
+      if (!url || typeof url !== 'string') return false;
+      if (!url.startsWith('data:')) return false;
+      
+      // Base64 부분 존재 확인
+      const parts = url.split(',');
+      if (parts.length !== 2 || !parts[1]) return false;
+      
+      return true;
+    });
+    
+    // 유효하지 않은 이미지가 있다면 필터링된 데이터로 업데이트
+    if (validImageUrls.length !== draft.imageDataUrls.length) {
+      console.warn("Found invalid image data URLs, filtering...");
+      draft.imageDataUrls = validImageUrls;
+      saveReviewDraft(draft);
+    }
+    
+    return draft;
   } catch {
+    console.warn("Failed to parse review draft, clearing...");
+    clearReviewDraft();
     return null;
   }
 };
