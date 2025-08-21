@@ -17,6 +17,8 @@ interface StoreBottomSheetProps {
     loading?: boolean;
     error?: string | null;
     onStoreLocationMove?: (lat: number, lng: number) => void;
+    onStoreDeselect?: () => void;
+    onStoreSelect?: (storeId: string) => void;
 }
 
 const StoreDetailContainer: React.FC<{
@@ -47,6 +49,8 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     loading = false,
     error = null,
     onStoreLocationMove,
+    onStoreDeselect,
+    onStoreSelect,
 }) => {
     const [mode, setMode] = useState<"list" | "detail">("list");
     const [internalSelectedStoreId, setInternalSelectedStoreId] =
@@ -63,11 +67,13 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     const handleStoreSelect = (storeId: string) => {
         setInternalSelectedStoreId(storeId);
         setMode("detail");
+        onStoreSelect?.(storeId); // 상위 컴포넌트에 가게 선택 알림
     };
 
     const handleBackToList = () => {
         setMode("list");
         setInternalSelectedStoreId("");
+        onStoreDeselect?.(); // 상위 컴포넌트에 선택 해제 알림
     };
 
     const handleExpandedChange = (isExpanded: boolean) => {

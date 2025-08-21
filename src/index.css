@@ -51,7 +51,7 @@ body {
     display: none;
 }
 
-메인 콘텐츠도 헤더 높이에 맞춰 조정
+/* 메인 콘텐츠도 헤더 높이에 맞춰 조정 */
 .main-content-with-header {
     padding-top: calc(env(safe-area-inset-top, 40px) + 120px);
 }

@@ -1,25 +1,15 @@
-import { Map, MapMarker, useKakaoLoader } from "react-kakao-maps-sdk";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { Map, useKakaoLoader } from "react-kakao-maps-sdk";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
+import StoreMarkerList from "../../components/map/StoreMarkerList";
 import { useHomeStores } from "../../hooks/queries/useGetStoreList";
+import { useMapNavigation } from "../../hooks/useMapNavigation";
 import { SortType } from "../../types/store";
 import { RotateCwIcon } from "lucide-react";
-import { useCallback } from "react";
 import { useLocation } from "react-router-dom";
 
-// 가게의 averagePositiveScore를 기반으로 레벨 생성 (1-5)
-const getStoreLevel = (averagePositiveScore?: number): number => {
-    if (!averagePositiveScore) return 1; // 점수가 없으면 기본 레벨 1
-
-    // 0~10 점수를 5단계로 나누기
-    if (averagePositiveScore >= 8) return 5;
-    if (averagePositiveScore >= 6) return 4;
-    if (averagePositiveScore >= 4) return 3;
-    if (averagePositiveScore >= 2) return 2;
-    return 1;
-};
 
 const Homepage = () => {
     const initialLat = 37.545377367170566;
@@ -93,10 +83,11 @@ const Homepage = () => {
 
     const DEFAULT_RADIUS_KM = 3; // 초기/미지정 반경 기본값
 
-    // 가게 목록 가져오기 (검색 기준 위치 + 정렬 기준 + 키워드)
+    // 가게 목록 가져오기
     const { stores, loading, error } = useHomeStores(
         currentSortBy,
-        {
+        // 키워드 검색 시에는 위치 제한 없이 전체 검색, 일반 조회 시에는 현재 위치 기반
+        keywordFromQuery ? undefined : {
             latitude: searchLocation.lat,
             longitude: searchLocation.lng,
             radius: mapRadiusKm ?? DEFAULT_RADIUS_KM,
@@ -105,20 +96,29 @@ const Homepage = () => {
         keywordFromQuery
     );
 
-    // 가게 클릭 시 지도 이동 함수
+    // 지도 네비게이션 훅 사용
+    const { moveMapCenter, moveSearchLocation } = useMapNavigation({
+        mapLevel,
+        DEFAULT_MAP_LEVEL,
+        setMapCenter,
+        setHasMapMoved,
+    });
+
+    // 가게 클릭 시 지도 이동 함수 (API 재요청 없이 지도만 이동)
     const moveToStore = useCallback(
         (lat: number, lng: number) => {
-            console.log(mapLevel);
-            if (
-                mapLevel <= DEFAULT_MAP_LEVEL + 2 &&
-                mapLevel >= DEFAULT_MAP_LEVEL
-            ) {
-                setMapCenter({ lat: lat - 0.005, lng });
-            }
-            setSearchLocation({ lat: lat, lng });
-            setHasMapMoved(false);
+            moveMapCenter(lat, lng);
         },
-        [mapLevel]
+        [moveMapCenter]
+    );
+
+    // 검색 영역 이동 함수 (API 재요청 발생)
+    const moveToStoreWithSearch = useCallback(
+        (lat: number, lng: number) => {
+            moveMapCenter(lat, lng);
+            moveSearchLocation(lat, lng, setSearchLocation);
+        },
+        [moveMapCenter, moveSearchLocation]
     );
 
     // 키워드 검색 결과의 첫 가게 위치로 지도 자동 이동
@@ -140,22 +140,27 @@ const Homepage = () => {
         const [lng, lat] = stores[0].location.coordinates || [];
         if (lat !== undefined && lng !== undefined) {
             setMapLevel(DEFAULT_MAP_LEVEL);
-            moveToStore(lat, lng);
+            moveToStoreWithSearch(lat, lng);
             lastCenteredKeywordRef.current = keywordFromQuery;
         }
-    }, [keywordFromQuery, stores, loading, location.search, moveToStore]);
+    }, [keywordFromQuery, stores, loading, location.search, moveToStoreWithSearch]);
 
-    // 쿼리의 lat/lng가 있으면 홈 진입 시 해당 위치로 지도 이동
+    // 쿼리의 lat/lng가 있으면 홈 진입 시 해당 위치로 지도 이동 (한 번만)
+    const hasAppliedUrlParams = useRef(false);
     useEffect(() => {
+        if (hasAppliedUrlParams.current) return; // 이미 적용했으면 스킵
+        
         const params = new URLSearchParams(location.search);
         const latParam = params.get("lat");
         const lngParam = params.get("lng");
         const levelParam = params.get("level");
+        
         if (latParam && lngParam) {
             const lat = parseFloat(latParam);
             const lng = parseFloat(lngParam);
             if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
-                moveToStore(lat, lng);
+                moveToStoreWithSearch(lat, lng);
+                hasAppliedUrlParams.current = true;
             }
         }
         if (levelParam) {
@@ -164,7 +169,7 @@ const Homepage = () => {
                 setMapLevel(lv);
             }
         }
-    }, [location.search, moveToStore]);
+    }, [location.search, moveToStoreWithSearch]);
 
     const handleBottomSheetFullScreenChange = (isFullScreen: boolean) => {
         setIsBottomSheetFullScreen(isFullScreen);
@@ -179,20 +184,28 @@ const Homepage = () => {
         if (lat !== undefined && lng !== undefined) {
             moveToStore(lat, lng);
         }
+        
+        // 마커 클릭으로 지도가 이동했으므로 URL에서 지도 파라미터 제거
+        cleanUrlParams();
     };
 
     const handleBottomSheetExpandedChange = (expanded: boolean) => {
+        const wasExpanded = isExpanded; // 이전 확장 상태 기억
         setIsExpanded(expanded);
+        
         if (expanded && shouldExpandBottomSheet) {
             setShouldExpandBottomSheet(false);
         }
-        if (expanded && selectedStoreId) {
+        
+        // 처음 확장될 때만 지도 이동 (이미 확장된 상태에서는 이동하지 않음)
+        if (expanded && !wasExpanded && selectedStoreId) {
             const store = stores.find((s) => s._id === selectedStoreId);
             if (store?.location?.coordinates) {
                 const [lng, lat] = store.location.coordinates;
                 moveToStore(lat, lng);
             }
         }
+        
         if (!expanded) {
             setSelectedStoreId("");
         }
@@ -266,6 +279,9 @@ const Homepage = () => {
         );
         const shouldShow = distance > 0.001;
         setHasMapMoved(shouldShow);
+        
+        // 사용자가 지도를 드래그했으므로 URL에서 지도 파라미터 제거
+        cleanUrlParams();
     };
 
     const handleZoomChanged = (map: kakao.maps.Map) => {
@@ -285,23 +301,55 @@ const Homepage = () => {
             setMapRadiusKm(radiusKm);
         }
 
-        setSearchLocation({ lat: newLat, lng: newLng });
+        moveSearchLocation(newLat, newLng, setSearchLocation);
         setMapLevel(map.getLevel());
-        setHasMapMoved(false);
+        
+        // 사용자가 지도를 확대/축소했으므로 URL에서 지도 파라미터 제거
+        cleanUrlParams();
     };
 
     // 재검색 버튼 클릭 핸들러
     const handleResearch = () => {
         // 보류해 둔 중심/반경을 실제 검색 기준으로 확정
-        setSearchLocation({ lat: pendingCenter.lat, lng: pendingCenter.lng });
+        moveSearchLocation(pendingCenter.lat, pendingCenter.lng, setSearchLocation);
         setMapRadiusKm(pendingRadiusKm);
-        setHasMapMoved(false);
     };
 
     // 정렬 변경 핸들러
     const handleSortChange = (newSortBy: SortType) => {
         setCurrentSortBy(newSortBy);
     };
+
+    // 사용자가 지도를 조작했을 때 URL에서 지도 관련 파라미터 제거
+    const cleanUrlParams = useCallback(() => {
+        const params = new URLSearchParams(location.search);
+        const hasMapParams = params.has('lat') || params.has('lng') || params.has('level');
+        
+        if (hasMapParams) {
+            params.delete('lat');
+            params.delete('lng'); 
+            params.delete('level');
+            const newUrl = `${location.pathname}?${params.toString()}`;
+            window.history.replaceState({}, '', newUrl);
+        }
+    }, [location.search, location.pathname]);
+
+    // 가게 선택 해제 핸들러
+    const handleStoreDeselect = useCallback(() => {
+        setSelectedStoreId("");
+    }, []);
+
+    // 가게 선택 핸들러 (StoreList에서 호출)
+    const handleStoreSelect = useCallback((storeId: string) => {
+        setSelectedStoreId(storeId);
+        // 선택된 가게로 지도 이동
+        const store = stores.find((s) => s._id === storeId);
+        if (store?.location?.coordinates) {
+            const [lng, lat] = store.location.coordinates;
+            moveToStore(lat, lng);
+        }
+        cleanUrlParams();
+    }, [stores, moveToStore, cleanUrlParams]);
 
     // 카카오맵 로더 사용
     const [mapLoading, mapError] = useKakaoLoader({
@@ -362,41 +410,14 @@ const Homepage = () => {
                 onDragEnd={handleBoundsOrDragChanged}
                 onZoomChanged={handleZoomChanged}
             >
-                {/* 가게 마커들 렌더링 - 로딩 중이 아닐 때만 표시 */}
-                {!loading &&
-                    stores.map((store) => {
-                        const level = getStoreLevel(store.averagePositiveScore);
-                        return (
-                            <MapMarker
-                                key={store._id}
-                                position={{
-                                    lat: store.location.coordinates[1],
-                                    lng: store.location.coordinates[0],
-                                }}
-                                image={{
-                                    src: `/mark/lv${level}.svg`,
-                                    size: {
-                                        width: 40,
-                                        height: 40,
-                                    },
-                                    options: {
-                                        offset: {
-                                            x: 20,
-                                            y: 40,
-                                        },
-                                    },
-                                }}
-                                clickable={true}
-                                onClick={() =>
-                                    handleMarkerClick(
-                                        store._id,
-                                        store.location.coordinates[1],
-                                        store.location.coordinates[0]
-                                    )
-                                }
-                            />
-                        );
-                    })}
+                {/* 가게 마커들 렌더링 */}
+                <StoreMarkerList
+                    stores={stores}
+                    loading={loading}
+                    selectedStoreId={selectedStoreId}
+                    isExpanded={isExpanded}
+                    onMarkerClick={handleMarkerClick}
+                />
             </Map>
             <StoreBottomSheet
                 onFullScreenChange={handleBottomSheetFullScreenChange}
@@ -410,6 +431,8 @@ const Homepage = () => {
                 loading={loading}
                 error={error}
                 onStoreLocationMove={moveToStore}
+                onStoreDeselect={handleStoreDeselect}
+                onStoreSelect={handleStoreSelect}
             />
             <Footer />
         </div>
