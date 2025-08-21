@@ -29,7 +29,7 @@ const RankingPage = () => {
             <div className="bg-white">
                 {loading && (
                     <div className="px-4">
-                        <StoreListSkeleton />
+                        <StoreListSkeleton count={10} />
                     </div>
                 )}
 

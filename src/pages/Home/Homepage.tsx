@@ -108,7 +108,11 @@ const Homepage = () => {
     // 가게 클릭 시 지도 이동 함수
     const moveToStore = useCallback(
         (lat: number, lng: number) => {
-            if (mapLevel === DEFAULT_MAP_LEVEL) {
+            console.log(mapLevel);
+            if (
+                mapLevel <= DEFAULT_MAP_LEVEL + 2 &&
+                mapLevel >= DEFAULT_MAP_LEVEL
+            ) {
                 setMapCenter({ lat: lat - 0.005, lng });
             }
             setSearchLocation({ lat: lat, lng });
@@ -265,6 +269,8 @@ const Homepage = () => {
     };
 
     const handleZoomChanged = (map: kakao.maps.Map) => {
+        // console.log(map.getLevel());
+
         const center = map.getCenter();
         const newLat = center.getLat();
         const newLng = center.getLng();
