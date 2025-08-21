@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Clock, Heart, MapPin } from "lucide-react";
 import { StoreDetail } from "../../types/store";
 import {
@@ -17,15 +17,15 @@ interface StoreInfoProps {
     isFullScreen?: boolean;
 }
 
-const StoreInfo: React.FC<StoreInfoProps> = ({
-    store,
-    isExpanded,
-    isFullScreen,
-}) => {
+const StoreInfo: React.FC<StoreInfoProps> = ({ store }) => {
     const [showTooltip, setShowTooltip] = useState(false);
     const nameRef = useRef<HTMLHeadingElement>(null);
     const navigate = useNavigate();
+    const location = useLocation();
     const { toggleFavorite } = useToggleFavorite();
+    
+    // 현재 경로가 StoreDetailPage인지 확인
+    const isStoreDetailPage = location.pathname.startsWith('/stores/') && location.pathname !== '/stores';
 
     // 외부 클릭시 tooltip 닫기
     useEffect(() => {
@@ -52,13 +52,13 @@ const StoreInfo: React.FC<StoreInfoProps> = ({
     };
 
     const handleNameClick = () => {
-        // isExpanded이고 isFullScreen이 아닐 때 가게 상세 페이지로 이동
-        if (isExpanded && !isFullScreen) {
+        // StoreDetailPage가 아닐 때는 가게 상세 페이지로 이동
+        if (!isStoreDetailPage) {
             navigate(`/stores/${store._id}`);
             return;
         }
 
-        // 이름 잘렸는지 확인하여 툴팁 표시
+        // StoreDetailPage일 때만 이름 잘렸는지 확인하여 툴팁 표시
         if (nameRef.current) {
             const scrollWidth = nameRef.current.scrollWidth;
             const clientWidth = nameRef.current.clientWidth;

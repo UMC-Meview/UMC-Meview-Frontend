@@ -48,14 +48,14 @@ const StoreDetailPage: React.FC = () => {
 
     // 모든 이미지 배열 (메인 이미지 + 추가 이미지들)
     const allImages = [];
-    
+
     // mainImage가 배열인 경우 처리 (백엔드에서 배열로 반환)
     if (Array.isArray(store.mainImage)) {
         allImages.push(...store.mainImage);
     } else if (store.mainImage) {
         allImages.push(store.mainImage);
     }
-    
+
     // 추가 이미지들도 포함
     if (store.images && store.images.length > 0) {
         allImages.push(...store.images);

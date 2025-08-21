@@ -3,8 +3,7 @@ import BottomSheet, { BottomSheetContext } from "../common/BottomSheet";
 import StoreList from "./StoreList";
 import StoreDetailCard from "./StoreDetailCard";
 import BottomSheetHeader from "../common/BottomSheetHeader";
-import { StoreDetail } from "../../types/store";
-import { ServerSortType } from "../../hooks/queries/useGetStoreList";
+import { StoreDetail, SortType } from "../../types/store";
 
 interface StoreBottomSheetProps {
     onFullScreenChange: (isFullScreen: boolean) => void;
@@ -13,11 +12,13 @@ interface StoreBottomSheetProps {
     onExpandedChange?: (isExpanded: boolean) => void;
     stores?: StoreDetail[];
     currentLocation?: { lat: number; lng: number };
-    currentSortBy?: ServerSortType;
-    onSortChange?: (sortBy: ServerSortType) => void;
+    currentSortBy?: SortType;
+    onSortChange?: (sortBy: SortType) => void;
     loading?: boolean;
     error?: string | null;
     onStoreLocationMove?: (lat: number, lng: number) => void;
+    onStoreDeselect?: () => void;
+    onStoreSelect?: (storeId: string) => void;
 }
 
 const StoreDetailContainer: React.FC<{
@@ -48,6 +49,8 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     loading = false,
     error = null,
     onStoreLocationMove,
+    onStoreDeselect,
+    onStoreSelect,
 }) => {
     const [mode, setMode] = useState<"list" | "detail">("list");
     const [internalSelectedStoreId, setInternalSelectedStoreId] =
@@ -64,11 +67,13 @@ const StoreBottomSheet: React.FC<StoreBottomSheetProps> = ({
     const handleStoreSelect = (storeId: string) => {
         setInternalSelectedStoreId(storeId);
         setMode("detail");
+        onStoreSelect?.(storeId); // 상위 컴포넌트에 가게 선택 알림
     };
 
     const handleBackToList = () => {
         setMode("list");
         setInternalSelectedStoreId("");
+        onStoreDeselect?.(); // 상위 컴포넌트에 선택 해제 알림
     };
 
     const handleExpandedChange = (isExpanded: boolean) => {

@@ -100,7 +100,7 @@ const RankingItem: React.FC<RankingItemProps> = ({
                 {/* 두 번째 줄: 총 보너스 */}
                 <div className="mb-1">
                     <span className="text-sm text-[#FF5436] font-medium whitespace-nowrap">
-                        총 보너스 {bonusAmount.toLocaleString()}원
+                        총 보너스 {bonusAmount.toLocaleString()}만원
                     </span>
                 </div>
 
