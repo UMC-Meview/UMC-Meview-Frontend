@@ -120,6 +120,7 @@ const ProfileEditPage: React.FC = () => {
     return (
         <FixedFrameLayout
             header={<Header onBack={() => window.history.back()} center="프로필 수정" />}
+            contentHeightOffset={isKeyboardVisible ? 80 : 180}
         >
                 <ProfileInfoSection
                     imageUrl={localPreview || profileImageUrl}

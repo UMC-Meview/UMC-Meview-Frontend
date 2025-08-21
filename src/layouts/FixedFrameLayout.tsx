@@ -19,7 +19,7 @@ const FixedFrameLayout: React.FC<FixedFrameLayoutProps> = ({
     header,
     children,
     contentClassName = "",
-    // contentHeightOffset = 180,
+    contentHeightOffset = 180,
     scrollable = true,
 }) => {
     return (
@@ -32,8 +32,8 @@ const FixedFrameLayout: React.FC<FixedFrameLayoutProps> = ({
                 <div
                     className={contentClassName}
                     style={{
-                        // height: `calc(100dvh - ${contentHeightOffset}px)`,
-                        // maxHeight: `calc(100dvh - ${contentHeightOffset}px)`,
+                        height: `calc(100dvh - ${contentHeightOffset}px)`,
+                        maxHeight: `calc(100dvh - ${contentHeightOffset}px)`,
                         overflowY: "auto",
                     }}
                 >
