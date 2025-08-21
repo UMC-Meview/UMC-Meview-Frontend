@@ -46,7 +46,7 @@ export const usePostMenuRegistration = (): UseMenuRegistrationResult => {
     const mutation = useMutation<MenuResponseDto, Error, MenuRegistrationRequest>({
         mutationFn: registerMenu,
         onSuccess: (data) => {
-            console.log("메뉴 등록 완료:", data);
+            // console.log("메뉴 등록 완료:", data);
             
             // 메뉴 목록 캐시 무효화 (새로운 메뉴가 추가되었으므로)
             queryClient.invalidateQueries({ queryKey: ["menus"] });

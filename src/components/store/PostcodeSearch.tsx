@@ -28,7 +28,7 @@ const PostcodeSearch: React.FC<PostcodeSearchProps> = ({
           const latitude = parseFloat(coords.y);
           const longitude = parseFloat(coords.x);
           
-          console.log(`주소: ${fullAddress}, 위도: ${latitude}, 경도: ${longitude}`);
+          // console.log(`주소: ${fullAddress}, 위도: ${latitude}, 경도: ${longitude}`);
           onAddressSelect(fullAddress, postcode, latitude, longitude);
         } else {
           console.warn('좌표 변환 실패, 기본 좌표 사용');

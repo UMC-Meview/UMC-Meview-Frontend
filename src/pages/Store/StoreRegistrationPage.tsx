@@ -18,12 +18,16 @@ import { useKeyboardDetection } from "../../hooks/useKeyboardDetection";
 
 const StoreRegistrationPage: React.FC = () => {
     const navigate = useNavigate();
-    const { mutate, isLoading, isSuccess, data, error } = useStoreRegistration();
+    const { mutate, isLoading, isSuccess, data, error } =
+        useStoreRegistration();
     const { registerMenuAsync } = usePostMenuRegistration();
-    const { uploadImageAsync, isLoading: isImageUploading } = usePostImageUpload();
+    const { uploadImageAsync, isLoading: isImageUploading } =
+        usePostImageUpload();
     const isKeyboardVisible = useKeyboardDetection();
     // 메뉴 이미지 업로드 프라미스 캐시
-    const menuImageUploadCacheRef = useRef<Map<File, Promise<string | undefined>>>(new Map());
+    const menuImageUploadCacheRef = useRef<
+        Map<File, Promise<string | undefined>>
+    >(new Map());
 
     const {
         formData,
@@ -53,24 +57,36 @@ const StoreRegistrationPage: React.FC = () => {
                     name: formData.storeName.trim(),
                     category: formData.category || "음식점",
                     description: formData.description || "상세 설명 없음",
-                    address: formData.detailAddress 
+                    address: formData.detailAddress
                         ? `${formData.address.trim()} ${formData.detailAddress.trim()}`
                         : formData.address.trim(),
-                    operatingHours: formData.openingHours.filter(hour => hour.trim() !== "").join(", ") || "영업시간 미정",
+                    operatingHours:
+                        formData.openingHours
+                            .filter((hour) => hour.trim() !== "")
+                            .join(", ") || "영업시간 미정",
                     qrPrefix: "https://miview.com/stores/",
                 };
 
                 // 메뉴 이미지 선행 업로드(병렬)
                 menuImageUploadCacheRef.current = new Map();
                 formData.menuList.forEach((menu) => {
-                    if (menu.image && !menuImageUploadCacheRef.current.has(menu.image)) {
+                    if (
+                        menu.image &&
+                        !menuImageUploadCacheRef.current.has(menu.image)
+                    ) {
                         const promise = uploadImageAsync(menu.image)
                             .then((res) => res.url)
                             .catch((e) => {
-                                console.error("메뉴 이미지 선행 업로드 실패:", e);
+                                console.error(
+                                    "메뉴 이미지 선행 업로드 실패:",
+                                    e
+                                );
                                 return undefined;
                             });
-                        menuImageUploadCacheRef.current.set(menu.image, promise);
+                        menuImageUploadCacheRef.current.set(
+                            menu.image,
+                            promise
+                        );
                     }
                 });
 
@@ -81,7 +97,7 @@ const StoreRegistrationPage: React.FC = () => {
                         requestData.mainImage = mainImageUrls;
                     }
                 }
-                
+
                 mutate(requestData);
             } catch (error) {
                 console.error("이미지 처리 중 오류:", error);
@@ -92,33 +108,41 @@ const StoreRegistrationPage: React.FC = () => {
         }
     };
 
-        // 등록 성공 시 메뉴 등록 → QR 페이지
+    // 등록 성공 시 메뉴 등록 → QR 페이지
     useEffect(() => {
         if (isSuccess && data) {
             // 유효 메뉴만 등록
-            const validMenus = formData.menuList.filter(menu => 
-                menu.name.trim() !== "" && menu.price.trim() !== ""
+            const validMenus = formData.menuList.filter(
+                (menu) => menu.name.trim() !== "" && menu.price.trim() !== ""
             );
-            
+
             if (validMenus.length > 0) {
                 // 메뉴 등록 병렬 처리
                 const menuPromises = validMenus.map(async (menu) => {
                     // 선행 업로드 결과 재사용
                     let uploadedMenuImageUrl: string | undefined = undefined;
                     if (menu.image) {
-                        const cached = menuImageUploadCacheRef.current.get(menu.image);
+                        const cached = menuImageUploadCacheRef.current.get(
+                            menu.image
+                        );
                         if (cached) {
                             try {
                                 uploadedMenuImageUrl = await cached;
                             } catch (e) {
-                                console.error("메뉴 이미지 캐시 업로드 결과 대기 중 오류:", e);
+                                console.error(
+                                    "메뉴 이미지 캐시 업로드 결과 대기 중 오류:",
+                                    e
+                                );
                             }
                         } else {
                             try {
                                 const res = await uploadImageAsync(menu.image);
                                 uploadedMenuImageUrl = res.url;
                             } catch (e) {
-                                console.error("메뉴 이미지 업로드 실패, 이미지 없이 메뉴 등록 진행:", e);
+                                console.error(
+                                    "메뉴 이미지 업로드 실패, 이미지 없이 메뉴 등록 진행:",
+                                    e
+                                );
                             }
                         }
                     }
@@ -132,25 +156,50 @@ const StoreRegistrationPage: React.FC = () => {
                     };
                     return registerMenuAsync(menuData);
                 });
-                
+
                 // 모두 완료 후 이동
                 Promise.all(menuPromises)
                     .then(() => {
-                        navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
+                        navigate(
+                            `/qrcode?qrCode=${encodeURIComponent(
+                                data.qrCodeBase64
+                            )}&storeId=${
+                                data._id
+                            }&storeName=${encodeURIComponent(data.name)}`
+                        );
                     })
                     .catch((error) => {
                         console.error("메뉴 등록 중 오류:", error);
                         // 실패해도 이동(가게는 등록됨)
-                        navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
+                        navigate(
+                            `/qrcode?qrCode=${encodeURIComponent(
+                                data.qrCodeBase64
+                            )}&storeId=${
+                                data._id
+                            }&storeName=${encodeURIComponent(data.name)}`
+                        );
                     });
             } else {
                 // 메뉴 없으면 바로 이동
-                navigate(`/qrcode?qrCode=${encodeURIComponent(data.qrCodeBase64)}&storeId=${data._id}&storeName=${encodeURIComponent(data.name)}`);
+                navigate(
+                    `/qrcode?qrCode=${encodeURIComponent(
+                        data.qrCodeBase64
+                    )}&storeId=${data._id}&storeName=${encodeURIComponent(
+                        data.name
+                    )}`
+                );
             }
         }
-    }, [isSuccess, data, navigate, formData.menuList, registerMenuAsync, uploadImageAsync]);
+    }, [
+        isSuccess,
+        data,
+        navigate,
+        formData.menuList,
+        registerMenuAsync,
+        uploadImageAsync,
+    ]);
 
-    const handleBack = () => navigate('/login');
+    const handleBack = () => navigate("/login");
 
     return (
         <FixedFrameLayout
@@ -159,7 +208,7 @@ const StoreRegistrationPage: React.FC = () => {
         >
             {/* 에러 메시지 표시 */}
             {error && <ErrorMessage message={error} />}
-            
+
             <div style={{ marginTop: "15px" }}>
                 {/* 메인 이미지 섹션 */}
                 <StoreImageSection
@@ -182,13 +231,18 @@ const StoreRegistrationPage: React.FC = () => {
                     detailAddress={formData.detailAddress}
                     postalCode={formData.postalCode}
                     onInputChange={handleInputChange}
-                    onAddressSelect={(address: string, postcode: string, latitude?: number, longitude?: number) => {
+                    onAddressSelect={(
+                        address: string,
+                        postcode: string,
+                        latitude?: number,
+                        longitude?: number
+                    ) => {
                         handleInputChange("address", address);
                         handleInputChange("postalCode", postcode);
                         // 위도/경도가 있으면 업데이트
                         if (latitude !== undefined && longitude !== undefined) {
                             updateCoordinates(latitude, longitude);
-                            console.log(`좌표 업데이트됨 - 위도: ${latitude}, 경도: ${longitude}`);
+                            // console.log(`좌표 업데이트됨 - 위도: ${latitude}, 경도: ${longitude}`);
                         }
                     }}
                 />
@@ -199,23 +253,31 @@ const StoreRegistrationPage: React.FC = () => {
                     onAddOpeningHour={handleAddOpeningHour}
                 />
                 {/* 메뉴판 사진 */}
-                <StoreMenuSection 
-                    menus={formData.menuList} 
+                <StoreMenuSection
+                    menus={formData.menuList}
                     onMenuChange={handleMenuChange}
                     onAddMenu={handleAddMenu}
                 />
                 {/* BottomFixedButton 위에 여백 추가 */}
                 <div className="h-38"></div>
             </div>
-            
+
             {/* 등록 완료 버튼 - 하단 고정 */}
             {!isKeyboardVisible && (
                 <BottomFixedButton
                     onClick={handleSubmit}
                     disabled={!isFormValid() || isLoading || isImageUploading}
-                    variant={isFormValid() && !isLoading && !isImageUploading ? "primary" : "disabled"}
+                    variant={
+                        isFormValid() && !isLoading && !isImageUploading
+                            ? "primary"
+                            : "disabled"
+                    }
                 >
-                    {isImageUploading ? "이미지 업로드 중..." : isLoading ? "등록 중..." : "가게 등록 완료"}
+                    {isImageUploading
+                        ? "이미지 업로드 중..."
+                        : isLoading
+                        ? "등록 중..."
+                        : "가게 등록 완료"}
                 </BottomFixedButton>
             )}
         </FixedFrameLayout>

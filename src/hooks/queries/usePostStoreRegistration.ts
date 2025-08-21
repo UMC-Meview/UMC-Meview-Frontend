@@ -47,7 +47,7 @@ export const useStoreRegistration = (): UseStoreRegistrationResult => {
     const mutation = useMutation<StoreRegistrationResponse, Error, StoreRegistrationRequest>({
         mutationFn: registerStore,
         onSuccess: (data) => {
-            console.log("가게 등록 완료:", data);
+            // console.log("가게 등록 완료:", data);
             
             // 가게 목록 캐시 무효화 (새로운 가게가 추가되었으므로)
             queryClient.invalidateQueries({ queryKey: ["stores"] });

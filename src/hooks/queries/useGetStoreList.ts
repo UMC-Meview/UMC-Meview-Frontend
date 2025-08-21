@@ -1,13 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { axiosClient } from "../../services/apis/axiosClients";
-import { StoreDetail } from "../../types/store";
-
-// 서버 API에 맞는 정렬 타입
-export type ServerSortType =
-    | "reviews"
-    | "favorites"
-    | "distance"
-    | "positiveScore";
+import { StoreDetail, SortType } from "../../types/store";
 
 // 검색/목록 조회 파라미터 인터페이스
 export interface StoresParams {
@@ -16,7 +9,7 @@ export interface StoresParams {
     latitude?: number; // 위도 (거리순 정렬 또는 위치 기반 검색 시 필요)
     longitude?: number; // 경도 (거리순 정렬 또는 위치 기반 검색 시 필요)
     radius?: number; // 반경(km) (위치 기반 검색 시 필요)
-    sortBy?: ServerSortType; // 정렬 기준
+    sortBy?: SortType; // 정렬 기준
     userId?: string; // 사용자 ID (찜 여부 확인용)
 }
 
@@ -29,8 +22,8 @@ export interface UseStoresResult {
 }
 
 // 클라이언트 정렬 타입을 서버 정렬 타입으로 매핑
-export const mapClientSortToServer = (clientSort: string): ServerSortType => {
-    const sortMapping: Record<string, ServerSortType> = {
+export const mapClientSortToServer = (clientSort: string): SortType => {
+    const sortMapping: Record<string, SortType> = {
         "보너스금액 많은 순": "positiveScore",
         "리뷰 많은 순": "reviews",
         "가까운 순": "distance",
@@ -190,11 +183,11 @@ export const useStores = (
 
 // 각 페이지별 편의 함수들
 export const useRankingStores = (enabled: boolean = true) => {
-    return useStores({ sortBy: "positiveScore" }, enabled);
+    return useStores({ sortBy: "ranking" }, enabled);
 };
 
 export const useHomeStores = (
-    sortBy: ServerSortType,
+    sortBy: SortType,
     location?: { latitude: number; longitude: number; radius?: number },
     enabled: boolean = true,
     keyword?: string

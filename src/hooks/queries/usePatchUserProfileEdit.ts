@@ -63,7 +63,7 @@ export const usePatchUserProfileEdit = (): UsePatchUserProfileEditResult => {
       return patchUserProfile(userId, updateData);
     },
     onSuccess: (data, variables) => {
-      console.log("프로필 수정 성공:", data.nickname);
+      // console.log("프로필 수정 성공:", data.nickname);
       
       // localStorage에 기본 사용자 정보 업데이트
       const currentUserInfo = getUserInfo();

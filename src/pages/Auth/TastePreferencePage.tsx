@@ -14,8 +14,8 @@ const TastePreferencePage: React.FC = () => {
     const { selectedItems: selectedTastes, toggleItem: toggleTaste } = useMultiSelect({ maxSelections: 3 });
 
     const handleNext = () => {
-        console.log("선택된 입맛들:", selectedTastes);
-        console.log("선택된 개수:", selectedTastes.length);
+        // console.log("선택된 입맛들:", selectedTastes);
+        // console.log("선택된 개수:", selectedTastes.length);
         if (selectedTastes.length >= 3) {
             updateTempPreferences(selectedTastes);
             navigate("/profile-info");

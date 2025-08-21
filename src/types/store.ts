@@ -23,6 +23,8 @@ export interface StoreDetail {
     reviewCount?: number;
     averagePositiveScore?: number;
     averageNegativeScore?: number;
+    totalPositiveScore?: number;
+    totalNegativeScore?: number;
     favoriteCount?: number;
     isFavorited?: boolean;
     distance?: number;
@@ -38,9 +40,9 @@ export interface StoreRegistrationRequest {
     description: string;
     address: string;
     operatingHours: string;
-    mainImage?: string[]; 
-    images?: string[];  
-    qrPrefix: string; 
+    mainImage?: string[];
+    images?: string[];
+    qrPrefix: string;
 }
 
 export interface StoreRegistrationResponse {
@@ -67,26 +69,43 @@ export interface StoreRegistrationResponse {
 }
 
 export type SortType =
-    | "보너스금액 많은 순"
-    | "리뷰 많은 순"
-    | "가까운 순"
-    | "찜 많은 순";
+    | "reviews"
+    | "favorites"
+    | "distance"
+    | "positiveScore"
+    | "ranking";
+
+export type UserSelectableSortType = Exclude<SortType, "ranking">;
+
+export const SORT_LABELS: Record<UserSelectableSortType, string> = {
+    positiveScore: "보너스금액 많은 순",
+    reviews: "리뷰 많은 순",
+    distance: "가까운 순",
+    favorites: "찜 많은 순",
+} as const;
+
+export const USER_SORT_OPTIONS: UserSelectableSortType[] = [
+    "positiveScore",
+    "reviews", 
+    "distance",
+    "favorites",
+];
 
 export interface StoreFormData {
-  storeName: string;
-  category: string;
-  description: string;
-  address: string;
-  detailAddress: string;
-  postalCode: string;
-  latitude: number;
-  longitude: number;
-  openingHours: string[];
-  mainImages: File[];
-  menuList: {
-    name: string;
-    price: string;
-    detail: string;
-    image: File | null;
-  }[];
+    storeName: string;
+    category: string;
+    description: string;
+    address: string;
+    detailAddress: string;
+    postalCode: string;
+    latitude: number;
+    longitude: number;
+    openingHours: string[];
+    mainImages: File[];
+    menuList: {
+        name: string;
+        price: string;
+        detail: string;
+        image: File | null;
+    }[];
 }

@@ -1,12 +1,14 @@
 import React from "react";
-import { SortType, StoreDetail } from "../../types/store";
+import {
+    SortType,
+    StoreDetail,
+    SORT_LABELS,
+    USER_SORT_OPTIONS,
+    UserSelectableSortType,
+} from "../../types/store";
 import { BottomSheetContext } from "../common/BottomSheet";
 import { Clock, MapPin } from "lucide-react";
 import SafeImage from "../common/SafeImage";
-import {
-    ServerSortType,
-    mapClientSortToServer,
-} from "../../hooks/queries/useGetStoreList";
 import StoreListSkeleton from "./StoreListSkeleton";
 
 interface StoreListProps {
@@ -14,8 +16,8 @@ interface StoreListProps {
     onStoreSelect?: (storeId: string) => void;
     stores?: StoreDetail[];
     currentLocation?: { lat: number; lng: number };
-    currentSortBy?: ServerSortType;
-    onSortChange?: (sortBy: ServerSortType) => void;
+    currentSortBy?: SortType;
+    onSortChange?: (sortBy: SortType) => void;
     loading?: boolean;
     error?: string | null;
     onStoreLocationMove?: (lat: number, lng: number) => void;
@@ -31,25 +33,11 @@ const StoreList: React.FC<StoreListProps> = ({
     error = null,
     onStoreLocationMove,
 }) => {
-    const sortOptions: SortType[] = [
-        "보너스금액 많은 순",
-        "리뷰 많은 순",
-        "가까운 순",
-        "찜 많은 순",
-    ];
-
-    // 현재 선택된 정렬을 클라이언트 형태로 변환
-    const getCurrentSortType = (): SortType => {
-        const mapping: Record<ServerSortType, SortType> = {
-            positiveScore: "보너스금액 많은 순",
-            reviews: "리뷰 많은 순",
-            distance: "가까운 순",
-            favorites: "찜 많은 순",
-        };
-        return mapping[currentSortBy] || "보너스금액 많은 순";
-    };
-
-    const selectedSort = getCurrentSortType();
+    const selectedSort =
+        currentSortBy === "ranking"
+            ? SORT_LABELS.positiveScore
+            : SORT_LABELS[currentSortBy as UserSelectableSortType] ||
+              SORT_LABELS.positiveScore;
 
     // 정렬 타입에 따른 정보 렌더링 함수
     const renderSortInfo = (store: StoreDetail) => {
@@ -70,9 +58,8 @@ const StoreList: React.FC<StoreListProps> = ({
         }
     };
 
-    const handleSortChange = (sortType: SortType) => {
-        const serverSortType = mapClientSortToServer(sortType);
-        onSortChange?.(serverSortType);
+    const handleSortChange = (sortType: UserSelectableSortType) => {
+        onSortChange?.(sortType);
 
         if (
             bottomSheetContext &&
@@ -107,17 +94,17 @@ const StoreList: React.FC<StoreListProps> = ({
                 onMouseDown={(e) => e.stopPropagation()}
             >
                 <div className="flex space-x-1 overflow-x-auto py-2">
-                    {sortOptions.map((option) => (
+                    {USER_SORT_OPTIONS.map((sortType) => (
                         <button
-                            key={option}
-                            onClick={() => handleSortChange(option)}
-                            className={`h-[26px] px-[10px] py-[8px] rounded-[28px] text-[13px] font-medium whitespace-nowrap shadow-sm flex items-center justify-center ${
-                                selectedSort === option
+                            key={sortType}
+                            onClick={() => handleSortChange(sortType)}
+                            className={`h-[26px] px-[9px] py-[8px] rounded-[28px] text-[13px] font-medium whitespace-nowrap shadow-sm flex items-center justify-center ${
+                                SORT_LABELS[sortType] === selectedSort
                                     ? "text-[#FF694F] bg-white border border-[#FF694F]"
                                     : "text-[#919191] bg-white border border-gray-200"
                             }`}
                         >
-                            {option}
+                            {SORT_LABELS[sortType]}
                         </button>
                     ))}
                 </div>
@@ -161,7 +148,13 @@ const StoreList: React.FC<StoreListProps> = ({
                                 onClick={() => handleStoreClick(store)}
                             >
                                 <SafeImage
-                                    src={Array.isArray(store.mainImage) ? store.mainImage[0] : (store.mainImage as string | undefined)}
+                                    src={
+                                        Array.isArray(store.mainImage)
+                                            ? store.mainImage[0]
+                                            : (store.mainImage as
+                                                  | string
+                                                  | undefined)
+                                    }
                                     alt={store.name}
                                     className="w-20 h-20 rounded-lg object-cover"
                                 />

@@ -62,14 +62,14 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                     {/* 가게 이미지 */}
                     <div className="flex space-x-2 overflow-x-auto">
                         {/* 대표 이미지*/}
-            <button
+                        <button
                             onClick={() => setActiveImageIndex(0)}
                             className={
                                 "flex-shrink-0 w-[110px] h-[110px] overflow-hidden border rounded-[4px] border-gray-200"
                             }
                         >
                             <SafeImage
-                src={combinedImages[0]}
+                                src={combinedImages[0]}
                                 alt={`${store.name} 대표 이미지`}
                                 className="w-full h-full object-cover"
                             />
@@ -105,9 +105,7 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                                             }
                                             alt={
                                                 hasImage
-                                                    ? `${store.name} ${
-                                                          imageIndex
-                                                      }번째 이미지`
+                                                    ? `${store.name} ${imageIndex}번째 이미지`
                                                     : `${store.name} 이미지 없음`
                                             }
                                             className="w-full h-full object-cover"
@@ -118,10 +116,10 @@ const StoreDetail: React.FC<StoreDetailProps> = ({
                     </div>
 
                     {/* 가게 상세 정보 */}
-                    <StoreInfo 
-                        store={store} 
-                        isExpanded={isExpanded}
-                        isFullScreen={isFullScreen}
+                    <StoreInfo
+                        store={store}
+                        // isExpanded={isExpanded}
+                        // isFullScreen={isFullScreen}
                     />
                 </div>
             )}

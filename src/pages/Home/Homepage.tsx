@@ -3,10 +3,8 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import SearchBar from "../../components/common/SearchBar";
 import Footer from "../../components/common/Footer";
 import StoreBottomSheet from "../../components/store/StoreBottomSheet";
-import {
-    useHomeStores,
-    ServerSortType,
-} from "../../hooks/queries/useGetStoreList";
+import { useHomeStores } from "../../hooks/queries/useGetStoreList";
+import { SortType } from "../../types/store";
 import { RotateCwIcon } from "lucide-react";
 import { useCallback } from "react";
 import { useLocation } from "react-router-dom";
@@ -24,8 +22,8 @@ const getStoreLevel = (averagePositiveScore?: number): number => {
 };
 
 const Homepage = () => {
-    const initialLat = 37.5665;
-    const initialLng = 126.978;
+    const initialLat = 37.545377367170566;
+    const initialLng = 126.95256128269644;
     const DEFAULT_MAP_LEVEL = 5;
 
     // URL 쿼리에서 keyword 읽기 (항상 최상단에서 훅 호출)
@@ -72,7 +70,7 @@ const Homepage = () => {
 
     // 정렬 기준 상태 추가
     const [currentSortBy, setCurrentSortBy] =
-        useState<ServerSortType>("positiveScore");
+        useState<SortType>("positiveScore");
 
     // 검색 유입 시 BottomSheet 자동 확장 처리 쿼리 파싱
     const shouldExpandByQuery = useMemo(() => {
@@ -295,7 +293,7 @@ const Homepage = () => {
     };
 
     // 정렬 변경 핸들러
-    const handleSortChange = (newSortBy: ServerSortType) => {
+    const handleSortChange = (newSortBy: SortType) => {
         setCurrentSortBy(newSortBy);
     };
 

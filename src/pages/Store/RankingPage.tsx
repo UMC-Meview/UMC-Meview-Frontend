@@ -13,6 +13,15 @@ const RankingPage = () => {
         navigate(`/stores/${storeId}`);
     };
 
+    const calculateTotalScore = (
+        positiveScore: number | undefined,
+        negativeScore: number | undefined
+    ) => {
+        const positive = positiveScore || 0;
+        const negative = negativeScore || 0;
+        return positive - negative < 0 ? 0 : positive - negative;
+    };
+
     return (
         <FixedFrameLayout
             header={<Header onBack={() => navigate("/")} center={"랭킹"} />}
@@ -41,14 +50,20 @@ const RankingPage = () => {
                         <RankingItem
                             key={store._id}
                             rank={index + 1}
-                            image={Array.isArray(store.mainImage) ? store.mainImage[0] : (store.mainImage || "")}
+                            image={
+                                Array.isArray(store.mainImage)
+                                    ? store.mainImage[0]
+                                    : store.mainImage || ""
+                            }
                             storeName={store.name}
                             category={store.category}
                             score={Math.round(
-                                (store.averagePositiveScore || 0) -
-                                    (store.averageNegativeScore || 0)
+                                calculateTotalScore(
+                                    store.totalPositiveScore,
+                                    store.totalNegativeScore
+                                )
                             )}
-                            bonusAmount={store.averagePositiveScore || 0}
+                            bonusAmount={store.totalPositiveScore || 0}
                             reviewCount={store.reviewCount || 0}
                             onClick={() => handleStoreClick(store._id)}
                         />

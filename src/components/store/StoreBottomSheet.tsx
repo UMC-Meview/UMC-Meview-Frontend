@@ -3,8 +3,7 @@ import BottomSheet, { BottomSheetContext } from "../common/BottomSheet";
 import StoreList from "./StoreList";
 import StoreDetailCard from "./StoreDetailCard";
 import BottomSheetHeader from "../common/BottomSheetHeader";
-import { StoreDetail } from "../../types/store";
-import { ServerSortType } from "../../hooks/queries/useGetStoreList";
+import { StoreDetail, SortType } from "../../types/store";
 
 interface StoreBottomSheetProps {
     onFullScreenChange: (isFullScreen: boolean) => void;
@@ -13,8 +12,8 @@ interface StoreBottomSheetProps {
     onExpandedChange?: (isExpanded: boolean) => void;
     stores?: StoreDetail[];
     currentLocation?: { lat: number; lng: number };
-    currentSortBy?: ServerSortType;
-    onSortChange?: (sortBy: ServerSortType) => void;
+    currentSortBy?: SortType;
+    onSortChange?: (sortBy: SortType) => void;
     loading?: boolean;
     error?: string | null;
     onStoreLocationMove?: (lat: number, lng: number) => void;
