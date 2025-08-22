@@ -54,6 +54,7 @@ const StoreMarker = React.memo<StoreMarkerProps>(({ store, isSelected, onMarkerC
             }}
             clickable={true}
             onClick={handleClick}
+            zIndex={isSelected ? 20 : 10}
         />
     );
 });

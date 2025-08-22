@@ -112,8 +112,9 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     useEffect(() => {
         const handleGlobalMove = (e: MouseEvent | TouchEvent) => {
             if (!isDragging) return;
-            
-            const clientY = e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
+
+            const clientY =
+                e instanceof MouseEvent ? e.clientY : e.touches[0].clientY;
             if (e instanceof TouchEvent) {
                 e.preventDefault();
             }
@@ -127,24 +128,32 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
         };
 
         if (isDragging) {
-            document.addEventListener("mousemove", handleGlobalMove as EventListener);
+            document.addEventListener(
+                "mousemove",
+                handleGlobalMove as EventListener
+            );
             document.addEventListener("mouseup", handleGlobalEnd);
-            document.addEventListener("touchmove", handleGlobalMove as EventListener, { passive: false });
+            document.addEventListener(
+                "touchmove",
+                handleGlobalMove as EventListener,
+                { passive: false }
+            );
             document.addEventListener("touchend", handleGlobalEnd);
         }
 
         return () => {
-            document.removeEventListener("mousemove", handleGlobalMove as EventListener);
+            document.removeEventListener(
+                "mousemove",
+                handleGlobalMove as EventListener
+            );
             document.removeEventListener("mouseup", handleGlobalEnd);
-            document.removeEventListener("touchmove", handleGlobalMove as EventListener);
+            document.removeEventListener(
+                "touchmove",
+                handleGlobalMove as EventListener
+            );
             document.removeEventListener("touchend", handleGlobalEnd);
         };
-    }, [
-        isDragging,
-        handleDragMove,
-        handleDragEnd,
-    ]);
-
+    }, [isDragging, handleDragMove, handleDragEnd]);
 
     const handleDragStart = (clientY: number) => {
         setStartY(clientY);
@@ -197,13 +206,13 @@ const BottomSheet: React.FC<BottomSheetProps> = ({
     return (
         <div
             ref={sheetRef}
-            className={`fixed left-0 right-0 ${getSheetPosition()} ${getSheetHeight()} ${getSheetRounded()} bg-white shadow-lg transition-all duration-300 ease-out z-40 flex flex-col ${
+            className={`fixed left-0 right-0 ${getSheetPosition()} ${getSheetHeight()} ${getSheetRounded()} bg-white shadow-lg transition-all duration-300 ease-out z-55 flex flex-col ${
                 isDragging ? "select-none" : ""
             }`}
         >
             <div
                 className="flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing flex-shrink-0"
-                style={{ touchAction: 'none' }}
+                style={{ touchAction: "none" }}
                 onTouchStart={handleTouchStart}
                 onMouseDown={handleMouseDown}
             >
