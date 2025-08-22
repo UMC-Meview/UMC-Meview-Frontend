@@ -4,7 +4,6 @@ const DEFAULTS = {
   maxWidth: 2000,
   maxHeight: 2000,
   quality: 0.8,
-  sizeThreshold: 1_500_000,
 };
 
 function isHeicFile(file: File): boolean {
@@ -133,22 +132,20 @@ async function compressToSize(file: File, maxBytes: number): Promise<File> {
   return compressed;
 }
 
-/**
- * 업로드 전 이미지 전처리 - HEIC 변환, 리사이즈, 압축.
- */
 export async function processImageForUpload(
   file: File,
   opts: ProcessImageOptions = {}
 ): Promise<File> {
   const { 
-    sizeThreshold = DEFAULTS.sizeThreshold, 
+    sizeThreshold = 1_500_000,
     maxDimension = DEFAULTS.maxWidth, 
     quality = DEFAULTS.quality 
   } = opts;
   
+  const wasHeicFile = isHeicFile(file);
   let processedFile = await convertHeicToJpegIfNeeded(file);
   
-  if (processedFile.size > DEFAULTS.sizeThreshold || processedFile.type === "image/png") {
+  if (wasHeicFile || processedFile.type === "image/png" || processedFile.size > sizeThreshold) {
     processedFile = await compressImageWithCanvas(processedFile, maxDimension, maxDimension, quality);
   }
   
