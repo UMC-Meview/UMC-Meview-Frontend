@@ -1,6 +1,6 @@
 import { ReviewResponseDto } from "../../types/review";
 import ReviewTag from "../common/ReviewTag";
-import ReviewImageFrame from "./ReviewImageFrame";
+import ReviewImageCollage from "../Review/ReviewImageCollage";
 
 interface ReviewInfoProps {
     review: ReviewResponseDto;
@@ -48,7 +48,10 @@ const ReviewInfo = ({ review }: ReviewInfoProps) => {
                     ))}
                 </div>
 
-                <ReviewImageFrame images={imageUrls} />
+                <ReviewImageCollage
+                    imageUrls={imageUrls}
+                    className="w-[90%] h-[187px]"
+                />
             </div>
         </div>
     );
