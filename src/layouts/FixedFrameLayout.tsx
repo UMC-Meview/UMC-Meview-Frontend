@@ -4,15 +4,7 @@ interface FixedFrameLayoutProps {
     header?: React.ReactNode;
     children: React.ReactNode;
     contentClassName?: string;
-    /**
-     * 콘텐츠 스크롤 영역 높이 계산 시 제외할 픽셀 값
-     * 기본 180px (헤더 + 하단 고정 영역 높이 합산 대비치)
-     * // height: `calc(100dvh - ${contentHeightOffset}px)`,
-     */
     contentHeightOffset?: number;
-    /**
-     * 스크롤 가능한 영역 여부. true면 overflow-y-auto 컨테이너 제공
-     */
     scrollable?: boolean;
 }
 
@@ -20,6 +12,7 @@ const FixedFrameLayout: React.FC<FixedFrameLayoutProps> = ({
     header,
     children,
     contentClassName = "",
+    contentHeightOffset = 180,
     scrollable = true,
 }) => {
     return (
@@ -32,6 +25,8 @@ const FixedFrameLayout: React.FC<FixedFrameLayoutProps> = ({
                 <div
                     className={contentClassName}
                     style={{
+                        height: `calc(100dvh - ${contentHeightOffset}px)`,
+                        maxHeight: `calc(100dvh - ${contentHeightOffset}px)`,
                         overflowY: "auto",
                     }}
                 >
