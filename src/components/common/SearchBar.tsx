@@ -13,7 +13,7 @@ const SearchBar = ({ keyword }: SearchBarProps) => {
     };
 
     return (
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-50 px-4 w-full max-w-sm top-[80px]">
+        <div className="fixed left-1/2 transform -translate-x-1/2 z-50 px-4 w-full max-w-sm top-[80px]">
             <div
                 className="bg-white rounded-[24.5px] shadow-lg flex items-center px-4 w-full h-[40px] cursor-pointer hover:shadow-xl transition-shadow"
                 onClick={handleSearchBarClick}
