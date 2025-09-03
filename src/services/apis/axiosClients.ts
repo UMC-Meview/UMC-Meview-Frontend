@@ -2,11 +2,12 @@
 import axios from "axios";
 import { logout } from "../../utils/auth";
 
+const API_BASE = (import.meta.env.MODE === "development"
+    ? "/api"
+    : (import.meta.env.VITE_API_BASE_URL || "https://miview.p-e.kr")).replace(/\/+$/, "");
+
 export const axiosClient = axios.create({
-    baseURL:
-        import.meta.env.MODE === "development"
-            ? "/api"
-            : "https://miview.p-e.kr",
+    baseURL: API_BASE,
     timeout: 10000,
 });
 
