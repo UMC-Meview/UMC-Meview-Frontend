@@ -35,13 +35,12 @@ const AuthMainPage: React.FC = () => {
                     <Button
                         variant="secondary"
                         onClick={() => navigate("/signup")}
-                        className="text-lg font-bold w-full h-[46px]"
                     >
                         로그인 하기
                     </Button>
                     <Button
                         onClick={() => navigate("/store-registration")}
-                        className="!bg-[#B0B0B0] text-white text-lg font-bold w-full h-[46px]"
+                        className="!bg-[#B0B0B0]"
                     >
                         가게 등록하기
                     </Button>
