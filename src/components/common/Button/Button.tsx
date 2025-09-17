@@ -20,7 +20,7 @@ const Button: React.FC<ButtonProps> = ({
         primary: `${baseClasses} h-[65px] bg-[#FF774C] text-white`,
         secondary: `${baseClasses} h-[65px] bg-white border border-gray-300 text-black`,
         disabled: `${baseClasses} h-[65px] bg-[#D9D9D9] text-white cursor-not-allowed`,
-        compact: "${baseClasses} h-12 bg-[#FF774C] px-15 py-0 whitespace-nowrap text-white",
+        compact: `${baseClasses} h-12 bg-[#FF774C] px-15 py-0 whitespace-nowrap text-white`,
     };
 
     const variantKey = disabled ? "disabled" : variant;
