@@ -171,7 +171,7 @@ const ProfileEditPage: React.FC = () => {
             {!isKeyboardVisible && (
                 <BottomFixedButton
                     onClick={handleEditComplete}
-                    variant={totalSelections === 3 && !isUpdating && !isUploading ? "primary" : "disabled"}
+                    variant="primary"
                     disabled={isUpdating || isUploading || totalSelections !== 3 || !userName.trim()}
                 >
                     수정완료

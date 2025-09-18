@@ -90,8 +90,7 @@ const SignupPage: React.FC = () => {
                     <Button
                         onClick={handleNext}
                         disabled={!isValidNickname || isLoading}
-                        variant={isValidNickname && !isLoading ? "primary" : "disabled"}
-                        className="w-[333px] h-[59px] text-lg font-bold rounded-full"
+                        variant="primary"
                     >
                         {isLoading ? "확인 중..." : "다음"}
                     </Button>

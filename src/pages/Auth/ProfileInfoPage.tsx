@@ -104,7 +104,7 @@ const ProfileInfoPage: React.FC = () => {
                     <Button
                         onClick={handleNext}
                         disabled={!isFormValid || isLoading}
-                        variant={isFormValid && !isLoading ? "primary" : "disabled"}
+                        variant="primary"
                     >
                         {isLoading ? "가입 중..." : "가입완료"}
                     </Button>

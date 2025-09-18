@@ -59,7 +59,7 @@ const TastePreferencePage: React.FC = () => {
                 <Button
                     onClick={handleNext}
                     disabled={selectedTastes.length < 3}
-                    variant={selectedTastes.length >= 3 ? "primary" : "disabled"}
+                    variant="primary"
                 >
                     다음 ({selectedTastes.length}/3)
                 </Button>

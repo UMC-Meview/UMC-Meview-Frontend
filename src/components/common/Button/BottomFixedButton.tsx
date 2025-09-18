@@ -4,7 +4,7 @@ import Button from "./Button";
 interface BottomFixedButtonProps {
     onClick: () => void;
     children: React.ReactNode;
-    variant?: "primary" | "secondary" | "disabled";
+    variant?: "primary" | "secondary";
     disabled?: boolean;
     className?: string;
 }

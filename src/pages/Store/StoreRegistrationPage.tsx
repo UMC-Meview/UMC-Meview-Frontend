@@ -267,11 +267,7 @@ const StoreRegistrationPage: React.FC = () => {
                 <BottomFixedButton
                     onClick={handleSubmit}
                     disabled={!isFormValid() || isLoading || isImageUploading}
-                    variant={
-                        isFormValid() && !isLoading && !isImageUploading
-                            ? "primary"
-                            : "disabled"
-                    }
+                    variant="primary"
                 >
                     {isImageUploading
                         ? "이미지 업로드 중..."

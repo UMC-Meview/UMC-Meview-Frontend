@@ -328,7 +328,7 @@ const ReviewDetailPage: React.FC = () => {
 
             <BottomFixedButton
                 onClick={handleSubmit}
-                variant={isSubmitDisabled ? "disabled" : "primary"}
+                variant="primary"
                 disabled={isSubmitDisabled}
             >
                 {isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
