@@ -105,9 +105,11 @@ const StoreMenuSection = ({
           </div>
         ))}
       </div  >
-      <AddItemButton onClick={onAddMenu} variant="full">
-        메뉴 추가하기 +
-      </AddItemButton>
+      <div className="mt-6">
+        <AddItemButton onClick={onAddMenu}>
+          메뉴 추가하기 +
+        </AddItemButton>
+      </div>
     </div>
   );
 };

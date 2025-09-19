@@ -2,26 +2,17 @@ interface AddItemButtonProps {
   onClick: () => void;
   children: React.ReactNode;
   className?: string;
-  variant?: "full" | "center";
 }
 
 const AddItemButton = ({
   onClick,
   children,
-  className = "",
-  variant = "full"
+  className = ""
 }: AddItemButtonProps) => {
-  const baseStyles = "text-black font-medium text-sm";
-  
-  const variantStyles = {
-    full: "mt-2 w-full bg-white rounded-lg py-3 hover:bg-gray-50",
-    center: "mt-1 mx-auto block hover:text-gray-600"
-  };
-
   return (
     <button
       type="button"
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+      className={`text-black font-medium text-sm mx-auto block ${className}`}
       onClick={onClick}
     >
       {children}

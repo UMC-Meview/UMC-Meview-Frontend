@@ -26,9 +26,9 @@ const StoreOperatingHoursSection = ({
                 </div>
             ))}
             <div className="mt-10">
-                <AddItemButton onClick={onAddOpeningHour} variant="center">
-                    영업시간 추가하기 +
-                </AddItemButton>
+            <AddItemButton onClick={onAddOpeningHour}>
+                영업시간 추가하기 +
+            </AddItemButton>
             </div>
         </div>
     );
