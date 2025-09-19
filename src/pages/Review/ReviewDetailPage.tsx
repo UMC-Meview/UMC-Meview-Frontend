@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/common/Header";
-import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
+import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
+import Button from "../../components/common/Button/Button";
 import SelectionGrid from "../../components/common/SelectionGrid";
 import ThinDivider from "../../components/common/ThinDivider";
 import StoreImageSection from "../../components/store/StoreImageSection";
@@ -326,13 +327,15 @@ const ReviewDetailPage: React.FC = () => {
                 </div>
             </div>
 
-            <BottomFixedButton
-                onClick={handleSubmit}
-                variant="primary"
-                disabled={isSubmitDisabled}
-            >
-                {isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
-            </BottomFixedButton>
+            <BottomFixedWrapper withBackground={true}>
+                <Button
+                    onClick={handleSubmit}
+                    variant="primary"
+                    disabled={isSubmitDisabled}
+                >
+                    {isLoading ? "리뷰 등록 중..." : "리뷰 작성 완료"}
+                </Button>
+            </BottomFixedWrapper>
         </div>
     );
 };

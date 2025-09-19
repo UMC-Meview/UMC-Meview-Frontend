@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/common/Header";
 import FixedFrameLayout from "../../layouts/FixedFrameLayout";
-import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
+import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
+import Button from "../../components/common/Button/Button";
 import ProfileInfoSection from "../../components/auth/ProfileInfoSection";
 import SelectionGrid from "../../components/common/SelectionGrid";
 import ThinDivider from "../../components/common/ThinDivider";
@@ -169,13 +170,15 @@ const ProfileEditPage: React.FC = () => {
             </div>
 
             {!isKeyboardVisible && (
-                <BottomFixedButton
-                    onClick={handleEditComplete}
-                    variant="primary"
-                    disabled={isUpdating || isUploading || totalSelections !== 3 || !userName.trim()}
-                >
-                    수정완료
-                </BottomFixedButton>
+                <BottomFixedWrapper withBackground={true}>
+                    <Button
+                        onClick={handleEditComplete}
+                        variant="primary"
+                        disabled={isUpdating || isUploading || totalSelections !== 3 || !userName.trim()}
+                    >
+                        수정완료
+                    </Button>
+                </BottomFixedWrapper>
             )}
         </FixedFrameLayout>
     );

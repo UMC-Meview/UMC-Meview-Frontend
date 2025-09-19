@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/common/Header";
 import FixedFrameLayout from "../../layouts/FixedFrameLayout";
-import BottomFixedButton from "../../components/common/Button/BottomFixedButton";
+import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
+import Button from "../../components/common/Button/Button";
 import StoreMenuSection from "../../components/store/StoreMenuSection";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import StoreBasicInfoSection from "../../components/store/StoreBasicInfoSection";
@@ -264,17 +265,19 @@ const StoreRegistrationPage: React.FC = () => {
 
             {/* 등록 완료 버튼 - 하단 고정 */}
             {!isKeyboardVisible && (
-                <BottomFixedButton
-                    onClick={handleSubmit}
-                    disabled={!isFormValid() || isLoading || isImageUploading}
-                    variant="primary"
-                >
-                    {isImageUploading
-                        ? "이미지 업로드 중..."
-                        : isLoading
-                        ? "등록 중..."
-                        : "가게 등록 완료"}
-                </BottomFixedButton>
+                <BottomFixedWrapper withBackground={true}>
+                    <Button
+                        onClick={handleSubmit}
+                        disabled={!isFormValid() || isLoading || isImageUploading}
+                        variant="primary"
+                    >
+                        {isImageUploading
+                            ? "이미지 업로드 중..."
+                            : isLoading
+                            ? "등록 중..."
+                            : "가게 등록 완료"}
+                    </Button>
+                </BottomFixedWrapper>
             )}
         </FixedFrameLayout>
     );
