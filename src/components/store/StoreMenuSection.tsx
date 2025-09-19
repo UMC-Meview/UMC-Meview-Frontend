@@ -17,8 +17,6 @@ interface StoreMenuSectionProps {
   menus: MenuItem[];
   onMenuChange: (menus: MenuItem[]) => void;
   onAddMenu: () => void;
-  getImageUrl?: (file: File) => string;
-  revokeImage?: (url: string) => void;
 }
 
 const PreviewImageMenu: React.FC<{ file: File | null }> = React.memo(({ file }) => {
@@ -33,7 +31,11 @@ const PreviewImageMenu: React.FC<{ file: File | null }> = React.memo(({ file }) 
   );
 });
 
-const StoreMenuSection: React.FC<StoreMenuSectionProps> = ({ menus, onMenuChange, onAddMenu }) => {
+const StoreMenuSection = ({ 
+  menus, 
+  onMenuChange, 
+  onAddMenu 
+}: StoreMenuSectionProps) => {
   const { uploadImageAsync } = usePostImageUpload();
   
   const handleMenuImageSelect = async (idx: number, picked: File) => {
