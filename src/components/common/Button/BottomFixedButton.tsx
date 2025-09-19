@@ -1,10 +1,12 @@
 import Button from "./Button";
 import { ComponentProps } from "react";
 
+// Button 컴포넌트의 모든 props 타입을 추출하여 재사용
 type ButtonProps = ComponentProps<typeof Button>;
 
+// Button의 모든 props에서 className만 제외 (wrapper div용 className을 별도로 정의했기 때문)
 interface BottomFixedButtonProps extends Omit<ButtonProps, 'className'> {
-    className?: string; // wrapper div용 className
+    className?: string;
 }
 
 const BottomFixedButton = ({
