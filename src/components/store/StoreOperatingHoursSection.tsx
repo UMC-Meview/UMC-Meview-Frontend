@@ -1,4 +1,3 @@
-import React from "react";
 import StoreFormInput from "./StoreFormInput";
 import AddItemButton from "../common/Button/AddItemButton";
 
@@ -8,11 +7,11 @@ interface StoreOperatingHoursSectionProps {
     onAddOpeningHour: () => void;
 }
 
-const StoreOperatingHoursSection: React.FC<StoreOperatingHoursSectionProps> = ({
+const StoreOperatingHoursSection = ({
     openingHours,
     onOpeningHourChange,
     onAddOpeningHour,
-}) => {
+}: StoreOperatingHoursSectionProps) => {
     return (
         <div className="mt-6 mb-5">
             <label className="block text-gray-800 font-medium mb-2">영업시간</label>
