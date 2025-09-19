@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FloatingItem } from "../../../types/review";
 import moneyImage from "../../../assets/money/money.svg";
@@ -9,7 +9,10 @@ interface FloatingCoinsEffectProps {
     maxCount?: number;
 }
 
-const FloatingCoinsEffect: React.FC<FloatingCoinsEffectProps> = ({ floatingItems, maxCount = 6 }) => {
+const FloatingCoinsEffect = ({
+    floatingItems,
+    maxCount = 6
+}: FloatingCoinsEffectProps) => {
     const limitedItems = useMemo(() => floatingItems.slice(0, maxCount), [floatingItems, maxCount]);
 
     return (

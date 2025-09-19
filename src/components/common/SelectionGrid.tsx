@@ -1,4 +1,3 @@
-import React from "react";
 import SelectableButton from "./Button/SelectableButton";
 import { LayoutConfig } from "../../constants/options";
 
@@ -21,7 +20,7 @@ type SelectionGridProps = {
     layoutType?: 'grid' | 'flex'; // 새로운 prop: 레이아웃 타입 지정
 };
 
-const SelectionGrid: React.FC<SelectionGridProps> = ({
+const SelectionGrid = ({
     options,
     selectedItems,
     onToggle,
@@ -33,7 +32,7 @@ const SelectionGrid: React.FC<SelectionGridProps> = ({
     className = "",
     layout = { type: 'auto' },
     layoutType = 'flex' // 기본값은 flex로 설정
-}) => {
+}: SelectionGridProps) => {
     // 텍스트 크기 클래스 매핑
     const textSizeClasses = {
         base: 'text-[18px]',

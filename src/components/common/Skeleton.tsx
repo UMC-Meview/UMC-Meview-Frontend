@@ -8,13 +8,13 @@ interface SkeletonProps {
     variant?: "text" | "rectangular" | "circular";
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({
+const Skeleton = ({
     className = "",
     width,
     height,
     rounded = "sm",
     variant = "rectangular",
-}) => {
+}: SkeletonProps) => {
     const roundedClasses = {
         none: "rounded-none",
         sm: "rounded",

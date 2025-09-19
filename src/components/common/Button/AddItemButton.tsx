@@ -1,5 +1,3 @@
-import React from "react";
-
 interface AddItemButtonProps {
   onClick: () => void;
   children: React.ReactNode;
@@ -7,12 +5,12 @@ interface AddItemButtonProps {
   variant?: "full" | "center";
 }
 
-const AddItemButton: React.FC<AddItemButtonProps> = ({
+const AddItemButton = ({
   onClick,
   children,
   className = "",
   variant = "full"
-}) => {
+}: AddItemButtonProps) => {
   const baseStyles = "text-black font-medium text-sm";
   
   const variantStyles = {

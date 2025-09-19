@@ -15,7 +15,12 @@ interface UserReviewInfoProps {
     storeCategory?: string;
 }
 
-const UserReviewInfo = ({ review, storeName, storeAddressShort, storeCategory }: UserReviewInfoProps) => {
+const UserReviewInfo = ({
+    review, 
+    storeName, 
+    storeAddressShort, 
+    storeCategory 
+}: UserReviewInfoProps) => {
     const navigate = useNavigate();
     const { isPositive, score, storeReviews, foodReviews, imageUrl, content } = review;
     const imageUrls = (review as DisplayReview & { imageUrls?: string[] }).imageUrls || (imageUrl ? [imageUrl] : []);

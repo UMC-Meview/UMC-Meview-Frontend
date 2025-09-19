@@ -1,5 +1,3 @@
-import React from "react";
-
 interface SelectableButtonProps {
     selected: boolean;
     onClick: () => void;
@@ -8,13 +6,13 @@ interface SelectableButtonProps {
     disabled?: boolean;
 }
 
-const SelectableButton: React.FC<SelectableButtonProps> = ({
+const SelectableButton = ({
     selected,
     onClick,
     children,
     className = "",
     disabled = false,
-}) => {
+}: SelectableButtonProps) => {
     const buttonStyle = `px-3 py-0.5 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.12)] text-[18px] font-medium border bg-white min-h-[24px] whitespace-nowrap
   ${
       selected

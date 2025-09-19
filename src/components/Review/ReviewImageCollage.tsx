@@ -1,4 +1,3 @@
-import React from "react";
 import SafeImage from "../common/SafeImage";
 
 interface ReviewImageCollageProps {
@@ -6,7 +5,10 @@ interface ReviewImageCollageProps {
     className?: string;
 }
 
-const ReviewImageCollage: React.FC<ReviewImageCollageProps> = ({ imageUrls = [], className = "w-full h-[187px]" }) => {
+const ReviewImageCollage = ({
+    imageUrls = [], 
+    className = "w-full h-[187px]" 
+}: ReviewImageCollageProps) => {
     const count = imageUrls.length;
 
     const renderTile = (src: string | undefined, classNameForTile: string) => {

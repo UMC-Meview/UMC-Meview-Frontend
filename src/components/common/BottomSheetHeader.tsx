@@ -1,4 +1,3 @@
-import React from "react";
 import { ChevronLeft } from "lucide-react";
 
 interface BottomSheetHeaderProps {
@@ -7,11 +6,11 @@ interface BottomSheetHeaderProps {
     children?: React.ReactNode;
 }
 
-const BottomSheetHeader: React.FC<BottomSheetHeaderProps> = ({
+const BottomSheetHeader = ({
     onBack,
     title,
     children,
-}) => {
+}: BottomSheetHeaderProps) => {
     return (
         <div className="flex-shrink-0">
             <div className="flex items-center justify-between py-1">

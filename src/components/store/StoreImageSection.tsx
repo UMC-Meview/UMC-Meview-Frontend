@@ -25,7 +25,7 @@ interface StoreImageSectionProps {
     previewUrls?: string[]; // 외부에서 제공되는 미리보기 URL들
 }
 
-const StoreImageSection: React.FC<StoreImageSectionProps> = ({
+const StoreImageSection = ({
     mainImages,
     onImageSelect,
     onReplaceImage,
@@ -35,7 +35,7 @@ const StoreImageSection: React.FC<StoreImageSectionProps> = ({
     showCount = true,
     variant = "default",
     previewUrls = [],
-}) => {
+}: StoreImageSectionProps) => {
     const canAddMore = maxImages ? mainImages.length < maxImages : true;
     
     if (variant === "review") {

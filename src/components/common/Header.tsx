@@ -1,4 +1,3 @@
-import React from "react";
 import BackButton from "./Button/BackButton";
 import logoIcon from "../../assets/Logo.svg";
 import StepIndicator from "./StepIndicator";
@@ -13,7 +12,7 @@ interface HeaderProps {
     page?: number;
 }
 
-const Header: React.FC<HeaderProps> = ({
+const Header = ({
     onBack,
     center,
     right,
@@ -21,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
     currentStep,
     totalSteps,
     page,
-}) => {
+}: HeaderProps) => {
     const renderCenter = () => {
         if (showLogo) {
             return <img src={logoIcon} alt="Meview Logo" className="w-6 h-6" />;

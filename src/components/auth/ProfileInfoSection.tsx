@@ -1,4 +1,3 @@
-import React from "react";
 import ProfileImage from "./ProfileImage";
 import EditableText from "./EditableText";
 
@@ -16,7 +15,7 @@ interface ProfileInfoSectionProps {
     className?: string;
 }
 
-const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
+const ProfileInfoSection = ({
     imageUrl,
     nickname,
     introduction,
@@ -28,7 +27,7 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({
     onNicknameChange,
     onIntroductionChange,
     className = ""
-}) => {
+}: ProfileInfoSectionProps) => {
     const tagClass = "px-3 py-0.5 rounded-full shadow-[0_2px_8px_0_rgba(0,0,0,0.12)] text-[15px] font-medium border bg-white border-transparent text-gray-800 min-h-[22px] whitespace-nowrap";
     const bubbleClass = "px-4 py-2 rounded-tr-full rounded-br-full rounded-bl-full shadow-[0_2px_8px_0_rgba(0,0,0,0.12)] bg-white border border-transparent h-[40px]";
     

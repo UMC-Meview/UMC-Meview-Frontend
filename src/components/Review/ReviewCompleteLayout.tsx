@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../common/Header";
 import Button from "../common/Button/Button";
@@ -11,12 +10,12 @@ interface ReviewCompleteLayoutProps {
     onButtonClick: () => void;
 }
 
-const ReviewCompleteLayout: React.FC<ReviewCompleteLayoutProps> = ({
+const ReviewCompleteLayout = ({
     title,
     description,
     buttonText,
     onButtonClick
-}) => {
+}: ReviewCompleteLayoutProps) => {
     const navigate = useNavigate();
 
     const handleGoBack = () => {

@@ -1,10 +1,10 @@
-import React from "react";
-
 interface BackButtonProps {
     onClick?: () => void;
 }
 
-const BackButton: React.FC<BackButtonProps> = ({ onClick }) => {
+const BackButton = ({
+    onClick
+}: BackButtonProps) => {
     return (
         <button
             onClick={onClick}

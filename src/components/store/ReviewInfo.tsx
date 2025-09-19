@@ -6,7 +6,9 @@ interface ReviewInfoProps {
     review: ReviewResponseDto;
 }
 
-const ReviewInfo = ({ review }: ReviewInfoProps) => {
+const ReviewInfo = ({ 
+    review 
+}: ReviewInfoProps) => {
     const { user, isPositive, score, storeReviews, foodReviews, imageUrls } =
         review;
 

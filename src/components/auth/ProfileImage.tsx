@@ -9,12 +9,12 @@ interface ProfileImageProps {
     className?: string;
 }
 
-const ProfileImage: React.FC<ProfileImageProps> = ({
+const ProfileImage = ({
     imageUrl,
     isEditable = false,
     onImageSelect,
     className = ""
-}) => {
+}: ProfileImageProps) => {
     if (isEditable) {
         const imageElement = (
             <img

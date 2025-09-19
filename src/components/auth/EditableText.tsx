@@ -14,7 +14,7 @@ interface EditableTextProps {
     editMode?: 'nickname' | 'description';
 }
 
-const EditableText: React.FC<EditableTextProps> = ({
+const EditableText = ({
     value,
     onSave,
     placeholder = "",
@@ -25,7 +25,7 @@ const EditableText: React.FC<EditableTextProps> = ({
     maxLength,
     iconPosition = 'inline',
     editMode = 'description'
-}) => {
+}: EditableTextProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(value);
 

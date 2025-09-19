@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ImageUploadProps {
     onImageSelect?: (file: File) => void;
     className?: string;
@@ -9,14 +7,14 @@ interface ImageUploadProps {
     noBorder?: boolean;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({
+const ImageUpload = ({
     onImageSelect,
     className = "",
     size = "large",
     variant = "default",
     children,
     noBorder = false,
-}) => {
+}: ImageUploadProps) => {
     const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
         try {
             const picked = event.target.files?.[0];

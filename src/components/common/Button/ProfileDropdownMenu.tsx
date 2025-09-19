@@ -1,5 +1,3 @@
-import React from "react";
-
 interface ProfileDropdownMenuProps {
     isOpen: boolean;
     onToggle: () => void;
@@ -8,13 +6,13 @@ interface ProfileDropdownMenuProps {
     onLogout: () => void;
 }
 
-const ProfileDropdownMenu: React.FC<ProfileDropdownMenuProps> = ({
+const ProfileDropdownMenu = ({
     isOpen,
     onToggle,
     onClose,
     onEditProfile,
     onLogout,
-}) => {
+}: ProfileDropdownMenuProps) => {
     const buttonBaseClass = "w-full flex items-center space-x-2 px-2 py-1.5 transition-colors text-left";
     const textBaseClass = "text-[12px] font-medium";
 

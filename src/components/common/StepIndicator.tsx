@@ -1,16 +1,14 @@
-import React from "react";
-
 interface StepIndicatorProps {
     currentStep: number;
     totalSteps: number;
     className?: string;
 }
 
-const StepIndicator: React.FC<StepIndicatorProps> = ({
+const StepIndicator = ({
     currentStep,
     totalSteps,
     className,
-}) => {
+}: StepIndicatorProps) => {
     return (
         <div className={`text-gray-400 text-sm font-medium ${className ?? ""}`}>
             {currentStep}/{totalSteps}

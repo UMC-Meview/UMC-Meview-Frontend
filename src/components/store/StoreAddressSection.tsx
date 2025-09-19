@@ -1,4 +1,3 @@
-import React from "react";
 import StoreFormInput from "./StoreFormInput";
 import PostcodeSearch from "./PostcodeSearch";
 
@@ -10,13 +9,13 @@ interface StoreAddressSectionProps {
     onAddressSelect: (address: string, postcode: string, latitude?: number, longitude?: number) => void;
 }
 
-const StoreAddressSection: React.FC<StoreAddressSectionProps> = ({
+const StoreAddressSection = ({
     address,
     detailAddress,
     postalCode,
     onInputChange,
     onAddressSelect,
-}) => {
+}: StoreAddressSectionProps) => {
     return (
         <div className="space-y-2">
             <label className="block text-gray-800 font-medium mb-2">가게 주소</label>

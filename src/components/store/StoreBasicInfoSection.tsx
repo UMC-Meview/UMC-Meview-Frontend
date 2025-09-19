@@ -1,4 +1,3 @@
-import React from "react";
 import StoreFormInput from "./StoreFormInput";
 
 interface StoreBasicInfoSectionProps {
@@ -8,12 +7,12 @@ interface StoreBasicInfoSectionProps {
     onInputChange: (field: string, value: string) => void;
 }
 
-const StoreBasicInfoSection: React.FC<StoreBasicInfoSectionProps> = ({
+const StoreBasicInfoSection = ({
     storeName,
     category,
     description,
     onInputChange,
-}) => {
+}: StoreBasicInfoSectionProps) => {
     return (
         <div className="space-y-6">
             {/* 가게명 */}

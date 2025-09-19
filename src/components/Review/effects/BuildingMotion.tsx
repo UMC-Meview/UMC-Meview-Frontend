@@ -20,7 +20,7 @@ interface BuildingMotionProps {
     containerRef?: React.Ref<HTMLDivElement | null>;
 }
 
-const BuildingMotion: React.FC<BuildingMotionProps> = ({
+const BuildingMotion = ({
     src,
     alt,
     onClick,
@@ -29,7 +29,7 @@ const BuildingMotion: React.FC<BuildingMotionProps> = ({
     children,
     onImageLoad,
     containerRef,
-}) => {
+}: BuildingMotionProps) => {
     const controls = useAnimationControls();
 
     useEffect(() => {

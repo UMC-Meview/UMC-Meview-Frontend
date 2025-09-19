@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DaumPostcode from "react-daum-postcode";
 import StoreFormInput from "./StoreFormInput";
 import { KakaoGeocoderResult } from "../../types/kakao";
@@ -8,10 +8,10 @@ interface PostcodeSearchProps {
   className?: string;
 }
 
-const PostcodeSearch: React.FC<PostcodeSearchProps> = ({
+const PostcodeSearch = ({
   onAddressSelect,
   className = "",
-}) => {
+}: PostcodeSearchProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleComplete = (data: { address: string; zonecode: string }) => {

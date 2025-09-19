@@ -20,12 +20,12 @@ export interface BottomSheetContext {
     setIsFullScreen: (fullScreen: boolean) => void;
 }
 
-const BottomSheet: React.FC<BottomSheetProps> = ({
+const BottomSheet = ({
     children,
     onFullScreenChange,
     onExpandedChange,
     forceExpanded = false,
-}) => {
+}: BottomSheetProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [startY, setStartY] = useState(0);

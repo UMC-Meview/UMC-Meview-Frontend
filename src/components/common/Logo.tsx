@@ -1,6 +1,6 @@
 import logoImage from "../../assets/Logo.svg";
 
-const Logo: React.FC = () => {
+const Logo = () => {
     return (
         <div className="flex justify-center items-center mb-6">
             <img

@@ -1,4 +1,3 @@
-import React from "react";
 import alertError from "../../assets/alert-error.svg";
 
 interface ErrorMessageProps {
@@ -7,11 +6,11 @@ interface ErrorMessageProps {
     variant?: "default" | "compact";
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({
+const ErrorMessage = ({
     message,
     className = "",
     variant = "default",
-}) => {
+}: ErrorMessageProps) => {
     const outerClassName =
         variant === "compact"
             ? `mb-4 ${className}`

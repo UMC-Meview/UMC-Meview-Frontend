@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { DustParticle } from "../../../types/review";
 import catPaw1 from "../../../assets/cat-paw/cat-paw-1.svg";
@@ -20,7 +19,10 @@ interface DustEffectProps {
     dustParticles: DustParticle[];
 }
 
-const DustEffect: React.FC<DustEffectProps> = ({ showDust, dustParticles }) => {
+const DustEffect = ({
+    showDust, 
+    dustParticles 
+}: DustEffectProps) => {
     if (!showDust) return null;
 
     return (

@@ -10,14 +10,14 @@ interface ProgressBarProps {
     onBonusUpdate?: (totalBonus: number) => void;
 }
 
-const ProgressBar: React.FC<ProgressBarProps> = ({
+const ProgressBar = ({
     clickCount,
     maxClicks,
     progressLabel = "클릭완료",
     showBonus = true,
     showProgress = true,
     onBonusUpdate
-}) => {
+}: ProgressBarProps) => {
     const [totalBonus, setTotalBonus] = useState(0);
 
     // clickCount가 변경될 때마다 보너스 계산

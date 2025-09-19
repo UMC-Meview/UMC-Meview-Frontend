@@ -6,11 +6,11 @@ interface ReviewContentLayoutProps {
     bottomImage?: React.ReactNode;
   }
   
-  const ReviewContentLayout: React.FC<ReviewContentLayoutProps> = ({
+  const ReviewContentLayout = ({
     topEffect,
     buildingImage,
     bottomImage,
-  }) => {
+  }: ReviewContentLayoutProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
