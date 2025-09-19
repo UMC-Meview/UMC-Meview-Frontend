@@ -1,29 +1,19 @@
 import Button from "./Button";
+import { ComponentProps } from "react";
 
-interface BottomFixedButtonProps {
-    children: React.ReactNode;
-    onClick: () => void;
-    variant?: "primary" | "secondary";
-    disabled?: boolean;
-    className?: string;
+type ButtonProps = ComponentProps<typeof Button>;
+
+interface BottomFixedButtonProps extends Omit<ButtonProps, 'className'> {
+    className?: string; // wrapper div용 className
 }
 
 const BottomFixedButton = ({
-    children,
-    onClick,
-    variant = "primary",
-    disabled = false,
-    className = ""
+    className = "",
+    ...buttonProps
 }: BottomFixedButtonProps) => {
     return (
         <div className={`fixed bottom-0 left-1/2 -translate-x-1/2 pt-[13px] pb-[20px] px-6 z-10 bg-white border-t border-gray-300 w-full max-w-[390px] ${className}`}>
-            <Button 
-                onClick={onClick} 
-                variant={variant}
-                disabled={disabled}
-            >
-                {children}
-            </Button>
+            <Button {...buttonProps} />
         </div>
     );
 };
