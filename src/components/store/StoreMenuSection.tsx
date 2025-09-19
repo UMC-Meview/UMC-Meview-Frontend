@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import ImageUpload from "../common/ImageUpload";
 import StoreFormInput from "./StoreFormInput";
 import AddItemButton from "../common/Button/AddItemButton";
@@ -19,7 +19,7 @@ interface StoreMenuSectionProps {
   onAddMenu: () => void;
 }
 
-const PreviewImageMenu: React.FC<{ file: File | null }> = React.memo(({ file }) => {
+const PreviewImageMenu = memo(({ file }: { file: File | null }) => {
   const src = useFilePreview(file);
   if (!src) return null;
   return (
