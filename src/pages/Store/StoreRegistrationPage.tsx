@@ -259,8 +259,8 @@ const StoreRegistrationPage: React.FC = () => {
                     onMenuChange={handleMenuChange}
                     onAddMenu={handleAddMenu}
                 />
-                {/* BottomFixedButton 위에 여백 추가 */}
-                <div className="h-38"></div>
+                {/* BottomFixedWrapper 위에 여백 추가 */}
+                <div className="h-8"></div>
             </div>
 
             {/* 등록 완료 버튼 - 하단 고정 */}
