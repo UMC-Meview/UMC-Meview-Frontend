@@ -270,7 +270,7 @@ const ReviewDetailPage: React.FC = () => {
                         매장과 음식 평가를 각각 최소 1개 이상 선택해주세요.
                     </p>
                     {error && (
-                        <ErrorMessage message={error.message} className="mt-2" variant="compact" />
+                        <ErrorMessage message={error.message} className="mt-2" />
                     )}
                 </div>
 
