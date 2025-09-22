@@ -7,8 +7,6 @@ interface HeaderProps {
     center?: React.ReactNode;
     right?: React.ReactNode;
     showLogo?: boolean;
-    currentStep?: number;
-    totalSteps?: number;
     page?: number;
 }
 
@@ -17,8 +15,6 @@ const Header = ({
     center,
     right,
     showLogo,
-    currentStep,
-    totalSteps,
     page,
 }: HeaderProps) => {
     const renderCenter = () => {
@@ -45,15 +41,6 @@ const Header = ({
                 />
             );
         }
-        if (currentStep && totalSteps) {
-            return (
-                <StepIndicator
-                    currentStep={currentStep}
-                    totalSteps={totalSteps}
-                    className="scale-110"
-                />
-            );
-        }
         if (right) {
             return right;
         }
@@ -63,8 +50,7 @@ const Header = ({
 
     return (
         <div className="sticky top-0 bg-white z-10">
-            {/* <div className="h-[64px]"></div> */}
-            <div className="flex items-center justify-between px-4 py-3 bg-white">
+            <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex-1 flex justify-start min-w-0">
                     {onBack && <BackButton onClick={onBack} />}
                 </div>
