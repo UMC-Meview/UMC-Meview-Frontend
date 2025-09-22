@@ -21,8 +21,7 @@ const ProfileDropdownMenu = ({
             {/* 드롭다운 버튼 */}
             <button 
                 onClick={onToggle} 
-                className="p-2 hover:bg-gray-100 rounded-full relative z-20"
-                style={{ zIndex: 20 }}
+                className="p-2 hover:bg-gray-100 rounded-full"
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="5" r="2" fill="currentColor"/>
@@ -34,8 +33,8 @@ const ProfileDropdownMenu = ({
             {/* 드롭다운 메뉴 */}
             {isOpen && (
                 <>
-                    <div className="fixed inset-0 z-40" onClick={onClose} />
-                    <div className="absolute top-12 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-0.5 z-[60] min-w-[100px]">
+                    <div className="fixed inset-0 z-40" onClick={onClose} /> {/* ProfilePage.tsx의 Header(z-30)보다 높은 z-index를 가지도록 함 */}
+                    <div className="absolute top-12 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-0.5 min-w-[100px]">
                         <button
                             onClick={onEditProfile}
                             className={`${buttonBaseClass} hover:bg-gray-50`}
