@@ -6,7 +6,6 @@ import ProgressBar from "../../components/Review/ProgressBar";
 import ReviewContentLayout from "../../components/Review/ReviewContentLayout";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
 import Button from "../../components/common/Button/Button";
-import BuildingMotion from "../../components/Review/effects/BuildingMotion";
 import { FloatingCoinsEffect, MoneyInteraction } from "../../components/Review/effects/SatisfactionEffects";
 import type { MoneyInteractionHandle } from "../../components/Review/effects/SatisfactionEffects";
 import coinImage from "../../assets/money/coin.svg";
@@ -89,24 +88,22 @@ const ReviewSatisfactionRatingPage: React.FC = () => {
             <div className="overflow-y-auto" style={{ height: "calc(100dvh - 180px)", maxHeight: "calc(100dvh - 180px)" }}>
             <ReviewContentLayout
                 topEffect={<FloatingCoinsEffect floatingItems={floatingItems} maxCount={6} />}
-                buildingImage={(
-                        <BuildingMotion
-                            src={new URL(`../../assets/buildings/building-level-${finalStep + 1}.svg`, import.meta.url).href}
-                            alt={`건물 레벨 ${finalStep + 1}`}
-                            onClick={() => handleClick('store')}
-                            pulseTrigger={clickCount}
-                            containerRef={buildingRef}
+                buildingMotion={{
+                    src: new URL(`../../assets/buildings/building-level-${finalStep + 1}.svg`, import.meta.url).href,
+                    alt: `건물 레벨 ${finalStep + 1}`,
+                    onClick: () => handleClick('store'),
+                    pulseTrigger: clickCount,
+                    containerRef: buildingRef,
+                    children: (
+                        <motion.div 
+                            className="absolute -top-6 left-1/2 transform -translate-x-1/2"
+                            animate={{ y: [0, -12, 0] }}
+                            transition={{ duration: 1, repeat: Infinity }}
                         >
-                            {/* 건물 위 부유하는 코인 */}
-                            <motion.div 
-                                className="absolute -top-6 left-1/2 transform -translate-x-1/2"
-                                animate={{ y: [0, -12, 0] }}
-                                transition={{ duration: 1, repeat: Infinity }}
-                            >
-                                <img src={coinImage} alt="코인" className="w-27 h-27 drop-shadow-lg" />
-                            </motion.div>
-                        </BuildingMotion>
-                )}
+                            <img src={coinImage} alt="코인" className="w-27 h-27 drop-shadow-lg" />
+                        </motion.div>
+                    )
+                }}
                 bottomImage={(
                     <MoneyInteraction
                         ref={moneyInteractionRef}

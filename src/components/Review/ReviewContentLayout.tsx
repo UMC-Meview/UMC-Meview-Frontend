@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import BuildingMotion from "./effects/BuildingMotion";
 
 interface ReviewContentLayoutProps {
     topEffect?: React.ReactNode;
-    buildingImage: React.ReactNode;
+    buildingMotion: React.ComponentProps<typeof BuildingMotion>;
     bottomImage?: React.ReactNode;
   }
   
   const ReviewContentLayout = ({
     topEffect,
-    buildingImage,
+    buildingMotion,
     bottomImage,
   }: ReviewContentLayoutProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -60,10 +61,7 @@ interface ReviewContentLayoutProps {
             <div style={{ transform: `translateY(${offsetY}px) scale(${scale})`, transformOrigin: "top center" }}>
                 <div ref={contentRef} className="flex flex-col justify-center items-center">
                     <div className="translate-y-[-120px]">
-                        {React.isValidElement(buildingImage) 
-                            ? React.cloneElement(buildingImage as React.ReactElement<{ onImageLoad?: () => void }>, { onImageLoad: measure })
-                            : buildingImage
-                        }
+                        <BuildingMotion {...buildingMotion} onImageLoad={measure} />
                     </div>
                     {bottomImage && <div className="translate-y-[-240px]">{bottomImage}</div>}
                 </div>

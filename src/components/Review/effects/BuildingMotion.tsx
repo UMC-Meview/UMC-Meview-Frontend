@@ -15,7 +15,6 @@ interface BuildingMotionProps {
     isShaking?: boolean;
     pulseTrigger?: number; 
     children?: React.ReactNode;
-    scale?: number;
     onImageLoad?: () => void;
     containerRef?: React.Ref<HTMLDivElement | null>;
 }
@@ -34,7 +33,7 @@ const BuildingMotion = ({
 
     useEffect(() => {
         if (pulseTrigger !== undefined) {
-            void controls.start({ scale: [1, 1.1, 1] }, { duration: 0.3 });
+            void controls.start({ scale: [1, 1.1, 1] }, { duration: 0.3 }); //1:시작(100%), 1.1:중간(110%), 1:끝(100%)
         }
     }, [pulseTrigger, controls]);
 
@@ -42,7 +41,7 @@ const BuildingMotion = ({
         <motion.div
             className="relative cursor-pointer"
             onClick={onClick}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.95 }} //클릭하는 동안 95% 축소
             animate={controls}
             transition={{ duration: 0.3 }}
             ref={(node: HTMLDivElement | null) => setRef<HTMLDivElement | null>(containerRef, node)}
@@ -56,7 +55,6 @@ const BuildingMotion = ({
                     scale: 1, 
                     opacity: 1,
                     ...(isShaking && {
-                        // 흔들기 애니메이션: x, y, rotate 값들을 순차적으로 적용
                         x: [-12, 12, -10, 10, -8, 8, -6, 6, -4, 4, -2, 2, -1, 1, 0],
                         y: [-8, 8, -6, 6, -4, 4, -3, 3, -2, 2, -1, 1, 0],
                         rotate: [-4, 4, -3, 3, -2, 2, -1, 1, 0]
@@ -92,7 +90,6 @@ const BuildingMotion = ({
                     zIndex: 1
                 }}
             />
-
             {/* 추가 효과들을 위한 children (할퀴기, 먼지, 코인 등) */}
             {children}
         </motion.div>

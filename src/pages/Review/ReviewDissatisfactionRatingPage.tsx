@@ -5,7 +5,6 @@ import ProgressBar from "../../components/Review/ProgressBar";
 import ReviewContentLayout from "../../components/Review/ReviewContentLayout";
 import BottomFixedWrapper from "../../components/common/BottomFixedWrapper";
 import Button from "../../components/common/Button/Button";
-import BuildingMotion from "../../components/Review/effects/BuildingMotion";
 import { DustEffect, CatPawInteraction, ScratchEffect } from "../../components/Review/effects/DissatisfactionEffects";
 import { useGetStoreDetail } from "../../hooks/queries/useGetStoreDetail";
 
@@ -90,25 +89,25 @@ const ReviewDissatisfactionRatingPage: React.FC = () => {
             <div className="overflow-y-auto" style={{ height: "calc(100dvh - 180px)", maxHeight: "calc(100dvh - 180px)" }}>
             <ReviewContentLayout
                 topEffect={<div className="h-0" />}
-                buildingImage={(
-                    <BuildingMotion
-                        src={new URL(`../../assets/buildings/building-broken-${currentStep + 1}.svg`, import.meta.url).href}
-                        alt={`무너지는 건물 ${currentStep + 1}단계`}
-                        onClick={() => handleClick('store')}
-                        isShaking={isShaking}
-                        scale={clickCount > 0 ? 1.1 : 1}
-                    >
-                        <ScratchEffect
-                            showScratch={showScratch}
-                            scratchIndexes={scratchIndexes}
-                            clickCount={clickCount}
-                        />
-                        <DustEffect
-                            showDust={showDust}
-                            dustParticles={dustParticles}
-                        />
-                    </BuildingMotion>
-                )}
+                buildingMotion={{
+                    src: new URL(`../../assets/buildings/building-broken-${currentStep + 1}.svg`, import.meta.url).href,
+                    alt: `무너지는 건물 ${currentStep + 1}단계`,
+                    onClick: () => handleClick('store'),
+                    isShaking: isShaking,
+                    children: (
+                        <>
+                            <ScratchEffect
+                                showScratch={showScratch}
+                                scratchIndexes={scratchIndexes}
+                                clickCount={clickCount}
+                            />
+                            <DustEffect
+                                showDust={showDust}
+                                dustParticles={dustParticles}
+                            />
+                        </>
+                    )
+                }}
                 bottomImage={(
                     <CatPawInteraction
                         clickCount={clickCount}
