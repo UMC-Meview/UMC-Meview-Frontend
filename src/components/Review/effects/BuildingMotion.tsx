@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
 import { motion, useAnimationControls } from "framer-motion";
 
-// 안전하게 React Ref에 값을 설정하는 유틸
-function setRef<T>(ref: React.Ref<T> | undefined, value: T) {
-    if (!ref) return;
-    if (typeof ref === "function") ref(value);
-    else (ref as React.MutableRefObject<T | null>).current = value as unknown as T & (T extends null ? never : unknown);
-}
 
 interface BuildingMotionProps {
     src: string;
@@ -29,7 +23,7 @@ const BuildingMotion = ({
     onImageLoad,
     containerRef,
 }: BuildingMotionProps) => {
-    const controls = useAnimationControls();
+    const controls = useAnimationControls(); //Framer Motion에서 제공하는 애니메이션 controls 관리 훅
 
     useEffect(() => {
         if (pulseTrigger !== undefined) {
@@ -42,9 +36,9 @@ const BuildingMotion = ({
             className="relative cursor-pointer"
             onClick={onClick}
             whileTap={{ scale: 0.95 }} //클릭하는 동안 95% 축소
-            animate={controls}
+            animate={controls} //애니메이션이 이 div에 적용됨
             transition={{ duration: 0.3 }}
-            ref={(node: HTMLDivElement | null) => setRef<HTMLDivElement | null>(containerRef, node)}
+            ref={containerRef}
         >
             <motion.img
                 src={src}
